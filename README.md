@@ -42,4 +42,20 @@ keyops/
 └── docs/
     └── product/
         ├── historias-de-usuario-keyops.docx
-        └── keyops-lean-canvas.pptxx
+        └── keyops-lean-canvas.pptx
+```
+
+## Metodología
+
+KeyOps adopta un enfoque de desarrollo dirigido por especificaciones —Spec-Driven Development— basado en [GitHub Spec-Kit](https://github.com/github/spec-kit).
+
+El flujo previsto es:
+
+1. **Specify** — Definir qué debe resolver el producto y por qué.
+2. **Plan** — Diseñar el enfoque técnico.
+3. **Tasks** — Convertir el plan en tareas ejecutables.
+4. **Implement** — Construir y validar la solución.
+
+## Proyecto
+
+Proyecto desarrollado en el contexto de VIBERANO'26.
