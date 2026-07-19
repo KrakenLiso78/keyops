@@ -1,7 +1,7 @@
 # KeyOps — Especificación de feature: Gestión autónoma de credenciales API
 
 **Proyecto**: KeyOps  
-**Rama**: `[001-gestion-autonoma-credenciales-api]`  
+**Rama**: `[001-gestion-credenciales-api]`  
 **Creado**: 17 de julio de 2026  
 **Estado**: Borrador para validación  
 **Entradas**: `Lean Canvas Full · Gestión autónoma de credenciales API · Escuadrón 04.docx` y `docs/product/historias-de-usuario-keyops.docx`
