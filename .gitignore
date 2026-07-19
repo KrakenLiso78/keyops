@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+._*
+
+# Archivos temporales de Microsoft Office
+~$*.docx
+~$*.pptx
+~$*.xlsx
+
+# Configuración local y secretos
+.env
+.env.*
+!.env.example
+
+# Archivos temporales y registros
+*.tmp
+*.temp
+*.log
+
+# Exportaciones y comprobaciones locales
+outputs/
+*.inspect.ndjson
