@@ -36,6 +36,12 @@ La primera feature también está organizada siguiendo la estructura de GitHub S
 keyops/
 ├── README.md
 ├── spec.md
+├── design/
+│   ├── DESIGN.md
+│   ├── Pantallas_KeyOps_V3.png
+│   ├── Propuesta-Diseños.pptx
+│   ├── logo.png
+│   └── spec.md
 ├── specs/
 │   └── 001-gestion-credenciales-api/
 │       └── spec.md
