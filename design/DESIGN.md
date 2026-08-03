@@ -1,148 +1,174 @@
 ---
-version: alpha
-name: Notion-design-analysis
-description: Notion presents itself as the all-in-one workspace through a confident, illustration-rich brand voice — anchored by a deep navy hero band ({colors.brand-navy}) decorated with brand-colored sticky-note dots and mesh wire illustrations, a signature purple pill primary CTA ({colors.primary}), and a rich palette of pastel-tinted feature cards that echo the colorful database properties of the live product. The system uses a Notion-Sans (Inter-based) typeface across every UI surface, anchors a 4-tier pricing comparison (Free / Plus / Business / Enterprise), and presents the live workspace UI mockup directly inside the hero band. Coverage spans homepage, Enterprise, Product AI, Product Agents, Startups, and Pricing surfaces.
+version: "1.0"
+status: final
+name: "KeyOps Mobile Design System"
+product: "KeyOps"
+platform: "Aplicación móvil"
+language: "es"
+description: >
+  Sistema de diseño final para KeyOps, una aplicación móvil interna que permite
+  a analistas autorizados consultar aplicaciones y tramitar de forma segura el
+  ciclo de vida de credenciales API. Conserva la identidad navy, morada y
+  turquesa de la propuesta visual aprobada, con tarjetas claras, acentos
+  geométricos y una interfaz vertical optimizada para el uso con el dedo.
+
+assets:
+  logo-primary:
+    path: "./logo.png"
+    repositoryPath: "design/logo.png"
+    format: "PNG"
+    dimensions: "2816x1536"
+    composition: "Símbolo y logotipo KeyOps sobre fondo blanco texturizado"
+    altText: "KeyOps"
+    intendedUse: "Acceso, documentación y presentaciones"
 
 colors:
   primary: "#5645d4"
   primary-pressed: "#4534b3"
   primary-deep: "#3a2a99"
   on-primary: "#ffffff"
+
   brand-navy: "#0a1530"
   brand-navy-deep: "#070f24"
   brand-navy-mid: "#1a2a52"
+  brand-cyan: "#12b8c8"
+  brand-teal: "#2a9d99"
+
   link-blue: "#0075de"
   link-blue-pressed: "#005bab"
+
   brand-orange: "#dd5b00"
   brand-orange-deep: "#793400"
   brand-pink: "#ff64c8"
-  brand-pink-deep: "#a02e6d"
   brand-purple: "#7b3ff2"
   brand-purple-300: "#d6b6f6"
   brand-purple-800: "#391c57"
-  brand-teal: "#2a9d99"
   brand-green: "#1aae39"
   brand-yellow: "#f5d75e"
-  brand-brown: "#523410"
+
   card-tint-peach: "#ffe8d4"
   card-tint-rose: "#fde0ec"
   card-tint-mint: "#d9f3e1"
   card-tint-lavender: "#e6e0f5"
   card-tint-sky: "#dcecfa"
   card-tint-yellow: "#fef7d6"
-  card-tint-yellow-bold: "#f9e79f"
-  card-tint-cream: "#f8f5e8"
   card-tint-gray: "#f0eeec"
+
   canvas: "#ffffff"
   surface: "#f6f5f4"
   surface-soft: "#fafaf9"
   hairline: "#e5e3df"
   hairline-soft: "#ede9e4"
   hairline-strong: "#c8c4be"
+
   ink-deep: "#000000"
   ink: "#1a1a1a"
   charcoal: "#37352f"
   slate: "#5d5b54"
   steel: "#787671"
-  stone: "#a4a097"
-  muted: "#bbb8b1"
+  muted: "#a4a097"
   on-dark: "#ffffff"
-  on-dark-muted: "#a4a097"
-  semantic-success: "#1aae39"
-  semantic-warning: "#dd5b00"
-  semantic-error: "#e03131"
+  on-dark-muted: "#d5d7dc"
+
+  semantic-success: "#168a2f"
+  semantic-success-soft: "#d9f3e1"
+  semantic-warning: "#b54708"
+  semantic-warning-soft: "#fef0c7"
+  semantic-error: "#c62828"
+  semantic-error-soft: "#fde0ec"
+  semantic-info: "#0075de"
+  semantic-info-soft: "#dcecfa"
+
+  environment-test: "#5645d4"
+  environment-test-soft: "#e6e0f5"
+  environment-production: "#c62828"
+  environment-production-soft: "#fde0ec"
 
 typography:
-  hero-display:
-    fontFamily: Notion Sans
-    fontSize: 80px
-    fontWeight: 600
-    lineHeight: 1.05
-    letterSpacing: -2px
-  display-lg:
-    fontFamily: Notion Sans
-    fontSize: 56px
-    fontWeight: 600
-    lineHeight: 1.10
-    letterSpacing: -1px
   heading-1:
-    fontFamily: Notion Sans
-    fontSize: 48px
-    fontWeight: 600
-    lineHeight: 1.15
-    letterSpacing: -0.5px
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 32px
+    fontWeight: 700
+    lineHeight: 1.18
+    letterSpacing: "-0.5px"
   heading-2:
-    fontFamily: Notion Sans
-    fontSize: 36px
-    fontWeight: 600
-    lineHeight: 1.20
-    letterSpacing: -0.5px
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 26px
+    fontWeight: 700
+    lineHeight: 1.22
+    letterSpacing: "-0.3px"
   heading-3:
-    fontFamily: Notion Sans
-    fontSize: 28px
-    fontWeight: 600
-    lineHeight: 1.25
-  heading-4:
-    fontFamily: Notion Sans
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
     fontSize: 22px
-    fontWeight: 600
-    lineHeight: 1.30
-  heading-5:
-    fontFamily: Notion Sans
+    fontWeight: 650
+    lineHeight: 1.28
+    letterSpacing: "-0.2px"
+  heading-4:
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
     fontSize: 18px
-    fontWeight: 600
-    lineHeight: 1.40
+    fontWeight: 650
+    lineHeight: 1.35
+    letterSpacing: 0
   subtitle:
-    fontFamily: Notion Sans
-    fontSize: 18px
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 16px
     fontWeight: 400
     lineHeight: 1.50
+    letterSpacing: 0
   body-md:
-    fontFamily: Notion Sans
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
     fontSize: 16px
     fontWeight: 400
-    lineHeight: 1.55
+    lineHeight: 1.50
+    letterSpacing: 0
   body-md-medium:
-    fontFamily: Notion Sans
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
     fontSize: 16px
-    fontWeight: 500
-    lineHeight: 1.55
-  body-sm:
-    fontFamily: Notion Sans
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 1.50
-  body-sm-medium:
-    fontFamily: Notion Sans
-    fontSize: 14px
-    fontWeight: 500
-    lineHeight: 1.50
-  caption:
-    fontFamily: Notion Sans
-    fontSize: 13px
-    fontWeight: 400
-    lineHeight: 1.40
-  caption-bold:
-    fontFamily: Notion Sans
-    fontSize: 13px
     fontWeight: 600
+    lineHeight: 1.50
+    letterSpacing: 0
+  body-sm:
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 14px
+    fontWeight: 400
+    lineHeight: 1.45
+    letterSpacing: 0
+  body-sm-medium:
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 14px
+    fontWeight: 600
+    lineHeight: 1.45
+    letterSpacing: 0
+  caption:
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 13px
+    fontWeight: 400
     lineHeight: 1.40
+    letterSpacing: 0
+  caption-bold:
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 13px
+    fontWeight: 650
+    lineHeight: 1.40
+    letterSpacing: 0
   micro:
-    fontFamily: Notion Sans
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
     fontSize: 12px
     fontWeight: 500
     lineHeight: 1.40
-  micro-uppercase:
-    fontFamily: Notion Sans
-    fontSize: 11px
-    fontWeight: 600
-    lineHeight: 1.40
-    letterSpacing: 1px
-  button-md:
-    fontFamily: Notion Sans
+    letterSpacing: 0
+  code:
+    fontFamily: "JetBrains Mono, SFMono-Regular, Consolas, monospace"
     fontSize: 14px
     fontWeight: 500
-    lineHeight: 1.30
+    lineHeight: 1.50
+    letterSpacing: 0
+  button-md:
+    fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fontSize: 15px
+    fontWeight: 650
+    lineHeight: 1.20
+    letterSpacing: 0
 
 rounded:
   xs: 4px
@@ -151,7 +177,6 @@ rounded:
   lg: 12px
   xl: 16px
   xxl: 20px
-  xxxl: 24px
   full: 9999px
 
 spacing:
@@ -163,659 +188,611 @@ spacing:
   xl: 24px
   xxl: 32px
   xxxl: 40px
-  section-sm: 48px
-  section: 64px
-  section-lg: 96px
-  hero: 120px
+
+elevation:
+  flat: "none"
+  card: "0 1px 3px rgba(10, 21, 48, 0.10)"
+  overlay: "0 12px 32px rgba(10, 21, 48, 0.18)"
+
+motion:
+  fast: "120ms"
+  standard: "200ms"
+  slow: "320ms"
+  easing: "cubic-bezier(0.2, 0, 0, 1)"
 
 components:
+  brand-logo:
+    asset: "{assets.logo-primary.path}"
+    altText: "{assets.logo-primary.altText}"
+    backgroundColor: "{colors.canvas}"
+    recommendedWidthMobile: 200px
+    minimumWidth: 144px
+    maximumWidth: 240px
+
+  app-bar:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    height: 56px
+    padding: "0 {spacing.md}"
+    border: "0 0 1px {colors.hairline} solid"
+
+  environment-tabs:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.steel}"
+    activeTextColor: "{colors.ink}"
+    activeIndicatorColor: "{colors.primary}"
+    height: 44px
+
+  environment-production-alert:
+    backgroundColor: "{colors.environment-production-soft}"
+    textColor: "{colors.environment-production}"
+    typography: "{typography.caption-bold}"
+    height: 32px
+
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.button-md}"
     rounded: "{rounded.md}"
-    padding: "10px 18px"
+    height: 48px
+    padding: "0 {spacing.lg}"
   button-primary-pressed:
     backgroundColor: "{colors.primary-pressed}"
     textColor: "{colors.on-primary}"
   button-primary-disabled:
     backgroundColor: "{colors.hairline}"
     textColor: "{colors.muted}"
-  button-dark:
-    backgroundColor: "{colors.ink-deep}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.md}"
-    padding: "10px 18px"
   button-secondary:
-    backgroundColor: "transparent"
+    backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     typography: "{typography.button-md}"
     rounded: "{rounded.md}"
-    padding: "10px 18px"
+    height: 48px
+    padding: "0 {spacing.lg}"
     border: "1px solid {colors.hairline-strong}"
-  button-on-dark:
-    backgroundColor: "{colors.on-dark}"
-    textColor: "{colors.ink}"
+  button-danger:
+    backgroundColor: "{colors.semantic-error}"
+    textColor: "{colors.on-primary}"
     typography: "{typography.button-md}"
     rounded: "{rounded.md}"
-    padding: "10px 18px"
-  button-secondary-on-dark:
-    backgroundColor: "transparent"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.md}"
-    padding: "10px 18px"
-    border: "1px solid {colors.on-dark-muted}"
+    height: 48px
+    padding: "0 {spacing.lg}"
   button-ghost:
     backgroundColor: "transparent"
     textColor: "{colors.ink}"
     typography: "{typography.button-md}"
-    rounded: "{rounded.sm}"
-    padding: "8px 12px"
-  button-link:
+    rounded: "{rounded.md}"
+    height: 48px
+    padding: "0 {spacing.md}"
+  icon-button:
     backgroundColor: "transparent"
-    textColor: "{colors.link-blue}"
-    typography: "{typography.body-sm-medium}"
-    padding: "0"
-  card-base:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xl}"
-    border: "1px solid {colors.hairline}"
-  card-feature:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-    border: "1px solid {colors.hairline}"
-  card-feature-yellow-bold:
-    backgroundColor: "{colors.card-tint-yellow-bold}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-peach:
-    backgroundColor: "{colors.card-tint-peach}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-rose:
-    backgroundColor: "{colors.card-tint-rose}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-mint:
-    backgroundColor: "{colors.card-tint-mint}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-sky:
-    backgroundColor: "{colors.card-tint-sky}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-lavender:
-    backgroundColor: "{colors.card-tint-lavender}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-yellow:
-    backgroundColor: "{colors.card-tint-yellow}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-feature-cream:
-    backgroundColor: "{colors.card-tint-cream}"
-    textColor: "{colors.charcoal}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-  card-agent-tile:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xl}"
-    border: "1px solid {colors.hairline}"
-  card-template:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.lg}"
-    border: "1px solid {colors.hairline}"
-  card-startup-perk:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xl}"
-    border: "1px solid {colors.hairline}"
-  pricing-card:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-    border: "1px solid {colors.hairline}"
-  pricing-card-featured:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-    border: "2px solid {colors.primary}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.full}"
+    size: 48px
+
   text-input:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     typography: "{typography.body-md}"
     rounded: "{rounded.md}"
-    padding: "{spacing.sm} {spacing.md}"
+    padding: "0 {spacing.md}"
     border: "1px solid {colors.hairline-strong}"
-    height: 44px
+    height: 48px
   text-input-focused:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     border: "2px solid {colors.primary}"
-  search-pill:
+  text-area:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    typography: "{typography.body-md}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.sm} {spacing.md}"
+    border: "1px solid {colors.hairline-strong}"
+    minHeight: 104px
+
+  search-field:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.steel}"
     typography: "{typography.body-md}"
     rounded: "{rounded.md}"
-    padding: "{spacing.sm} {spacing.md}"
-    height: 44px
+    padding: "0 {spacing.md}"
+    height: 48px
     border: "1px solid {colors.hairline}"
-  pill-tab:
-    backgroundColor: "transparent"
-    textColor: "{colors.steel}"
-    typography: "{typography.body-sm-medium}"
-    rounded: "{rounded.full}"
-    padding: "{spacing.xs} {spacing.md}"
-    border: "1px solid {colors.hairline}"
-  pill-tab-active:
-    backgroundColor: "{colors.ink-deep}"
-    textColor: "{colors.on-dark}"
-    rounded: "{rounded.full}"
-    border: "1px solid {colors.ink-deep}"
-  segmented-tab:
-    backgroundColor: "transparent"
-    textColor: "{colors.steel}"
-    typography: "{typography.body-sm-medium}"
-    padding: "{spacing.sm} {spacing.md}"
-    border: "0 0 2px transparent solid"
-  segmented-tab-active:
-    backgroundColor: "transparent"
+
+  application-card:
+    backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-sm-medium}"
-    border: "0 0 2px {colors.ink} solid"
-  badge-purple:
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+    border: "1px solid {colors.hairline}"
+    shadow: "{elevation.card}"
+
+  credential-card:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+    border: "1px solid {colors.hairline}"
+    shadow: "{elevation.card}"
+
+  delivery-link-card:
+    backgroundColor: "{colors.card-tint-sky}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+    border: "1px solid {colors.hairline}"
+
+  otp-card:
+    backgroundColor: "{colors.card-tint-lavender}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+    border: "1px solid {colors.hairline}"
+
+  information-card:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+    border: "1px solid {colors.hairline}"
+
+  warning-card:
+    backgroundColor: "{colors.semantic-warning-soft}"
+    textColor: "{colors.semantic-warning}"
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+
+  error-card:
+    backgroundColor: "{colors.semantic-error-soft}"
+    textColor: "{colors.semantic-error}"
+    rounded: "{rounded.lg}"
+    padding: "{spacing.md}"
+
+  badge-role:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.caption-bold}"
     rounded: "{rounded.full}"
     padding: "4px 10px"
-  badge-pink:
-    backgroundColor: "{colors.brand-pink}"
-    textColor: "{colors.on-primary}"
+  badge-active:
+    backgroundColor: "{colors.semantic-success-soft}"
+    textColor: "{colors.semantic-success}"
     typography: "{typography.caption-bold}"
     rounded: "{rounded.full}"
     padding: "4px 10px"
-  badge-orange:
-    backgroundColor: "{colors.brand-orange}"
-    textColor: "{colors.on-primary}"
+  badge-suspended:
+    backgroundColor: "{colors.semantic-warning-soft}"
+    textColor: "{colors.semantic-warning}"
     typography: "{typography.caption-bold}"
     rounded: "{rounded.full}"
     padding: "4px 10px"
-  badge-tag-purple:
+  badge-revoked:
+    backgroundColor: "{colors.semantic-error-soft}"
+    textColor: "{colors.semantic-error}"
+    typography: "{typography.caption-bold}"
+    rounded: "{rounded.full}"
+    padding: "4px 10px"
+  badge-no-credentials:
+    backgroundColor: "{colors.card-tint-gray}"
+    textColor: "{colors.slate}"
+    typography: "{typography.caption-bold}"
+    rounded: "{rounded.full}"
+    padding: "4px 10px"
+  badge-rotated:
     backgroundColor: "{colors.card-tint-lavender}"
     textColor: "{colors.brand-purple-800}"
     typography: "{typography.caption-bold}"
-    rounded: "{rounded.sm}"
-    padding: "2px 8px"
-  badge-tag-orange:
-    backgroundColor: "{colors.card-tint-peach}"
-    textColor: "{colors.brand-orange-deep}"
-    typography: "{typography.caption-bold}"
-    rounded: "{rounded.sm}"
-    padding: "2px 8px"
-  badge-tag-green:
-    backgroundColor: "{colors.card-tint-mint}"
-    textColor: "{colors.brand-green}"
-    typography: "{typography.caption-bold}"
-    rounded: "{rounded.sm}"
-    padding: "2px 8px"
-  badge-popular:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.caption-bold}"
     rounded: "{rounded.full}"
     padding: "4px 10px"
-  promo-banner:
-    backgroundColor: "{colors.surface}"
+
+  timeline:
+    backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-sm-medium}"
+    typography: "{typography.body-sm}"
+    indicatorColor: "{colors.primary}"
+    borderColor: "{colors.hairline}"
+
+  bottom-action-bar:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
     padding: "{spacing.sm} {spacing.md}"
-  hero-band-dark:
-    backgroundColor: "{colors.brand-navy}"
-    textColor: "{colors.on-dark}"
-    rounded: "0"
-    padding: "{spacing.hero}"
-  workspace-mockup-card:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "0"
-    border: "1px solid {colors.hairline}"
-    shadow: "rgba(15, 15, 15, 0.2) 0px 24px 48px -8px"
-  cta-banner-light:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.section}"
-  comparison-table:
+    border: "1px 0 0 {colors.hairline} solid"
+
+  bottom-sheet:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.md}"
-    border: "1px solid {colors.hairline}"
-  comparison-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    padding: "{spacing.md} {spacing.lg}"
-    border: "0 0 1px {colors.hairline-soft} solid"
-  testimonial-card:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xxl}"
-    border: "1px solid {colors.hairline}"
-  logo-wall-item:
-    backgroundColor: "transparent"
-    textColor: "{colors.steel}"
-    typography: "{typography.body-md-medium}"
-    padding: "{spacing.lg}"
-  faq-accordion-item:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.xxl} {rounded.xxl} 0 0"
     padding: "{spacing.xl}"
-    border: "0 0 1px {colors.hairline} solid"
-  stat-row:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.lg}"
-    padding: "{spacing.section-sm}"
-  footer-region:
+    shadow: "{elevation.overlay}"
+
+  critical-modal:
     backgroundColor: "{colors.canvas}"
-    textColor: "{colors.charcoal}"
-    typography: "{typography.body-sm}"
-    padding: "{spacing.section} {spacing.xxl}"
-    border: "1px solid {colors.hairline}"
-  footer-link:
-    backgroundColor: "transparent"
-    textColor: "{colors.steel}"
-    typography: "{typography.body-sm}"
-    padding: "{spacing.xxs} 0"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.xl}"
+    padding: "{spacing.xl}"
+    shadow: "{elevation.overlay}"
 ---
 
-## Overview
-
-Notion presents itself as the all-in-one workspace through a confident, illustration-rich brand voice. The homepage opens with **"Meet the night shift."** rendered centered over a deep navy hero band ({colors.brand-navy}), decorated with brand-colored sticky-note dots and mesh wire illustrations scattered around the headline. The signature **purple pill primary CTA** ({colors.primary}) "Get Notion free" sits at the visual center, paired with an outlined "Request a demo" secondary. Below the buttons, a real Notion workspace UI mockup card (the "Ramp HQ" kanban board) breaks out of the hero band with a deep diffuse drop shadow.
-
-Below the hero, the page cycles through a distinctive sequence of feature sections: a dense sticky-note "Keep work moving 24/7" panel with red/blue/green/purple/teal status icons; a **bold yellow** ({colors.card-tint-yellow-bold}) "Ask your on-demand assistants" banner card flanked by orange/rose/mint pastel feature tiles showing assistant UI mockups; and a "Bring all your work together" 3-column grid with brand-colored mockups (sky-blue tutorial card, light Notion calendar, brown/rust testimonial slate). The pricing page renders 4 tiers (Free / Plus / Business / Enterprise) horizontally with one tier featured (purple-bordered) and a dense feature comparison table running below.
-
-The system uses a Notion-Sans typeface (Inter-based) across every UI surface — humanist-geometric character that pairs naturally with the colorful illustrations. Buttons are `{rounded.md}` (8px) rectangles, NOT pills — distinguishing Notion's sober rectangular geometry from competitors that use pills universally. Cards use `{rounded.lg}` (12px) consistently.
-
-**Key Characteristics:**
-- Deep navy hero band ({colors.brand-navy}) with scattered sticky-note dots + mesh wire decorative illustrations
-- **Signature purple pill** ({colors.primary}) primary CTA — Notion's recognizable "Get Notion free" button color
-- Real Notion workspace UI mockup card embedded in the hero with deep drop shadow
-- Bold yellow feature banner ({colors.card-tint-yellow-bold}) for high-emphasis content sections
-- Pastel feature card palette (peach, rose, mint, lavender, sky, yellow) echoing the live product database properties
-- Notion-Sans (Inter-based) across every UI surface
-- 8px-rounded buttons (NOT pills), 12px-rounded cards — sober editorial geometry
-- 4-tier pricing comparison with dense feature table
-- Centered hero layout (different from the left-aligned norm of most B2B SaaS)
-
-## Colors
-
-> Source pages: notion.com/ (homepage), /enterprise, /product/ai, /product/agents, /startups, /pricing. Token coverage was identical across all six pages.
-
-### Brand & Primary
-- **Notion Purple** ({colors.primary}): Signature primary CTA color — the unmistakable "Get Notion free" pill button. Reserved for the dominant CTA only.
-- **Purple Pressed** ({colors.primary-pressed}): Pressed-state variant
-- **Purple Deep** ({colors.primary-deep}): Deeper variant for emphasis
-- **Brand Navy** ({colors.brand-navy}): Hero band background — deep navy
-- **Brand Navy Deep** ({colors.brand-navy-deep}): Deeper navy for promo banner
-- **Brand Navy Mid** ({colors.brand-navy-mid}): Mid-spectrum navy
-- **Link Blue** ({colors.link-blue}): Inline text link blue (NOT primary CTA)
-- **Link Blue Pressed** ({colors.link-blue-pressed}): Pressed-state link blue
-
-### Brand Color Spectrum (echoes live product database properties)
-- **Brand Pink** ({colors.brand-pink}): Pink accent
-- **Brand Pink Deep** ({colors.brand-pink-deep}): Deeper pink
-- **Brand Orange** ({colors.brand-orange}): Orange accent
-- **Brand Orange Deep** ({colors.brand-orange-deep}): Deeper orange-rust
-- **Brand Purple** ({colors.brand-purple}): Purple accent variant
-- **Brand Purple 300** ({colors.brand-purple-300}): Light purple
-- **Brand Purple 800** ({colors.brand-purple-800}): Deep purple for tag text
-- **Brand Teal** ({colors.brand-teal}): Teal accent
-- **Brand Green** ({colors.brand-green}): Bright green
-- **Brand Yellow** ({colors.brand-yellow}): Soft yellow
-- **Brand Brown** ({colors.brand-brown}): Brand brown for "earthy" tints
-
-### Card Tints (Pastel Feature Card Backgrounds)
-- **Tint Peach** ({colors.card-tint-peach}): Pale peach
-- **Tint Rose** ({colors.card-tint-rose}): Pale rose-pink
-- **Tint Mint** ({colors.card-tint-mint}): Pale mint-green
-- **Tint Lavender** ({colors.card-tint-lavender}): Pale lavender
-- **Tint Sky** ({colors.card-tint-sky}): Pale sky-blue
-- **Tint Yellow** ({colors.card-tint-yellow}): Pale yellow
-- **Tint Yellow Bold** ({colors.card-tint-yellow-bold}): Bold yellow for high-emphasis feature banners ("Ask your on-demand assistants")
-- **Tint Cream** ({colors.card-tint-cream}): Cream tint
-- **Tint Gray** ({colors.card-tint-gray}): Neutral surface
-
-### Surface
-- **Canvas White** ({colors.canvas}): Page background and primary card surface
-- **Surface** ({colors.surface}): Subtle section backgrounds, search-pill rest, featured pricing tier
-- **Surface Soft** ({colors.surface-soft}): Quieter section divisions
-- **Hairline** ({colors.hairline}): 1px borders and primary dividers
-- **Hairline Soft** ({colors.hairline-soft}): Quieter dividers
-- **Hairline Strong** ({colors.hairline-strong}): Stronger 1px border for inputs
-
-### Text
-- **Ink Deep** ({colors.ink-deep}): Pure black for emphasis
-- **Ink** ({colors.ink}): Primary headlines and body text
-- **Charcoal** ({colors.charcoal}): Body emphasis (Notion's signature warm-charcoal)
-- **Slate** ({colors.slate}): Secondary text
-- **Steel** ({colors.steel}): Tertiary, footer links
-- **Stone** ({colors.stone}): Muted labels
-- **Muted** ({colors.muted}): Disabled, placeholders
-- **On Dark** ({colors.on-dark}): White text on dark surfaces
-- **On Dark Muted** ({colors.on-dark-muted}): Reduced-opacity white
-
-### Semantic
-- **Success** ({colors.semantic-success}): Confirmation green
-- **Warning** ({colors.semantic-warning}): Mid-priority alerts (orange)
-- **Error** ({colors.semantic-error}): Validation errors (red)
-
-## Typography
-
-### Font Family
-**Notion Sans** (primary): Notion's custom Inter-based variable typeface. Fallbacks: Inter, -apple-system, system-ui, 'Segoe UI', Helvetica, sans-serif. Humanist-geometric character used across every UI surface.
-
-### Hierarchy
-
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.hero-display}` | 80px | 600 | 1.05 | -2px | Hero ("Meet the night shift") |
-| `{typography.display-lg}` | 56px | 600 | 1.10 | -1px | Section openers |
-| `{typography.heading-1}` | 48px | 600 | 1.15 | -0.5px | Page-level headlines ("Try for free") |
-| `{typography.heading-2}` | 36px | 600 | 1.20 | -0.5px | Subsection headlines ("Keep work moving 24/7") |
-| `{typography.heading-3}` | 28px | 600 | 1.25 | 0 | Card titles |
-| `{typography.heading-4}` | 22px | 600 | 1.30 | 0 | Feature tile titles |
-| `{typography.heading-5}` | 18px | 600 | 1.40 | 0 | FAQ questions |
-| `{typography.subtitle}` | 18px | 400 | 1.50 | 0 | Hero subtitle |
-| `{typography.body-md}` | 16px | 400 | 1.55 | 0 | Primary body text |
-| `{typography.body-md-medium}` | 16px | 500 | 1.55 | 0 | Body emphasis |
-| `{typography.body-sm}` | 14px | 400 | 1.50 | 0 | Secondary body |
-| `{typography.body-sm-medium}` | 14px | 500 | 1.50 | 0 | Active sidebar, button labels |
-| `{typography.caption-bold}` | 13px | 600 | 1.40 | 0 | Badge labels |
-| `{typography.button-md}` | 14px | 500 | 1.30 | 0 | Button labels |
+# KeyOps Mobile Design System
 
-### Principles
-- Tight hero leading (1.05) on 80px display
-- Negative letter-spacing on display sizes (-2px to -0.5px)
-- Generous body leading (1.55) for documentation readability
-- 600 weight for headlines + 500 for buttons; 400 body
+## 1. Propósito
 
-## Layout
+KeyOps es una aplicación móvil interna para analistas que reciben solicitudes de
+credenciales API y tramitan su generación, entrega, rotación, suspensión,
+reactivación o revocación.
 
-### Spacing System
-- **Base unit**: 4px (8px primary increment)
-- **Tokens**: `{spacing.xxs}` (4px) through `{spacing.hero}` (120px)
-- **Section rhythm**: Marketing pages use `{spacing.section-lg}` (96px); pricing tightens to `{spacing.section}` (64px)
+La aplicación no está destinada al responsable de integración del cliente. El
+analista gestiona la solicitud y genera un enlace seguro para que el destinatario
+descargue la credencial desde un site separado.
 
-### Grid & Container
-- 1280px max-width with 32px gutters
-- Pricing: 4-tier card row at desktop with dense comparison table
-- Homepage: centered hero with workspace mockup below buttons; alternating colorful feature card sections
+La interfaz debe transmitir:
 
-### Whitespace Philosophy
-Marketing surfaces use generous breathing room between feature card bands. Workspace mockup card on hero gets full-width treatment with deep drop shadow.
+- Seguridad.
+- Claridad operativa.
+- Trazabilidad.
+- Rapidez de uso.
 
-## Elevation & Depth
+## 2. Usuarios
 
-| Level | Treatment | Use |
-|---|---|---|
-| 0 (flat) | No shadow; `{colors.hairline}` border | Default cards, table rows |
-| 1 (subtle) | `rgba(15, 15, 15, 0.04) 0px 1px 2px 0px` | Hover-elevated tiles |
-| 2 (card) | `rgba(15, 15, 15, 0.08) 0px 4px 12px 0px` | Feature cards |
-| 3 (mockup) | `rgba(15, 15, 15, 0.20) 0px 24px 48px -8px` | Hero workspace mockup card |
-| 4 (modal) | `rgba(15, 15, 15, 0.16) 0px 16px 48px -8px` | Modals, dropdowns |
+- **Analista**: consulta aplicaciones, genera credenciales y enlaces de entrega,
+  regenera, suspende y reactiva.
+- **Analista senior**: puede realizar las acciones anteriores y revocar.
+- **Administrador**: puede realizar todas las operaciones autorizadas.
+- **Auditor**: consulta la auditoría; no opera credenciales.
+- **Responsable de integración del cliente**: no usa la app móvil; recibe el
+  enlace y el OTP por separado.
 
-### Decorative Depth
-- Hero workspace mockup card uses deep diffuse drop shadow (Level 3) — significant elevation against the navy band
-- Pastel feature cards carry their own visual weight via tint backgrounds
-- Sticky-note dot illustrations and mesh wires add atmospheric decoration to navy hero
+Las acciones no autorizadas se omiten. No se muestran deshabilitadas.
 
-## Shapes
+## 3. Identidad
 
-### Border Radius Scale
+La marca se escribe siempre **KeyOps**, con `K` y `O` mayúsculas.
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.xs}` | 4px | Tag chips |
-| `{rounded.sm}` | 6px | Type badges |
-| `{rounded.md}` | 8px | Buttons, inputs, search-pill |
-| `{rounded.lg}` | 12px | Cards, pricing tiers, agent tiles, workspace mockup |
-| `{rounded.xl}` | 16px | Larger feature panels |
-| `{rounded.xxl}` | 20px | Featured product showcases |
-| `{rounded.xxxl}` | 24px | Larger feature cards |
-| `{rounded.full}` | 9999px | Status badges, pill tabs (NOT regular buttons) |
+### Activo oficial
 
-Notion's geometry is sober-editorial — `{rounded.md}` (8px) buttons distinguish it from pill-button-everywhere brands.
+El logotipo oficial es [logo.png](./logo.png).
 
-## Components
+| Propiedad | Valor |
+|---|---|
+| Token | `{assets.logo-primary}` |
+| Ruta relativa al documento | `./logo.png` |
+| Ruta desde la raíz | `design/logo.png` |
+| Formato | PNG RGBA |
+| Dimensiones | 2816 × 1536 px |
+| Composición | Símbolo y logotipo KeyOps |
+| Fondo visible | Blanco texturizado |
+| Texto alternativo | `KeyOps` |
 
-> Per the no-hover policy, hover states are NOT documented.
+La imagen combina un engranaje, una `K`, una llave y una flecha ascendente. El
+nombre usa navy para `Key` y cyan para `Ops`.
 
-### Buttons
+### Uso en la app
 
-**`button-primary`** — Signature purple rectangular primary CTA, the dominant action.
-- Background `{colors.primary}`, text `{colors.on-primary}`, typography `{typography.button-md}`, padding `10px 18px`, rounded `{rounded.md}`.
-- Pressed state `button-primary-pressed` deepens to `{colors.primary-pressed}`.
-- Disabled state uses `{colors.hairline}` background.
+- Usar la composición completa en la pantalla de acceso.
+- Ancho recomendado en móvil: 200 px.
+- Rango permitido: 144–240 px.
+- Centrarla horizontalmente y conservar su relación de aspecto.
+- Mantener al menos 16 px libres alrededor del contenido visible del logo.
+- Usar siempre el texto alternativo `KeyOps`.
+- En documentación y presentaciones puede utilizarse a mayor tamaño.
 
-**`button-dark`** — Black rectangular CTA on light backgrounds.
-- Background `{colors.ink-deep}`, text `{colors.on-dark}`, typography `{typography.button-md}`, padding `10px 18px`, rounded `{rounded.md}`.
+El PNG actual incluye mucho margen y un fondo blanco texturizado. Debe tratarse
+como el original de referencia, no como un icono listo para la barra superior.
+Hasta disponer de una variante compacta y transparente, la app bar debe mostrar
+el nombre `KeyOps` como texto junto al espacio reservado para el futuro símbolo,
+sin recortar manualmente este archivo.
 
-**`button-secondary`** — Outlined rectangular for secondary actions ("Request a demo").
-- Background transparent, text `{colors.ink}`, border `1px solid {colors.hairline-strong}`, typography `{typography.button-md}`, padding `10px 18px`, rounded `{rounded.md}`.
+### Usos no permitidos
 
-**`button-on-dark`** — White button on dark hero bands.
-- Background `{colors.on-dark}`, text `{colors.ink}`, typography `{typography.button-md}`, padding `10px 18px`, rounded `{rounded.md}`.
+- No deformar, estirar, rotar ni inclinar.
+- No recolorear el símbolo ni el logotipo.
+- No separar el símbolo del texto recortando este PNG.
+- No eliminar el fondo con tolerancias automáticas que dañen los bordes.
+- No colocarlo sobre fondos oscuros: el fondo blanco del archivo sería visible.
+- No añadir contornos, sombras, brillos o efectos adicionales.
+- No usarlo como icono de aplicación sin crear antes un activo específico.
 
-**`button-secondary-on-dark`** — Outlined button on dark.
-- Background transparent, text `{colors.on-dark}`, border `1px solid {colors.on-dark-muted}`, typography `{typography.button-md}`, padding `10px 18px`, rounded `{rounded.md}`.
+La identidad combina navy, cyan y morado:
 
-**`button-ghost`** — Quieter ghost button.
-- Background transparent, text `{colors.ink}`, typography `{typography.button-md}`, padding `8px 12px`, rounded `{rounded.sm}`.
+- Navy: confianza y seguridad.
+- Morado: acción principal.
+- Cyan y teal: identidad técnica.
+- Pasteles: agrupación y estados secundarios.
 
-**`button-link`** — Inline blue text link (NOT primary purple).
-- Background transparent, text `{colors.link-blue}`, typography `{typography.body-sm-medium}`, padding `0`.
+No usar gradientes adicionales, glassmorphism ni sombras intensas.
 
-### Cards & Containers
+## 4. Uso de tokens
 
-**`card-base`** — Standard content card.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.xl}`, border `1px solid {colors.hairline}`.
+Las expresiones entre llaves son referencias internas al sistema de diseño:
 
-**`card-feature`** — Feature card with larger padding.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.xxl}`, border `1px solid {colors.hairline}`.
+- `{typography.heading-2}` indica qué estilo aplicar.
+- `{colors.primary}` indica qué color aplicar.
+- `{components.badge-role}` indica qué componente utilizar.
 
-**`card-feature-yellow-bold`** — Bold yellow feature banner for high-emphasis content ("Ask your on-demand assistants").
-- Background `{colors.card-tint-yellow-bold}`, text `{colors.charcoal}`, rounded `{rounded.lg}`, padding `{spacing.xxl}`.
+Estas referencias **nunca se renderizan como texto visible**.
 
-**`card-feature-peach`** + **`card-feature-rose`** + **`card-feature-mint`** + **`card-feature-sky`** + **`card-feature-lavender`** + **`card-feature-yellow`** + **`card-feature-cream`** — Pastel-tinted feature cards.
-- Each variant uses its corresponding `card-tint-*` color as background, text `{colors.charcoal}`, rounded `{rounded.lg}`, padding `{spacing.xxl}`.
+Ejemplo correcto:
 
-**`card-agent-tile`** — Agent assistant tile.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.xl}`, border `1px solid {colors.hairline}`.
+```text
+Texto visible: Iniciar sesión
+Estilo aplicado: {typography.heading-2}
+```
 
-**`card-template`** — Template thumbnail card.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.lg}`, border `1px solid {colors.hairline}`.
+Ejemplo incorrecto:
 
-**`card-startup-perk`** — Startup-program perk grid item.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.xl}`, border `1px solid {colors.hairline}`.
+```text
+{typography.heading-2}
+Iniciar sesión
+```
 
-**`pricing-card`** — Standard pricing tier card.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.xxl}`, border `1px solid {colors.hairline}`.
+El nombre de un componente tampoco se muestra. Un badge puede usar
+`{components.badge-role}`, pero el usuario solo ve `Envío de mensajes`.
 
-**`pricing-card-featured`** — Featured pricing tier (Plus or Business — purple-bordered).
-- Background `{colors.surface}`, rounded `{rounded.lg}`, padding `{spacing.xxl}`, border `2px solid {colors.primary}`.
+## 5. Tipografía
 
-### Inputs & Forms
+Toda la aplicación usa Inter con fallback a las fuentes del sistema.
 
-**`text-input`** — Standard text field.
-- Background `{colors.canvas}`, text `{colors.ink}`, border `1px solid {colors.hairline-strong}`, rounded `{rounded.md}`, padding `{spacing.sm} {spacing.md}`, height 44px.
+| Token | Tamaño | Uso |
+|---|---:|---|
+| `{typography.heading-1}` | 32 px | Título principal de una pantalla |
+| `{typography.heading-2}` | 26 px | Acceso y resultados importantes |
+| `{typography.heading-3}` | 22 px | Títulos de sección |
+| `{typography.heading-4}` | 18 px | Títulos de tarjeta |
+| `{typography.subtitle}` | 16 px | Introducciones breves |
+| `{typography.body-md}` | 16 px | Contenido y formularios |
+| `{typography.body-sm}` | 14 px | Metadatos y ayuda |
+| `{typography.caption}` | 13 px | Badges y etiquetas |
+| `{typography.code}` | 14 px | Client ID, enlace y OTP |
 
-**`text-input-focused`** — Activated state.
-- Border switches to `2px solid {colors.primary}` (purple).
+No reducir el texto operativo por debajo de 14 px. El OTP puede aumentar hasta
+32 px para facilitar su lectura.
 
-**`search-pill`** — Search bar.
-- Background `{colors.surface}`, text `{colors.steel}`, typography `{typography.body-md}`, rounded `{rounded.md}`, height 44px, border `1px solid {colors.hairline}`.
+## 6. Color y significado
 
-### Tabs
+El morado identifica la acción principal. No representa estados.
 
-**`pill-tab`** + **`pill-tab-active`** — Pill-style tab nav for top-level switching.
-- Inactive: text `{colors.steel}`, border `1px solid {colors.hairline}`, padding `{spacing.xs} {spacing.md}`, rounded `{rounded.full}`.
-- Active: background `{colors.ink-deep}`, text `{colors.on-dark}`.
+| Estado | Tratamiento |
+|---|---|
+| Activa | Verde y texto `Activa` |
+| Suspendida | Ámbar y texto `Suspendida` |
+| Sin credenciales | Gris y texto `Sin credenciales` |
+| Inactiva por rotación | Lavanda y texto completo |
+| Revocada | Rojo suave y texto `Revocada` |
 
-**`segmented-tab`** + **`segmented-tab-active`** — Underline-style tab navigation.
-- Inactive: text `{colors.steel}`, no border. Active: text `{colors.ink}`, 2px bottom border in `{colors.ink}`.
+El color nunca es el único indicador. Cada estado incluye una etiqueta textual y,
+cuando ayude, un icono.
 
-### Badges & Status
+Pruebas y Producción deben distinguirse siempre:
 
-**`badge-purple`** — Purple status badge (matches primary CTA).
-- Background `{colors.primary}`, text `{colors.on-primary}`, typography `{typography.caption-bold}`, rounded `{rounded.full}`, padding `4px 10px`.
+- **Pruebas**: indicador morado.
+- **Producción**: indicador rojo y confirmaciones reforzadas.
 
-**`badge-pink`** — Pink accent badge.
-- Background `{colors.brand-pink}`, text `{colors.on-primary}`, typography `{typography.caption-bold}`, rounded `{rounded.full}`, padding `4px 10px`.
+## 7. Estructura móvil
 
-**`badge-orange`** — Orange accent badge.
-- Background `{colors.brand-orange}`, text `{colors.on-primary}`, typography `{typography.caption-bold}`, rounded `{rounded.full}`, padding `4px 10px`.
+- Orientación vertical.
+- Ancho de referencia: 390 px.
+- Rango objetivo: 360–430 px.
+- Márgenes laterales: 16 px.
+- Una sola columna.
+- Área táctil mínima: 48 × 48 px.
+- Barra superior: 56 px.
+- Selector de ambiente: 44 px.
+- Acciones finales ancladas sobre la zona segura inferior.
+- Desplazamiento vertical; no usar gestos laterales para operaciones.
 
-**`badge-tag-purple`** — Soft-purple feature tag chip.
-- Background `{colors.card-tint-lavender}`, text `{colors.brand-purple-800}`, typography `{typography.caption-bold}`, rounded `{rounded.sm}`, padding `2px 8px`.
+En tablet, el contenido se limita a 600 px y permanece centrado.
 
-**`badge-tag-orange`** — Soft-orange feature tag.
-- Background `{colors.card-tint-peach}`, text `{colors.brand-orange-deep}`, typography `{typography.caption-bold}`, rounded `{rounded.sm}`, padding `2px 8px`.
+## 8. Navegación
 
-**`badge-tag-green`** — Soft-mint feature tag.
-- Background `{colors.card-tint-mint}`, text `{colors.brand-green}`, typography `{typography.caption-bold}`, rounded `{rounded.sm}`, padding `2px 8px`.
+La barra superior incluye:
 
-**`badge-popular`** — "Most Popular" tier indicator.
-- Background `{colors.primary}`, text `{colors.on-primary}`, typography `{typography.caption-bold}`, rounded `{rounded.full}`, padding `4px 10px`.
+- Menú o botón Atrás de 48 × 48 px.
+- Símbolo KeyOps.
+- Título de pantalla cuando corresponda.
 
-**`promo-banner`** — Light surface promo strip ABOVE the top nav.
-- Background `{colors.surface}`, text `{colors.ink}`, typography `{typography.body-sm-medium}`, padding `{spacing.sm} {spacing.md}`. ("Developers: Get a first look at our new Developer Platform on May 13.")
+El selector `Pruebas | Producción` aparece en las pantallas operativas. No se
+puede cambiar de ambiente durante una operación iniciada.
 
-### Tables
+No es necesaria una barra inferior para el flujo mínimo. El retorno principal es
+siempre a la lista o al detalle de la aplicación.
 
-**`comparison-table`** — Pricing feature comparison table.
-- Background `{colors.canvas}`, text `{colors.ink}`, typography `{typography.body-sm}`, rounded `{rounded.md}`, border `1px solid {colors.hairline}`.
+## 9. Componentes
 
-**`comparison-row`** — Individual feature row.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.md} {spacing.lg}`, bottom border `1px solid {colors.hairline-soft}`.
+### Botones
 
-### Documentation Components
+- Un único botón primario por pantalla.
+- Etiquetas con verbos concretos: `Generar enlace`, `Regenerar`, `Suspender`.
+- `Continuar` solo se usa cuando la siguiente acción sea inequívoca.
+- Rojo únicamente para confirmar revocación u otra acción irreversible.
+- Durante el procesamiento, el botón conserva su etiqueta, muestra progreso y
+  bloquea pulsaciones repetidas.
 
-**`workspace-mockup-card`** — Embedded Notion workspace UI mockup on hero band ("Ramp HQ" kanban board).
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, border `1px solid {colors.hairline}`, deep shadow `rgba(15, 15, 15, 0.20) 0px 24px 48px -8px`. Carries actual Notion product UI mock.
+### Tarjetas
 
-**`testimonial-card`** — Customer testimonial card.
-- Background `{colors.canvas}`, rounded `{rounded.lg}`, padding `{spacing.xxl}`, border `1px solid {colors.hairline}`.
+Las tarjetas agrupan una unidad de información:
 
-**`logo-wall-item`** — Customer logo wordmark cell.
-- Background transparent, text `{colors.steel}`, typography `{typography.body-md-medium}`, padding `{spacing.lg}`.
+- Aplicación.
+- Credencial.
+- Enlace de entrega.
+- OTP.
+- Historial.
 
-**`faq-accordion-item`** — FAQ panel.
-- Background `{colors.canvas}`, rounded `{rounded.md}`, padding `{spacing.xl}`, bottom border `1px solid {colors.hairline}`.
+No anidar tarjetas. No usar más de un color pastel por tarjeta.
 
-**`stat-row`** — Stats strip with bar chart visualization ("More productivity. Fewer tools.").
-- Background `{colors.surface}`, text `{colors.ink}`, rounded `{rounded.lg}`, padding `{spacing.section-sm}`.
+### Formularios
 
-**`cta-banner-light`** — Light surface CTA banner.
-- Background `{colors.surface}`, text `{colors.ink}`, rounded `{rounded.lg}`, padding `{spacing.section}`.
+- Etiquetas persistentes encima del campo.
+- Error inmediatamente debajo.
+- El teclado no oculta el error ni la acción principal.
+- El motivo es obligatorio para suspender, reactivar y revocar.
 
-### Navigation
+### Badges
 
-**Top Navigation (Marketing)** — Sticky white bar.
-- Background `{colors.canvas}`, height ~64px, bottom border `1px solid {colors.hairline}`.
-- Left: Notion "N" logo + "Product / AI / Solutions / Resources / Enterprise / Pricing / Request a demo" links.
-- Right: "Get Notion free" purple button + "Log in" link.
+Los badges son informativos. No son botones.
 
-### Signature Components
+Textos permitidos:
 
-**`hero-band-dark`** — Deep navy hero band with embedded workspace mockup and decorative dots/wires.
-- Background `{colors.brand-navy}`, text `{colors.on-dark}`, padding `{spacing.hero}`.
-- Layout: centered headline `{typography.hero-display}`, subtitle, button row (`button-primary` purple + `button-secondary-on-dark`), `workspace-mockup-card` below.
-- Atmospheric decoration: scattered colorful sticky-note dots and mesh wire illustrations around the hero content (NOT a literal pattern fill — handled per-page via SVG/illustration).
+- Roles: `Envío de mensajes`, `Consultas` u otro rol del catálogo.
+- Estados: los cinco estados definidos en este documento.
 
-**`footer-region`** — Multi-column light footer.
-- Background `{colors.canvas}`, padding `{spacing.section} {spacing.xxl}`, top border `1px solid {colors.hairline}`.
-- 6-column link grid (Product / Download / Resources / Notion for / Company / Legal).
+Los nombres de tokens como `badge-role` o `badge-tag-purple` nunca son visibles.
 
-**`footer-link`** — Individual footer link.
-- Background transparent, text `{colors.steel}`, typography `{typography.body-sm}`, padding `{spacing.xxs} 0`.
+## 10. Pantallas y comportamiento
 
-## Do's and Don'ts
+### Acceso
 
-### Do
-- Use `{colors.primary}` (purple) as the dominant CTA across all surfaces — it's the brand's recognizable signal
-- Pair deep navy hero bands ({colors.brand-navy}) with the purple button + decorative sticky-note dots
-- Use pastel feature card tints (peach, rose, mint, lavender, sky, yellow) generously
-- Use `{colors.card-tint-yellow-bold}` for high-emphasis "Ask the assistant"-style banner cards
-- Apply `{rounded.md}` (8px) to buttons consistently — Notion uses rectangles, not pills
-- Apply `{rounded.lg}` (12px) to all card families
-- Maintain Notion-Sans across every UI surface
-- Use the workspace mockup card on hero bands to show actual product UI
+- Logotipo KeyOps.
+- Título `Iniciar sesión`.
+- Texto `Acceso restringido a analistas autorizados`.
+- Campos de usuario y contraseña.
+- Acción primaria `Ingresar`.
 
-### Don't
-- Don't use the purple for body text or large background surfaces
-- Don't use pill-shaped buttons; Notion's geometry is rectangular-sober
-- Don't mix link-blue ({colors.link-blue}) with primary-purple ({colors.primary}) — they have distinct roles
-- Don't apply heavy shadows on flat documentation cards
-- Don't replace Notion-Sans with a generic Inter
+No mostrar tokens tipográficos, enlaces de marketing ni contenido decorativo que
+compita con el formulario.
 
-## Responsive Behavior
+### Lista de aplicaciones
 
-### Breakpoints
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile (small) | < 480px | Single column. Hero 36px. Pricing 1-up. |
-| Mobile (large) | 480 – 767px | Feature cards 2-up. Hero 48px. |
-| Tablet | 768 – 1023px | 2-column feature grids. Hero 56px. |
-| Desktop | 1024 – 1279px | 4-tier pricing card row. Hero 72px. |
-| Wide Desktop | ≥ 1280px | Full 80px hero presentation. |
+- Selector de ambiente.
+- Título `Credenciales`.
+- Búsqueda y filtros.
+- Tarjetas con institución, aplicación, rol y estado.
+- Acción de cada tarjeta mediante botón explícito o menú accesible.
 
-### Touch Targets
-- Buttons render at 40–44px effective height
-- Form inputs render at 44px height
-- Pill tabs ~32px → 44px on mobile
+La acción global no debe generar una credencial sin haber seleccionado antes una
+aplicación y validado su contexto.
 
-### Collapsing Strategy
-- **Promo banner** stays full-width; truncates at < 480px
-- **Top nav** below 1024px collapses to hamburger
-- **Hero band**: workspace mockup card moves below text/buttons on mobile
-- **Pricing tiers**: 4-column → 2-column tablet → 1-column mobile
-- **Feature cards**: 3-up desktop → 2-up tablet → 1-up mobile
-- **Hero typography**: 80px → 56px → 48px → 36px
-- **Footer**: 6-column desktop → 3-column tablet → accordion mobile
+### Detalle de aplicación
 
-### Image Behavior
-- Workspace mockup card maintains aspect ratio
-- Pastel illustrations inside feature cards scale proportionally
-- Customer logo wall: wordmarks at consistent 60–80px height
+Es la pantalla principal del producto. Muestra, en este orden:
 
-## Iteration Guide
+1. Institución.
+2. Aplicación.
+3. Ambiente.
+4. Rol.
+5. Estado de credencial.
+6. Client ID, cuando exista.
+7. Acciones permitidas.
+8. Contacto, solicitud e IP declaradas.
+9. Historial de estados.
 
-1. Focus on ONE component at a time
-2. Reference component names and tokens directly
-3. Run `npx @google/design.md lint DESIGN.md` after edits
-4. Add new variants as separate `components:` entries
-5. Default to `{typography.body-md}` for body
-6. Keep `{colors.primary}` (purple) as the primary CTA — distinct from `{colors.link-blue}` for inline links
-7. Use `{rounded.md}` for buttons (rectangles), `{rounded.lg}` for cards, `{rounded.full}` for pill tabs/badges only
+El Client Secret no se muestra ni siquiera enmascarado.
 
-## Known Gaps
+### Operación sobre credencial
 
-- Specific dark-mode token values not surfaced beyond hero bands
-- Animation/transition timings not extracted; recommend 150–200ms ease
-- Form validation success state not explicitly captured
-- Pastel-tint mapping (which feature uses which tint) is observation-based — the actual brand library may have more entries
+Antes de ejecutar una acción se muestra:
+
+- Aplicación e institución.
+- Ambiente.
+- Estado actual.
+- Consecuencia.
+- Motivo, cuando sea obligatorio.
+- Botón con el verbo de la operación.
+- Cancelación disponible.
+
+### Entrega al cliente
+
+El analista no descarga la credencial en el móvil.
+
+Después de generar o regenerar:
+
+1. KeyOps genera un enlace al site de entrega.
+2. La app permite compartir o copiar el enlace.
+3. La app muestra un OTP de un solo uso válido durante dos minutos.
+4. El OTP se copia y envía por separado.
+5. El responsable de integración abre el enlace y descarga la credencial desde
+   el site.
+
+El enlace y el OTP aparecen en tarjetas separadas. Nunca incluir el OTP
+automáticamente al compartir el enlace.
+
+### Resultado
+
+La pantalla de resultado muestra:
+
+- Operación completada o fallida.
+- Aplicación.
+- Fecha y hora.
+- Nuevo estado.
+- Confirmación de auditoría.
+- Enlace y OTP, solo cuando corresponda.
+- Acción `Volver al detalle`.
+
+Un fallo de regeneración debe indicar que la credencial anterior continúa activa.
+
+## 11. Seguridad
+
+- El ambiente permanece visible.
+- El Client Secret no se muestra, copia ni precarga.
+- El analista no descarga el archivo de credenciales.
+- El OTP es de un solo uso y caduca a los dos minutos.
+- El enlace y el OTP se comparten mediante acciones separadas.
+- La contraseña del ZIP es distinta del OTP y no se muestra en la app.
+- Regenerar inactiva inmediatamente la versión anterior.
+- Suspender, reactivar y revocar exigen motivo.
+- Revocar requiere permiso específico y confirmación irreversible.
+- Toda operación genera trazabilidad.
+
+## 12. Mensajes y contenido
+
+La aplicación usa español claro y consistente.
+
+Usar:
+
+- `Estado`, no `Status`.
+- `Iniciar sesión`, no `Login`.
+- `Atrás`, no `Back`.
+- `Credencial activa`, no `Generada` si el estado real es activa.
+- `Generar enlace de entrega`, no `Descargar credenciales`.
+
+Los mensajes deben explicar qué ha ocurrido y qué conserva el sistema. No culpar
+al usuario ni revelar información sensible.
+
+## 13. Accesibilidad
+
+- Contraste mínimo WCAG AA.
+- Objetivos táctiles mínimos de 48 × 48 px.
+- Texto ampliable hasta 200 %.
+- Orden de lectura coherente.
+- Etiquetas accesibles para iconos.
+- Foco visible con teclado externo.
+- Color acompañado siempre de texto.
+- Respeto a la preferencia de movimiento reducido.
+- Errores persistentes; no comunicar fallos solo mediante toast.
+
+## 14. Iconografía y decoración
+
+- Iconos de línea simple, 24 px y trazo uniforme.
+- Iconos críticos acompañados de texto.
+- Las formas geométricas de color y las mallas se reservan para acceso, fondos
+  vacíos o presentación de marca.
+- No colocar decoración cerca de campos, OTP, estados o acciones críticas.
+
+## 15. No hacer
+
+- No mostrar referencias como `{typography.heading-2}`.
+- No mostrar nombres de componentes como `badge-tag-purple`.
+- No mostrar el Client Secret.
+- No descargar credenciales en el móvil del analista.
+- No ocultar el ambiente activo.
+- No mezclar español e inglés.
+- No mostrar acciones que el perfil no puede ejecutar.
+- No usar gestos rápidos para revocar.
+- No añadir precios, testimonios, planes, CTA comerciales o secciones de
+  marketing.
+- No convertir la interfaz en un dashboard de métricas ajeno al trabajo del
+  analista.
+
+## 16. Criterios de aceptación visual
+
+Una pantalla puede considerarse final cuando:
+
+- No contiene tokens o nombres de componentes visibles.
+- Se reconoce inmediatamente si opera en Pruebas o Producción.
+- Identifica la institución, aplicación, rol y estado.
+- Presenta una única acción principal.
+- Las acciones coinciden con el perfil y el estado.
+- No expone el Client Secret.
+- No ofrece descargar la credencial en el móvil.
+- Se puede utilizar verticalmente con una mano.
+- Mantiene la paleta navy, morada, cyan y pastel de KeyOps.
