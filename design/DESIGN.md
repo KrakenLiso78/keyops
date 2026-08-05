@@ -21,6 +21,12 @@ assets:
     composition: "Símbolo y logotipo KeyOps sobre fondo blanco texturizado"
     altText: "KeyOps"
     intendedUse: "Acceso, documentación y presentaciones"
+  screen-proposal-final:
+    path: "./Pantallas_KeyOps_V4.png"
+    repositoryPath: "design/Pantallas_KeyOps_V4.png"
+    format: "PNG"
+    dimensions: "1697x927"
+    intendedUse: "Referencia visual final para implementación"
 
 colors:
   primary: "#5645d4"
