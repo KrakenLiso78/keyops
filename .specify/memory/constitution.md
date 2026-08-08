@@ -4,7 +4,7 @@ Sync Impact Report
 - Modified principles: template placeholders replaced with seven KeyOps principles
 - Added sections: Quality and Compliance Constraints; Development Workflow and Quality Gates
 - Removed sections: none
-- Follow-up TODOs: confirm the original ratification date
+- Follow-up TODOs: none
 -->
 
 # KeyOps Constitution
@@ -95,4 +95,4 @@ controles y decisiones de versión, y retirar las excepciones vencidas. Si una f
 responsable o control no está confirmado, debe registrarse como TODO explícito y no
 tratarse como aprobado.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirmar fecha original de adopción | **Last Amended**: 2026-08-08
+**Version**: 1.0.0 | **Ratified**: 2026-08-08 | **Last Amended**: 2026-08-08
