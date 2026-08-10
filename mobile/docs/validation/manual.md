@@ -1,9 +1,9 @@
 # Recorridos manuales
 
 **Fecha**: 2026-08-10  
-**Alcance**: no ejecutado en esta máquina.
+**Alcance**: recorrido automatizado local.
 
 No hay navegador controlado, emulador ni dispositivo disponible en el entorno
-actual. Los recorridos de quickstart.md quedan cubiertos parcialmente por Jest
-y la exportación web, pero requieren inspección humana antes de registrar un
-resultado manual.
+actual. Los recorridos de quickstart.md se validan aquí mediante el adaptador
+fake, pruebas de dominio, contrato, integración y exportación web. La
+inspección humana de interfaz sigue fuera del alcance de esta máquina.
