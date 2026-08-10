@@ -1,19 +1,28 @@
 import { ScrollView, Text } from 'react-native';
-import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
-import { canReadAudit } from '@/domain/policies/permittedActions';
+import { listAuditEvents } from '@/domain/use-cases/audit/listAuditEvents';
 import { Body, Card, Heading, Screen } from '@/presentation/components/base';
 import { useApp } from '@/presentation/state/AppProvider';
 
 export default function AuditScreen() {
   const { user } = useApp();
-  if (!user || !canReadAudit(user.profile))
+  if (!user)
     return (
       <Screen>
         <Heading>Acceso no autorizado</Heading>
         <Body>No tienes permiso para consultar la auditoría.</Body>
       </Screen>
     );
-  const events = fakeRepository.listAudit();
+  let events;
+  try {
+    events = listAuditEvents(user).items;
+  } catch {
+    return (
+      <Screen>
+        <Heading>Acceso no autorizado</Heading>
+        <Body>No tienes permiso para consultar la auditoría.</Body>
+      </Screen>
+    );
+  }
   return (
     <Screen>
       <Heading>Auditoría</Heading>

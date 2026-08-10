@@ -119,6 +119,28 @@ export const fakeRepository = {
   listAudit(): AuditEvent[] {
     return events;
   },
+  getUsage(applicationId: string, environment: Environment) {
+    const application = this.getApplication(applicationId, environment);
+    if (!application) throw new Error('Aplicación no encontrada.');
+    if (application.messagesSent === undefined) {
+      return {
+        applicationId,
+        environment,
+        availability: 'no_data' as const,
+        consumedServices: [],
+        usedIps: [],
+      };
+    }
+    return {
+      applicationId,
+      environment,
+      availability: 'available' as const,
+      messagesSent: application.messagesSent,
+      consumedServices: application.consumedServices ?? [],
+      usedIps: application.usedIps ?? [],
+      lastConsumedAt: application.lastConsumedAt,
+    };
+  },
   listUsers(): User[] {
     return users;
   },
@@ -127,6 +149,13 @@ export const fakeRepository = {
     if (!user) throw new Error('Usuario no encontrado.');
     user.profile = profile;
     user.enabled = enabled;
+    return user;
+  },
+  createUser(input: Omit<User, 'id'>): User {
+    if (users.some((candidate) => candidate.loginIdentifier === input.loginIdentifier))
+      throw new Error('El identificador de acceso ya existe.');
+    const user = { ...input, id: `u-${id()}` };
+    users = [...users, user];
     return user;
   },
 };

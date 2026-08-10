@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Text } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
+import { updateManagementContext } from '@/domain/use-cases/applications/updateManagementContext';
 import { Button, Field, Heading, Screen } from '@/presentation/components/base';
 import { useApp } from '@/presentation/state/AppProvider';
 
@@ -25,7 +26,10 @@ export default function ManagementScreen() {
       <Button
         title="Guardar cambios"
         onPress={() => {
-          fakeRepository.updateManagement(applicationId, environment, contact, ticket);
+          updateManagementContext(environment, applicationId, {
+            technicalContact: contact || undefined,
+            requestOrTicketId: ticket || undefined,
+          });
           router.back();
         }}
       />
