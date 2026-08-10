@@ -3,7 +3,7 @@ import { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore'
 import { runtimeConfig } from './runtimeConfig';
 
 export interface AppDependencies {
-  dataSource: 'fake' | 'remote';
+  dataSource: 'fake';
   sessionStore: SecureStoreSessionStore;
   keyOps: typeof fakeRepository;
 }

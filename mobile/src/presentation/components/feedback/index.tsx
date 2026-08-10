@@ -41,7 +41,7 @@ export function CredentialBadge({ state }: { state: CredentialDisplayState }) {
 export function ProductionBanner() {
   return (
     <View accessibilityRole="alert" style={styles.production}>
-      <Text>Producción: las acciones afectan al entorno real.</Text>
+      <Text>Producción simulada: las acciones afectan solo a datos locales.</Text>
     </View>
   );
 }

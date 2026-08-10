@@ -24,7 +24,7 @@ export function EnvironmentBar() {
       </View>
       {environment === 'production' && (
         <Text accessibilityRole="alert" style={styles.alert}>
-          Producción: las acciones afectan al entorno real.
+          Producción simulada: las acciones afectan solo a datos locales.
         </Text>
       )}
     </View>
