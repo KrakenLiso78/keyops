@@ -6,14 +6,14 @@ KeyOps permite a analistas autorizados consultar aplicaciones, generar y renovar
 
 ## Estado del proyecto
 
-El proyecto se encuentra actualmente en fase de especificación.
+El proyecto cuenta con un candidato móvil Expo funcional con adaptador fake.
 
 - [x] Lean Canvas
 - [x] Especificación funcional
 - [x] Historias de usuario
-- [ ] Plan técnico
-- [ ] Desglose de tareas
-- [ ] Implementación
+- [x] Plan técnico
+- [x] Desglose de tareas
+- [x] Implementación local con adaptador fake
 
 ## Especificación pública
 
@@ -45,6 +45,10 @@ keyops/
 ├── specs/
 │   └── 001-gestion-credenciales-api/
 │       └── spec.md
+├── mobile/
+│   ├── src/
+│   ├── tests/
+│   └── package.json
 └── docs/
     └── product/
         ├── historias-de-usuario-keyops.docx

@@ -1,0 +1,132 @@
+import { fakeApplications, fakeUsers } from '@/data/fake/seed';
+import { nextCredentialState } from '@/domain/policies/credentialTransitions';
+import type {
+  Application,
+  AuditEvent,
+  CredentialState,
+  Environment,
+  Receipt,
+  User,
+  UserProfile,
+} from '@/domain/model/types';
+
+let applications = [...fakeApplications];
+let users = [...fakeUsers];
+let events: AuditEvent[] = [];
+const now = () => new Date().toISOString();
+const id = () => Math.random().toString(36).slice(2, 10);
+
+function receipt(
+  actor: User,
+  operation: AuditEvent['operation'],
+  environment: Environment,
+  application?: Application,
+  delivery = false,
+): Receipt {
+  const requestId = `req-${id()}`;
+  const auditEventId = `aud-${id()}`;
+  events = [
+    {
+      id: auditEventId,
+      occurredAt: now(),
+      actorDisplayName: actor.displayName,
+      operation,
+      environment,
+      institution: application?.institution,
+      application: application?.name,
+      result: 'succeeded',
+      requestId,
+    },
+    ...events,
+  ];
+  return {
+    operationId: `op-${id()}`,
+    requestId,
+    auditEventId,
+    result: 'succeeded',
+    delivery: delivery
+      ? {
+          deliveryUrl: `https://delivery.example.invalid/${id()}`,
+          otp: String(Math.floor(100000 + Math.random() * 900000)),
+          otpExpiresAt: new Date(Date.now() + 120000).toISOString(),
+        }
+      : undefined,
+  };
+}
+
+export const fakeRepository = {
+  signIn(login: string): User {
+    const user = users.find((candidate) => candidate.loginIdentifier === login);
+    if (!user || !user.enabled) throw new Error('Usuario no autorizado o inactivo.');
+    receipt(user, 'sign_in', 'test');
+    return user;
+  },
+  listApplications(environment: Environment, query = ''): Application[] {
+    return applications.filter(
+      (app) =>
+        app.environment === environment &&
+        `${app.name} ${app.institution} ${app.requestOrTicketId}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+    );
+  },
+  getApplication(id: string, environment: Environment): Application | undefined {
+    return applications.find((app) => app.id === id && app.environment === environment);
+  },
+  operate(
+    actor: User,
+    applicationId: string,
+    environment: Environment,
+    action: string,
+    reason?: string,
+  ): Receipt {
+    const application = this.getApplication(applicationId, environment);
+    if (!application) throw new Error('Aplicación no encontrada.');
+    if (['suspend', 'reactivate', 'revoke'].includes(action) && !reason?.trim())
+      throw new Error('El motivo es obligatorio.');
+    if (action === 'delivery' && application.credentialState !== 'active')
+      throw new Error('Solo se pueden entregar credenciales activas.');
+    if (action !== 'delivery') {
+      const credentialState: CredentialState = nextCredentialState(
+        action,
+        application.credentialState,
+      );
+      application.credentialState = credentialState;
+      application.clientId ??= `cli_${environment}_${id()}`;
+      application.lastChangedAt = now();
+    }
+    return receipt(
+      actor,
+      action as AuditEvent['operation'],
+      environment,
+      application,
+      ['issue', 'regenerate', 'delivery'].includes(action),
+    );
+  },
+  updateManagement(
+    applicationId: string,
+    environment: Environment,
+    technicalContact?: string,
+    requestOrTicketId?: string,
+  ) {
+    const app = this.getApplication(applicationId, environment);
+    if (!app) throw new Error('Aplicación no encontrada.');
+    app.technicalContact = technicalContact?.trim() || undefined;
+    app.requestOrTicketId = requestOrTicketId?.trim() || undefined;
+    app.lastChangedAt = now();
+    return app;
+  },
+  listAudit(): AuditEvent[] {
+    return events;
+  },
+  listUsers(): User[] {
+    return users;
+  },
+  updateUser(id: string, profile: UserProfile, enabled: boolean): User {
+    const user = users.find((candidate) => candidate.id === id);
+    if (!user) throw new Error('Usuario no encontrado.');
+    user.profile = profile;
+    user.enabled = enabled;
+    return user;
+  },
+};

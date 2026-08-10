@@ -1,0 +1,77 @@
+import type { Application, User } from '@/domain/model/types';
+
+export const fakeUsers: User[] = [
+  {
+    id: 'u-1',
+    displayName: 'Ana Torres',
+    loginIdentifier: 'analista',
+    profile: 'analyst',
+    enabled: true,
+  },
+  {
+    id: 'u-2',
+    displayName: 'Sergio Vidal',
+    loginIdentifier: 'senior',
+    profile: 'senior_analyst',
+    enabled: true,
+  },
+  {
+    id: 'u-3',
+    displayName: 'Lucía Moreno',
+    loginIdentifier: 'admin',
+    profile: 'administrator',
+    enabled: true,
+  },
+  {
+    id: 'u-4',
+    displayName: 'Elena Ruiz',
+    loginIdentifier: 'auditor',
+    profile: 'auditor',
+    enabled: true,
+  },
+];
+
+export const fakeApplications: Application[] = [
+  {
+    id: 'app-001',
+    name: 'Notificaciones judiciales',
+    institution: 'Ayuntamiento de Sevilla',
+    environment: 'test',
+    apiRole: 'Notificaciones',
+    declaredIps: ['10.20.1.12'],
+    technicalContact: 'María López',
+    requestOrTicketId: 'REQ-2026-001',
+    credentialState: 'no_credentials',
+    lastChangedAt: '2026-08-10T08:30:00Z',
+  },
+  {
+    id: 'app-002',
+    name: 'Sede electrónica',
+    institution: 'Comunidad de Madrid',
+    environment: 'test',
+    apiRole: 'Consulta',
+    declaredIps: ['10.20.2.40'],
+    technicalContact: 'Javier Sánchez',
+    requestOrTicketId: 'REQ-2026-002',
+    credentialState: 'active',
+    clientId: 'cli_test_6sR9',
+    lastChangedAt: '2026-08-09T15:20:00Z',
+    messagesSent: 1240,
+    consumedServices: ['Consulta', 'Notificación'],
+    usedIps: ['10.20.2.40'],
+    lastConsumedAt: '2026-08-10T07:50:00Z',
+  },
+  {
+    id: 'app-003',
+    name: 'Registro municipal',
+    institution: 'Ayuntamiento de Valencia',
+    environment: 'production',
+    apiRole: 'Notificaciones',
+    declaredIps: ['172.18.0.10'],
+    technicalContact: 'Carlos Pérez',
+    requestOrTicketId: 'REQ-2026-003',
+    credentialState: 'suspended',
+    clientId: 'cli_prod_4dX1',
+    lastChangedAt: '2026-08-08T10:10:00Z',
+  },
+];
