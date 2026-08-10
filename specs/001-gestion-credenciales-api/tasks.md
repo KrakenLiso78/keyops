@@ -149,8 +149,8 @@ mantiene los criterios visibles.
 
 ### Tests — escribir y comprobar que fallan
 
-- [ ] T053 [P] [US2] Escribir contract e integration tests de `ApplicationPage` y query params de `listApplications` en `mobile/tests/contract/applicationList.test.ts`; verificar fallo con `npm test -- applicationList.test.ts`
-- [ ] T054 [P] [US2] Escribir pruebas de búsqueda, filtros, orden y paginación del caso de uso en `mobile/tests/unit/domain/listApplications.test.ts`; verificar fallo con `npm test -- listApplications.test.ts`
+- [X] T053 [P] [US2] Escribir contract e integration tests de `ApplicationPage` y query params de `listApplications` en `mobile/tests/contract/applicationList.test.ts`; verificar con `npm test -- applicationList.test.ts`
+- [X] T054 [P] [US2] Escribir pruebas de búsqueda, filtros, orden y paginación del caso de uso en `mobile/tests/unit/domain/listApplications.test.ts`; verificar con `npm test -- listApplications.test.ts`
 - [ ] T055 [P] [US2] Escribir pruebas de tarjetas y estados carga/vacío/error en `mobile/tests/component/applications/applicationListScreen.test.tsx`; verificar fallo con `npm test -- applicationListScreen.test.tsx`
 
 ### Implementación
@@ -176,10 +176,10 @@ contiene Client Secret.
 
 ### Tests — escribir y comprobar que fallan
 
-- [ ] T060 [P] [US3] Escribir contract e integration tests de `ApplicationDetailResponse` y `getApplication` en `mobile/tests/contract/applicationDetail.test.ts`; verificar fallo con `npm test -- applicationDetail.test.ts`
-- [ ] T061 [P] [US3] Escribir pruebas de detalle y cálculo de acciones por perfil/estado en `mobile/tests/unit/domain/getApplicationDetail.test.ts`; verificar fallo con `npm test -- getApplicationDetail.test.ts`
+- [X] T060 [P] [US3] Escribir contract e integration tests de `ApplicationDetailResponse` y `getApplication` en `mobile/tests/contract/applicationDetail.test.ts`; verificar con `npm test -- applicationDetail.test.ts`
+- [X] T061 [P] [US3] Escribir pruebas de detalle y cálculo de acciones por perfil/estado en `mobile/tests/unit/domain/getApplicationDetail.test.ts`; verificar con `npm test -- getApplicationDetail.test.ts`
 - [ ] T062 [P] [US3] Escribir pruebas de orden visual, 404, historial y Client ID en `mobile/tests/component/applications/applicationDetailScreen.test.tsx`; verificar fallo con `npm test -- applicationDetailScreen.test.tsx`
-- [ ] T063 [P] [US3] Escribir una regresión que rechace `clientSecret` en DTO, fixtures y salida renderizada en `mobile/tests/security/noClientSecret.test.ts`; verificar fallo con `npm test -- noClientSecret.test.ts`
+- [X] T063 [P] [US3] Escribir una regresión que rechace `clientSecret` en DTO, fixtures y salida renderizada en `mobile/tests/security/noClientSecret.test.ts`; verificar con `npm test -- noClientSecret.test.ts`
 
 ### Implementación
 
