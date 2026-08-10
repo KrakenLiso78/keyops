@@ -1,0 +1,25 @@
+import { z } from 'zod';
+import { contractVersionSchema } from './common';
+const profileSchema = z.enum(['analyst', 'senior_analyst', 'administrator', 'auditor']);
+export const createSessionRequestSchema = z.object({
+  loginIdentifier: z.string().min(1),
+  password: z.string().min(1),
+});
+export const sessionUserSchema = z.object({
+  id: z.string().min(1),
+  loginIdentifier: z.string().min(1),
+  displayName: z.string().min(1),
+  profile: profileSchema,
+  enabled: z.boolean(),
+  permissions: z.array(z.string()),
+});
+export const sessionResponseSchema = z.object({
+  contractVersion: contractVersionSchema,
+  user: sessionUserSchema,
+  accessToken: z.string().min(1),
+  refreshToken: z.string().min(1).optional(),
+});
+export const sessionViewSchema = z.object({
+  contractVersion: contractVersionSchema,
+  user: sessionUserSchema,
+});

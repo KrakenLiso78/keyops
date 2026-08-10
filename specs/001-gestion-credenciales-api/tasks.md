@@ -95,15 +95,15 @@ cerrar sesión elimina tokens y estado.
 
 ### Tests — escribir y comprobar que fallan
 
-- [ ] T037 [P] [US1] Escribir contract tests para `CreateSessionRequest`, `SessionResponse` y `SessionView` en `mobile/tests/contract/sessionSchemas.test.ts`; verificar fallo con `npm test -- sessionSchemas.test.ts`
-- [ ] T038 [P] [US1] Escribir pruebas de iniciar, restaurar, caducar y cerrar sesión en `mobile/tests/unit/domain/sessionUseCases.test.ts`; verificar fallo con `npm test -- sessionUseCases.test.ts`
+- [X] T037 [P] [US1] Escribir contract tests para `CreateSessionRequest`, `SessionResponse` y `SessionView` en `mobile/tests/contract/sessionSchemas.test.ts`; verificar con `npm test -- sessionSchemas.test.ts`
+- [X] T038 [P] [US1] Escribir pruebas de iniciar, restaurar, caducar y cerrar sesión en `mobile/tests/unit/domain/sessionUseCases.test.ts`; verificar con `npm test -- sessionUseCases.test.ts`
 - [ ] T039 [P] [US1] Escribir pruebas de estados y protección de rutas de acceso en `mobile/tests/component/auth/signInFlow.test.tsx`; verificar fallo con `npm test -- signInFlow.test.tsx`
 - [ ] T040 [P] [US1] Definir el recorrido autorizado y rechazado en `mobile/tests/integration/auth/signInFlow.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
 - [ ] T041 [US1] Implementar schemas, mapper y `RestAuthRepository` para `/v1/sessions` y `/v1/session` en `mobile/src/data/schemas/session.ts`, `mobile/src/data/mappers/sessionMapper.ts` y `mobile/src/data/repositories/RestAuthRepository.ts`; hacer pasar `mobile/tests/contract/sessionSchemas.test.ts`
-- [ ] T042 [US1] Implementar `FakeAuthRepository` y casos de uso de iniciar, restaurar y cerrar sesión en `mobile/src/data/fake/FakeAuthRepository.ts` y `mobile/src/domain/use-cases/auth/`; hacer pasar `mobile/tests/unit/domain/sessionUseCases.test.ts`
+- [X] T042 [US1] Implementar `FakeAuthRepository` y casos de uso de iniciar, restaurar y cerrar sesión en `mobile/src/data/fake/FakeAuthRepository.ts` y `mobile/src/domain/use-cases/auth/`; hacer pasar `mobile/tests/unit/domain/sessionUseCases.test.ts`
 - [ ] T043 [US1] Implementar `SessionProvider` y `useSignInController` en `mobile/src/presentation/state/SessionProvider.tsx` y `mobile/src/presentation/controllers/useSignInController.ts`; hacer pasar los estados de `mobile/tests/component/auth/signInFlow.test.tsx`
 - [ ] T044 [US1] Implementar `mobile/src/app/(auth)/sign-in.tsx` y la protección/redirect de `mobile/src/app/_layout.tsx`; completar las pruebas de componente e integración de acceso
 
@@ -122,16 +122,16 @@ mantiene la misma matriz de permisos.
 
 ### Tests — escribir y comprobar que fallan
 
-- [ ] T045 [P] [US13] Escribir pruebas de selección, bloqueo durante operación y reset de ambiente en `mobile/tests/unit/presentation/environmentState.test.ts`; verificar fallo con `npm test -- environmentState.test.ts`
+- [X] T045 [P] [US13] Escribir pruebas de selección, bloqueo durante operación y reset de ambiente en `mobile/tests/unit/presentation/environmentState.test.ts`; verificar con `npm test -- environmentState.test.ts`
 - [ ] T046 [P] [US13] Escribir pruebas del selector, aviso de Producción y texto accesible en `mobile/tests/component/environment/environmentSelector.test.tsx`; verificar fallo con `npm test -- environmentSelector.test.tsx`
-- [ ] T047 [P] [US13] Escribir pruebas de ambiente en URL, aborto e ignorado de respuesta tardía en `mobile/tests/integration/data/environmentRequests.test.ts`; verificar fallo con `npm test -- environmentRequests.test.ts`
+- [X] T047 [P] [US13] Escribir pruebas de ambiente en URL, aborto e ignorado de respuesta tardía en `mobile/tests/integration/data/environmentRequests.test.ts`; verificar con `npm test -- environmentRequests.test.ts`
 - [ ] T048 [P] [US13] Definir el recorrido Pruebas → Producción sin mezcla en `mobile/tests/integration/environment/switchEnvironment.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
-- [ ] T049 [US13] Implementar `EnvironmentProvider` y el coordinador de reset en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`; hacer pasar `mobile/tests/unit/presentation/environmentState.test.ts`
+- [X] T049 [US13] Implementar `EnvironmentProvider` y el coordinador de reset en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`; hacer pasar `mobile/tests/unit/presentation/environmentState.test.ts`
 - [ ] T050 [P] [US13] Implementar `EnvironmentTabs` y `ProductionEnvironmentAlert` en `mobile/src/presentation/components/environment/`; hacer pasar `mobile/tests/component/environment/environmentSelector.test.tsx`
-- [ ] T051 [P] [US13] Implementar scope ambiental, secuencia de petición y cancelación en `mobile/src/data/http/EnvironmentRequestScope.ts`; hacer pasar `mobile/tests/integration/data/environmentRequests.test.ts`
+- [X] T051 [P] [US13] Implementar scope ambiental, secuencia de petición y cancelación en `mobile/src/data/http/EnvironmentRequestScope.ts`; hacer pasar `mobile/tests/integration/data/environmentRequests.test.ts`
 - [ ] T052 [US13] Integrar ambiente, bloqueo y retorno al inventario en `mobile/src/app/(protected)/_layout.tsx`; completar la prueba de integración de ambiente
 
 **Checkpoint**: ningún dato o respuesta de un ambiente aparece en el otro.
