@@ -4,11 +4,11 @@
     "slug": "keyops",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/keyops-logo.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "keyops",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/images/keyops-logo.png",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.viberano.keyops"
     },
     "android": {
