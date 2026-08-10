@@ -19,6 +19,7 @@ export function Heading({ children }: PropsWithChildren) {
 export function Body({ children }: PropsWithChildren) {
   return <Text style={styles.body}>{children}</Text>;
 }
+export const AppText = Body;
 export function Field({ label, ...props }: TextInputProps & { label: string }) {
   return (
     <View style={styles.field}>
@@ -32,6 +33,7 @@ export function Field({ label, ...props }: TextInputProps & { label: string }) {
     </View>
   );
 }
+export const TextField = Field;
 export function Button({
   title,
   onPress,

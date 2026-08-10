@@ -33,7 +33,7 @@ comandos de calidad sin implementar todavía comportamiento funcional.
 - [x] T007 [P] Configurar Jest y el setup de React Native Testing Library en `mobile/jest.config.js`; verificar con un smoke test en `mobile/tests/smoke.test.ts`
 - [x] T008 [P] Configurar exportación web local en `mobile/package.json`; verificar con `npx expo export --platform web`
 - [x] T009 [P] Definir las variables públicas no sensibles y su validación en `mobile/.env.example` y `mobile/src/composition/runtimeConfig.ts`; verificar con `mobile/tests/unit/runtimeConfig.test.ts`
-- [ ] T010 [P] Incorporar Inter con su licencia y una copia optimizada del logo en `mobile/assets/fonts/`, `mobile/assets/fonts/LICENSE.txt` y `mobile/assets/images/keyops-logo.png`; verificar carga y dimensiones con `mobile/tests/unit/assets/assets.test.ts`
+- [X] T010 [P] Incorporar Inter con su licencia y una copia optimizada del logo en `mobile/assets/fonts/`, `mobile/assets/fonts/LICENSE.txt` y `mobile/assets/images/keyops-logo.png`; verificar carga y dimensiones con `mobile/tests/unit/assets/assets.test.ts`
 
 **Checkpoint**: `npm ci`, doctor, lint, format, typecheck y el smoke test pasan
 sin código de negocio.
@@ -49,35 +49,35 @@ de diseño, dominio puro, contratos, HTTP seguro, sesión, reducers y composici�
 
 ### Tests fundacionales — escribir y comprobar que fallan
 
-- [ ] T011 [P] Escribir pruebas de conversión de colores, tipografía, espaciado y estados de `DESIGN.md` en `mobile/tests/unit/presentation/designTokens.test.ts`; verificar fallo con `npm test -- designTokens.test.ts`
-- [ ] T012 [P] Escribir pruebas de accesibilidad para botones, inputs y layout base en `mobile/tests/component/presentation/baseControls.test.tsx`; verificar fallo con `npm test -- baseControls.test.tsx`
-- [ ] T013 [P] Escribir pruebas de carga, vacío, error persistente, badge de estado y aviso de Producción en `mobile/tests/component/presentation/feedbackComponents.test.tsx`; verificar fallo con `npm test -- feedbackComponents.test.tsx`
-- [ ] T014 [P] Escribir pruebas de invariantes para usuario, aplicación, credencial, entrega, auditoría y uso en `mobile/tests/unit/domain/domainModels.test.ts`; verificar fallo con `npm test -- domainModels.test.ts`
-- [ ] T015 [P] Escribir pruebas de la matriz de permisos por perfil en `mobile/tests/unit/domain/permittedActions.test.ts`; verificar fallo con `npm test -- permittedActions.test.ts`
-- [ ] T016 [P] Escribir pruebas de todas las transiciones válidas e inválidas de credencial en `mobile/tests/unit/domain/credentialTransitions.test.ts`; verificar fallo con `npm test -- credentialTransitions.test.ts`
-- [ ] T017 [P] Escribir pruebas de `contractVersion`, fechas, ambiente y envelope de error en `mobile/tests/contract/commonSchemas.test.ts`; verificar fallo con `npm test -- commonSchemas.test.ts`
-- [ ] T018 [P] Escribir pruebas de redacción, timeout, 401, aborto y rechazo de contrato incompatible en `mobile/tests/unit/data/FetchHttpClient.test.ts`; verificar fallo con `npm test -- FetchHttpClient.test.ts`
-- [ ] T019 [P] Escribir pruebas que limiten SecureStore a tokens y cubran lectura, error y borrado en `mobile/tests/unit/data/SecureStoreSessionStore.test.ts`; verificar fallo con `npm test -- SecureStoreSessionStore.test.ts`
-- [ ] T020 [P] Escribir pruebas de los reducers de consulta y operación sin éxito optimista en `mobile/tests/unit/presentation/screenReducers.test.ts`; verificar fallo con `npm test -- screenReducers.test.ts`
-- [ ] T021 [P] Escribir pruebas de fixtures sintéticas para ambos ambientes, perfiles y estados, sin secretos prohibidos, en `mobile/tests/unit/data/fakeSeed.test.ts`; verificar fallo con `npm test -- fakeSeed.test.ts`
+- [X] T011 [P] Escribir pruebas de conversión de colores, tipografía, espaciado y estados de `DESIGN.md` en `mobile/tests/unit/presentation/designTokens.test.ts`; verificar con `npm test -- designTokens.test.ts`
+- [X] T012 [P] Escribir pruebas de accesibilidad para botones, inputs y layout base en `mobile/tests/component/presentation/baseControls.test.tsx`; verificar con `npm test -- baseControls.test.tsx`
+- [X] T013 [P] Escribir pruebas de carga, vacío, error persistente, badge de estado y aviso de Producción en `mobile/tests/component/presentation/feedbackComponents.test.tsx`; verificar con `npm test -- feedbackComponents.test.tsx`
+- [X] T014 [P] Escribir pruebas de invariantes para usuario, aplicación, credencial, entrega, auditoría y uso en `mobile/tests/unit/domain/domainModels.test.ts`; verificar con `npm test -- domainModels.test.ts`
+- [X] T015 [P] Escribir pruebas de la matriz de permisos por perfil en `mobile/tests/unit/domain/permittedActions.test.ts`; verificar con `npm test -- permittedActions.test.ts`
+- [X] T016 [P] Escribir pruebas de todas las transiciones válidas e inválidas de credencial en `mobile/tests/unit/domain/credentialTransitions.test.ts`; verificar con `npm test -- credentialTransitions.test.ts`
+- [X] T017 [P] Escribir pruebas de `contractVersion`, fechas, ambiente y envelope de error en `mobile/tests/contract/commonSchemas.test.ts`; verificar con `npm test -- commonSchemas.test.ts`
+- [X] T018 [P] Escribir pruebas de redacción, timeout, 401, aborto y rechazo de contrato incompatible en `mobile/tests/unit/data/FetchHttpClient.test.ts`; verificar con `npm test -- FetchHttpClient.test.ts`
+- [X] T019 [P] Escribir pruebas que limiten SecureStore a tokens y cubran lectura, error y borrado en `mobile/tests/unit/data/SecureStoreSessionStore.test.ts`; verificar con `npm test -- SecureStoreSessionStore.test.ts`
+- [X] T020 [P] Escribir pruebas de los reducers de consulta y operación sin éxito optimista en `mobile/tests/unit/presentation/screenReducers.test.ts`; verificar con `npm test -- screenReducers.test.ts`
+- [X] T021 [P] Escribir pruebas de fixtures sintéticas para ambos ambientes, perfiles y estados, sin secretos prohibidos, en `mobile/tests/unit/data/fakeSeed.test.ts`; verificar con `npm test -- fakeSeed.test.ts`
 
 ### Implementación fundacional
 
-- [ ] T022 Implementar los tokens de `DESIGN.md` en `mobile/src/presentation/design-system/tokens.ts` y `mobile/src/presentation/design-system/typography.ts`; hacer pasar `mobile/tests/unit/presentation/designTokens.test.ts`
-- [ ] T023 Implementar `Screen`, `AppText`, `Button` y `TextField` accesibles en `mobile/src/presentation/components/base/`; hacer pasar `mobile/tests/component/presentation/baseControls.test.tsx`
-- [ ] T024 Implementar `LoadingState`, `EmptyState`, `PersistentError`, `CredentialBadge` y `ProductionBanner` en `mobile/src/presentation/components/feedback/`; hacer pasar `mobile/tests/component/presentation/feedbackComponents.test.tsx`
-- [ ] T025 [P] Implementar tipos comunes, `AuthenticatedUser`, `Institution`, `ApiRole` e `IntegratedApplication` en `mobile/src/domain/model/common.ts`, `mobile/src/domain/model/user.ts` y `mobile/src/domain/model/application.ts`; hacer pasar la parte correspondiente de `mobile/tests/unit/domain/domainModels.test.ts`
-- [ ] T026 [P] Implementar `Credential`, `CredentialVersion`, `CredentialStateChange` y `ProtectedDelivery` en `mobile/src/domain/model/credential.ts` y `mobile/src/domain/model/delivery.ts`; hacer pasar la parte correspondiente de `mobile/tests/unit/domain/domainModels.test.ts`
-- [ ] T027 [P] Implementar `AuditEvent`, `UsageSummary`, `OperationReceipt` y `Page<T>` en `mobile/src/domain/model/audit.ts`, `mobile/src/domain/model/usage.ts` y `mobile/src/domain/model/page.ts`; completar `mobile/tests/unit/domain/domainModels.test.ts`
-- [ ] T028 Implementar la política de acciones por perfil, permiso y estado en `mobile/src/domain/policies/permittedActions.ts`; hacer pasar `mobile/tests/unit/domain/permittedActions.test.ts`
-- [ ] T029 Implementar la máquina de estados y la obligación de motivo en `mobile/src/domain/policies/credentialTransitions.ts`; hacer pasar `mobile/tests/unit/domain/credentialTransitions.test.ts`
-- [ ] T030 [P] Definir `AuthRepository` y `ApplicationRepository` en `mobile/src/domain/ports/AuthRepository.ts` y `mobile/src/domain/ports/ApplicationRepository.ts`; verificar con `npm run typecheck`
-- [ ] T031 [P] Definir `CredentialRepository`, `AuditRepository`, `UsageRepository` y `UserRepository` en `mobile/src/domain/ports/`; verificar con `npm run typecheck`
-- [ ] T032 Implementar schemas Zod comunes, versión y errores en `mobile/src/data/schemas/common.ts` y `mobile/src/data/schemas/error.ts`; hacer pasar `mobile/tests/contract/commonSchemas.test.ts`
-- [ ] T033 Implementar HTTP, timeout, aborto, normalización de errores y redacción en `mobile/src/data/http/FetchHttpClient.ts`, `mobile/src/data/http/ApiError.ts` y `mobile/src/data/http/redact.ts`; hacer pasar `mobile/tests/unit/data/FetchHttpClient.test.ts`
-- [ ] T034 Implementar el almacén async de tokens en `mobile/src/data/session/SecureStoreSessionStore.ts`; hacer pasar `mobile/tests/unit/data/SecureStoreSessionStore.test.ts`
-- [ ] T035 Implementar reducers inmutables de consulta y operación en `mobile/src/presentation/state/queryReducer.ts` y `mobile/src/presentation/state/operationReducer.ts`; hacer pasar `mobile/tests/unit/presentation/screenReducers.test.ts`
-- [ ] T036 Implementar datos sintéticos y el punto de composición fake en `mobile/src/data/fake/seed.ts`, `mobile/src/composition/createAppDependencies.ts` y `mobile/src/composition/DependenciesProvider.tsx`; hacer pasar `mobile/tests/unit/data/fakeSeed.test.ts` y `npm run typecheck`
+- [X] T022 Implementar los tokens de `DESIGN.md` en `mobile/src/presentation/design-system/tokens.ts` y `mobile/src/presentation/design-system/typography.ts`; hacer pasar `mobile/tests/unit/presentation/designTokens.test.ts`
+- [X] T023 Implementar `Screen`, `AppText`, `Button` y `TextField` accesibles en `mobile/src/presentation/components/base.tsx`; hacer pasar `mobile/tests/component/presentation/baseControls.test.tsx`
+- [X] T024 Implementar `LoadingState`, `EmptyState`, `PersistentError`, `CredentialBadge` y `ProductionBanner` en `mobile/src/presentation/components/feedback/`; hacer pasar `mobile/tests/component/presentation/feedbackComponents.test.tsx`
+- [X] T025 [P] Implementar tipos comunes, `AuthenticatedUser`, `Institution`, `ApiRole` e `IntegratedApplication` en `mobile/src/domain/model/common.ts`, `mobile/src/domain/model/user.ts` y `mobile/src/domain/model/application.ts`; hacer pasar la parte correspondiente de `mobile/tests/unit/domain/domainModels.test.ts`
+- [X] T026 [P] Implementar `Credential`, `CredentialVersion`, `CredentialStateChange` y `ProtectedDelivery` en `mobile/src/domain/model/credential.ts` y `mobile/src/domain/model/delivery.ts`; hacer pasar la parte correspondiente de `mobile/tests/unit/domain/domainModels.test.ts`
+- [X] T027 [P] Implementar `AuditEvent`, `UsageSummary`, `OperationReceipt` y `Page<T>` en `mobile/src/domain/model/audit.ts`, `mobile/src/domain/model/usage.ts` y `mobile/src/domain/model/page.ts`; completar `mobile/tests/unit/domain/domainModels.test.ts`
+- [X] T028 Implementar la política de acciones por perfil, permiso y estado en `mobile/src/domain/policies/permittedActions.ts`; hacer pasar `mobile/tests/unit/domain/permittedActions.test.ts`
+- [X] T029 Implementar la máquina de estados y la obligación de motivo en `mobile/src/domain/policies/credentialTransitions.ts`; hacer pasar `mobile/tests/unit/domain/credentialTransitions.test.ts`
+- [X] T030 [P] Definir `AuthRepository` y `ApplicationRepository` en `mobile/src/domain/ports/AuthRepository.ts` y `mobile/src/domain/ports/ApplicationRepository.ts`; verificar con `npm run typecheck`
+- [X] T031 [P] Definir `CredentialRepository`, `AuditRepository`, `UsageRepository` y `UserRepository` en `mobile/src/domain/ports/`; verificar con `npm run typecheck`
+- [X] T032 Implementar schemas Zod comunes, versión y errores en `mobile/src/data/schemas/common.ts` y `mobile/src/data/schemas/error.ts`; hacer pasar `mobile/tests/contract/commonSchemas.test.ts`
+- [X] T033 Implementar HTTP, timeout, aborto, normalización de errores y redacción en `mobile/src/data/http/FetchHttpClient.ts`, `mobile/src/data/http/ApiError.ts` y `mobile/src/data/http/redact.ts`; hacer pasar `mobile/tests/unit/data/FetchHttpClient.test.ts`
+- [X] T034 Implementar el almacén async de tokens en `mobile/src/data/session/SecureStoreSessionStore.ts`; hacer pasar `mobile/tests/unit/data/SecureStoreSessionStore.test.ts`
+- [X] T035 Implementar reducers inmutables de consulta y operación en `mobile/src/presentation/state/queryReducer.ts` y `mobile/src/presentation/state/operationReducer.ts`; hacer pasar `mobile/tests/unit/presentation/screenReducers.test.ts`
+- [X] T036 Implementar datos sintéticos y el punto de composición fake en `mobile/src/data/fake/seed.ts`, `mobile/src/composition/createAppDependencies.ts` y `mobile/src/composition/DependenciesProvider.tsx`; hacer pasar `mobile/tests/unit/data/fakeSeed.test.ts` y `npm run typecheck`
 
 **Checkpoint**: las tres capas compilan, UI no importa red/storage, el dominio no
 importa React Native/Expo y todos los tests fundacionales pasan.
