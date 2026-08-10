@@ -1,0 +1,1415 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Mobile Consumer API
+  version: 1.0.0
+  description: >-
+    Contrato lógico REST/JSON consumido por la aplicación móvil KeyOps. No
+    describe una API expuesta por el móvil ni el site externo de descarga. Las
+    implementaciones corporativas pueden adaptar varios servicios detrás de
+    esta frontera.
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+tags:
+  - name: Session
+  - name: Applications
+  - name: Credentials
+  - name: Audit
+  - name: Users
+paths:
+  /v1/sessions:
+    post:
+      tags: [Session]
+      operationId: createSession
+      summary: Iniciar una sesión de usuario interno
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+      responses:
+        '200':
+          description: Sesión iniciada y acceso auditado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailed'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/session:
+    get:
+      tags: [Session]
+      operationId: getSession
+      summary: Recuperar la sesión y permisos vigentes
+      responses:
+        '200':
+          description: Sesión vigente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionView'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [Session]
+      operationId: deleteSession
+      summary: Cerrar la sesión
+      responses:
+        '204':
+          description: Sesión cerrada
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/environments/{environment}/applications:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+    get:
+      tags: [Applications]
+      operationId: listApplications
+      summary: Consultar el inventario del ambiente activo
+      parameters:
+        - name: institutionQuery
+          in: query
+          schema:
+            type: string
+            maxLength: 120
+        - name: applicationQuery
+          in: query
+          schema:
+            type: string
+            maxLength: 120
+        - name: requestId
+          in: query
+          schema:
+            type: string
+            maxLength: 120
+        - name: credentialState
+          in: query
+          schema:
+            $ref: '#/components/schemas/CredentialDisplayState'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [institution, application, lastChangedAt]
+            default: lastChangedAt
+        - $ref: '#/components/parameters/SortDirection'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de aplicaciones; los items pueden estar vacíos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationPage'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/DependencyUnavailable'
+  /v1/environments/{environment}/applications/{applicationId}:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+    get:
+      tags: [Applications]
+      operationId: getApplication
+      summary: Consultar el detalle autorizado de una aplicación
+      responses:
+        '200':
+          description: Detalle sin Client Secret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDetailResponse'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/DependencyUnavailable'
+    patch:
+      tags: [Applications]
+      operationId: updateManagementContext
+      summary: Actualizar el contexto operativo de la aplicación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagementContextPatch'
+      responses:
+        '200':
+          description: Contexto actualizado y auditado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagementContextResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/environments/{environment}/applications/{applicationId}/credentials:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+    post:
+      tags: [Credentials]
+      operationId: issueCredential
+      summary: Emitir, activar y preparar la entrega inicial atómicamente
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '201':
+          description: Credencial activa y entrega protegida preparada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialOperationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '502':
+          $ref: '#/components/responses/DependencyFailed'
+        '503':
+          $ref: '#/components/responses/DependencyUnavailable'
+  /v1/environments/{environment}/applications/{applicationId}/credentials/{credentialId}/regenerations:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+      - $ref: '#/components/parameters/CredentialId'
+    post:
+      tags: [Credentials]
+      operationId: regenerateCredential
+      summary: Rotar la versión activa y preparar una entrega protegida
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Nueva versión activa y versión anterior inactiva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialOperationResponse'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '502':
+          $ref: '#/components/responses/DependencyFailed'
+        '503':
+          $ref: '#/components/responses/DependencyUnavailable'
+  /v1/environments/{environment}/applications/{applicationId}/credentials/{credentialId}/deliveries:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+      - $ref: '#/components/parameters/CredentialId'
+    post:
+      tags: [Credentials]
+      operationId: createCredentialDelivery
+      summary: Preparar una nueva entrega de la versión activa
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '201':
+          description: Enlace y OTP nuevos; la credencial conserva su estado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialOperationResponse'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '502':
+          $ref: '#/components/responses/DependencyFailed'
+  /v1/environments/{environment}/applications/{applicationId}/credentials/{credentialId}/suspensions:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+      - $ref: '#/components/parameters/CredentialId'
+    post:
+      tags: [Credentials]
+      operationId: suspendCredential
+      summary: Suspender temporalmente una credencial activa
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ReasonCommand'
+      responses:
+        '200':
+          $ref: '#/components/responses/CredentialOperationSucceeded'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/environments/{environment}/applications/{applicationId}/credentials/{credentialId}/reactivations:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+      - $ref: '#/components/parameters/CredentialId'
+    post:
+      tags: [Credentials]
+      operationId: reactivateCredential
+      summary: Reactivar una credencial suspendida
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ReasonCommand'
+      responses:
+        '200':
+          $ref: '#/components/responses/CredentialOperationSucceeded'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/environments/{environment}/applications/{applicationId}/credentials/{credentialId}/revocations:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+      - $ref: '#/components/parameters/CredentialId'
+    post:
+      tags: [Credentials]
+      operationId: revokeCredential
+      summary: Revocar definitivamente una credencial activa o suspendida
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        $ref: '#/components/requestBodies/ReasonCommand'
+      responses:
+        '200':
+          $ref: '#/components/responses/CredentialOperationSucceeded'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/environments/{environment}/applications/{applicationId}/usage:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+      - $ref: '#/components/parameters/ApplicationId'
+    get:
+      tags: [Applications]
+      operationId: getApplicationUsage
+      summary: Consultar la proyección de uso disponible
+      responses:
+        '200':
+          description: Resumen disponible, sin datos o dependencia no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageResponse'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/environments/{environment}/audit-events:
+    parameters:
+      - $ref: '#/components/parameters/Environment'
+    get:
+      tags: [Audit]
+      operationId: listAuditEvents
+      summary: Consultar eventos de auditoría autorizados
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: institutionId
+          in: query
+          schema:
+            type: string
+            minLength: 1
+        - name: applicationId
+          in: query
+          schema:
+            type: string
+            minLength: 1
+        - name: userId
+          in: query
+          schema:
+            type: string
+            minLength: 1
+        - $ref: '#/components/parameters/SortDirection'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página cronológica de eventos inmutables
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditPage'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/users:
+    get:
+      tags: [Users]
+      operationId: listUsers
+      summary: Listar usuarios internos autorizados
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Página de usuarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags: [Users]
+      operationId: createUser
+      summary: Registrar un usuario autorizado
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: Usuario creado y auditado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMutationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    patch:
+      tags: [Users]
+      operationId: updateUser
+      summary: Actualizar perfil o habilitación de un usuario
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Usuario actualizado y auditado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMutationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/SessionExpired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StateConflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+  parameters:
+    Environment:
+      name: environment
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Environment'
+    ApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    CredentialId:
+      name: credentialId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: UUID generado una vez por intento lógico y reutilizado al reintentar.
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    SortDirection:
+      name: direction
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+  requestBodies:
+    ReasonCommand:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReasonCommand'
+  responses:
+    CredentialOperationSucceeded:
+      description: Operación confirmada y auditada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CredentialOperationResponse'
+    AuthenticationFailed:
+      description: Credenciales de acceso no válidas
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    SessionExpired:
+      description: Sesión ausente o caducada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Usuario o acción no autorizados
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso inexistente o fuera del alcance del usuario
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Entrada o filtro inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    StateConflict:
+      description: Estado actual incompatible o identidad duplicada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: Fallo interno seguro y auditado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    DependencyFailed:
+      description: Una dependencia impidió completar la operación atómica
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    DependencyUnavailable:
+      description: Una dependencia de consulta no está disponible temporalmente
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ContractVersion:
+      type: string
+      const: '1'
+    Environment:
+      type: string
+      enum: [test, production]
+    UserProfile:
+      type: string
+      enum: [analyst, senior_analyst, administrator, auditor]
+    Permission:
+      type: string
+      enum:
+        - applications:read
+        - credentials:issue
+        - credentials:regenerate
+        - credentials:deliver
+        - credentials:suspend
+        - credentials:reactivate
+        - credentials:revoke
+        - management:write
+        - usage:read
+        - audit:read
+        - users:write
+    User:
+      type: object
+      additionalProperties: false
+      required: [id, loginIdentifier, displayName, profile, enabled, permissions]
+      properties:
+        id:
+          type: string
+          minLength: 1
+        loginIdentifier:
+          type: string
+          minLength: 1
+        displayName:
+          type: string
+          minLength: 1
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        enabled:
+          type: boolean
+        permissions:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/Permission'
+    CreateSessionRequest:
+      type: object
+      additionalProperties: false
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 200
+        password:
+          type: string
+          minLength: 1
+          maxLength: 500
+          writeOnly: true
+    SessionResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - contractVersion
+        - accessToken
+        - expiresAt
+        - user
+        - auditEventId
+        - requestId
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        accessToken:
+          type: string
+          minLength: 1
+        refreshToken:
+          type: string
+          minLength: 1
+        expiresAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    SessionView:
+      type: object
+      additionalProperties: false
+      required: [contractVersion, expiresAt, user, auditEventId, requestId]
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        expiresAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/User'
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    InstitutionRef:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+    ApiRoleRef:
+      type: object
+      additionalProperties: false
+      required: [id, name, serviceIdentifiers]
+      properties:
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        serviceIdentifiers:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+    CredentialState:
+      type: string
+      enum: [active, suspended, rotated_inactive, revoked]
+    CredentialDisplayState:
+      type: string
+      enum: [no_credentials, active, suspended, rotated_inactive, revoked]
+    CredentialVersion:
+      type: object
+      additionalProperties: false
+      required: [id, sequence, state, createdAt, stateChangedAt]
+      properties:
+        id:
+          type: string
+          minLength: 1
+        sequence:
+          type: integer
+          minimum: 1
+        previousVersionId:
+          type: string
+          minLength: 1
+        state:
+          $ref: '#/components/schemas/CredentialState'
+        createdAt:
+          type: string
+          format: date-time
+        stateChangedAt:
+          type: string
+          format: date-time
+    CredentialSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - applicationId
+        - environment
+        - clientId
+        - state
+        - currentVersion
+        - versions
+        - lastChangedAt
+      properties:
+        id:
+          type: string
+          minLength: 1
+        applicationId:
+          type: string
+          minLength: 1
+        environment:
+          $ref: '#/components/schemas/Environment'
+        clientId:
+          type: string
+          minLength: 1
+        state:
+          $ref: '#/components/schemas/CredentialState'
+        currentVersion:
+          $ref: '#/components/schemas/CredentialVersion'
+        versions:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CredentialVersion'
+        lastChangedAt:
+          type: string
+          format: date-time
+    TechnicalContact:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 40
+    ManagementContext:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        technicalContact:
+          $ref: '#/components/schemas/TechnicalContact'
+        requestOrTicketId:
+          type: string
+          minLength: 1
+          maxLength: 120
+        updatedAt:
+          type: string
+          format: date-time
+    StateChange:
+      type: object
+      additionalProperties: false
+      required: [fromState, toState, changedAt]
+      properties:
+        fromState:
+          $ref: '#/components/schemas/CredentialDisplayState'
+        toState:
+          $ref: '#/components/schemas/CredentialState'
+        changedAt:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        actorDisplayName:
+          type: string
+          minLength: 1
+    ApplicationListItem:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - institution
+        - environment
+        - apiRole
+        - credentialState
+        - lastChangedAt
+      properties:
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        institution:
+          $ref: '#/components/schemas/InstitutionRef'
+        environment:
+          $ref: '#/components/schemas/Environment'
+        apiRole:
+          $ref: '#/components/schemas/ApiRoleRef'
+        credentialState:
+          $ref: '#/components/schemas/CredentialDisplayState'
+        lastChangedAt:
+          type: string
+          format: date-time
+    ApplicationPage:
+      type: object
+      additionalProperties: false
+      required:
+        - contractVersion
+        - items
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+        - auditEventId
+        - requestId
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationListItem'
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalItems:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    ApplicationDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - institution
+        - environment
+        - apiRole
+        - credentialState
+        - lastChangedAt
+        - declaredIps
+        - management
+        - stateHistory
+      properties:
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        institution:
+          $ref: '#/components/schemas/InstitutionRef'
+        environment:
+          $ref: '#/components/schemas/Environment'
+        apiRole:
+          $ref: '#/components/schemas/ApiRoleRef'
+        credentialState:
+          $ref: '#/components/schemas/CredentialDisplayState'
+        lastChangedAt:
+          type: string
+          format: date-time
+        declaredIps:
+          type: array
+          uniqueItems: true
+          items:
+            oneOf:
+              - type: string
+                format: ipv4
+              - type: string
+                format: ipv6
+        management:
+          $ref: '#/components/schemas/ManagementContext'
+        credential:
+          $ref: '#/components/schemas/CredentialSummary'
+        stateHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateChange'
+    ApplicationDetailResponse:
+      type: object
+      additionalProperties: false
+      required: [contractVersion, application, auditEventId, requestId]
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        application:
+          $ref: '#/components/schemas/ApplicationDetail'
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    ManagementContextPatch:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        technicalContact:
+          oneOf:
+            - $ref: '#/components/schemas/TechnicalContact'
+            - type: 'null'
+        requestOrTicketId:
+          oneOf:
+            - type: string
+              minLength: 1
+              maxLength: 120
+            - type: 'null'
+    ManagementContextResponse:
+      type: object
+      additionalProperties: false
+      required: [contractVersion, management, auditEventId, requestId]
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        management:
+          $ref: '#/components/schemas/ManagementContext'
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    ReasonCommand:
+      type: object
+      additionalProperties: false
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+    CredentialOperation:
+      type: string
+      enum: [issue, regenerate, deliver, suspend, reactivate, revoke]
+    ProtectedDelivery:
+      type: object
+      additionalProperties: false
+      required:
+        - deliveryId
+        - credentialVersionId
+        - deliveryUrl
+        - otp
+        - createdAt
+        - otpExpiresAt
+      properties:
+        deliveryId:
+          type: string
+          minLength: 1
+        credentialVersionId:
+          type: string
+          minLength: 1
+        deliveryUrl:
+          type: string
+          format: uri
+          pattern: '^https://'
+        otp:
+          type: string
+          minLength: 1
+        createdAt:
+          type: string
+          format: date-time
+        otpExpiresAt:
+          type: string
+          format: date-time
+    CredentialOperationResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - contractVersion
+        - operationId
+        - requestId
+        - operation
+        - result
+        - occurredAt
+        - credential
+        - auditEventId
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        operationId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+        operation:
+          $ref: '#/components/schemas/CredentialOperation'
+        result:
+          type: string
+          const: succeeded
+        occurredAt:
+          type: string
+          format: date-time
+        credential:
+          $ref: '#/components/schemas/CredentialSummary'
+        auditEventId:
+          type: string
+          minLength: 1
+        delivery:
+          $ref: '#/components/schemas/ProtectedDelivery'
+    UsageResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - contractVersion
+        - applicationId
+        - environment
+        - availability
+        - consumedServices
+        - usedIps
+        - auditEventId
+        - requestId
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        applicationId:
+          type: string
+          minLength: 1
+        environment:
+          $ref: '#/components/schemas/Environment'
+        availability:
+          type: string
+          enum: [available, no_data, unavailable]
+        messagesSent:
+          type: integer
+          minimum: 0
+        consumedServices:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+        usedIps:
+          type: array
+          uniqueItems: true
+          items:
+            oneOf:
+              - type: string
+                format: ipv4
+              - type: string
+                format: ipv6
+        lastConsumedAt:
+          type: string
+          format: date-time
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    OperationResult:
+      type: string
+      enum: [succeeded, failed, rejected]
+    AuditEvent:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - occurredAt
+        - actorUserId
+        - actorDisplayName
+        - operation
+        - result
+        - originIp
+        - requestId
+      properties:
+        id:
+          type: string
+          minLength: 1
+        occurredAt:
+          type: string
+          format: date-time
+        actorUserId:
+          type: string
+          minLength: 1
+        actorDisplayName:
+          type: string
+          minLength: 1
+        operation:
+          type: string
+          minLength: 1
+        environment:
+          $ref: '#/components/schemas/Environment'
+        institutionId:
+          type: string
+          minLength: 1
+        applicationId:
+          type: string
+          minLength: 1
+        credentialId:
+          type: string
+          minLength: 1
+        result:
+          $ref: '#/components/schemas/OperationResult'
+        originIp:
+          oneOf:
+            - type: string
+              format: ipv4
+            - type: string
+              format: ipv6
+        failureCause:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    AuditPage:
+      type: object
+      additionalProperties: false
+      required:
+        - contractVersion
+        - items
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+        - auditEventId
+        - requestId
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalItems:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    UserPage:
+      type: object
+      additionalProperties: false
+      required:
+        - contractVersion
+        - items
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+        - auditEventId
+        - requestId
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalItems:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    CreateUserRequest:
+      type: object
+      additionalProperties: false
+      required: [loginIdentifier, displayName, profile]
+      properties:
+        loginIdentifier:
+          type: string
+          minLength: 1
+          maxLength: 200
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+    UpdateUserRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        enabled:
+          type: boolean
+    UserMutationResponse:
+      type: object
+      additionalProperties: false
+      required: [contractVersion, user, auditEventId, requestId]
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        user:
+          $ref: '#/components/schemas/User'
+        auditEventId:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+    FieldError:
+      type: object
+      additionalProperties: false
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - requestId
+        - retryable
+        - occurredAt
+        - auditRecorded
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+        requestId:
+          type: string
+          minLength: 1
+        retryable:
+          type: boolean
+        occurredAt:
+          type: string
+          format: date-time
+        auditRecorded:
+          type: boolean
+        auditEventId:
+          type: string
+          minLength: 1
+        currentCredentialState:
+          $ref: '#/components/schemas/CredentialDisplayState'
+        fieldErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [contractVersion, error]
+      properties:
+        contractVersion:
+          $ref: '#/components/schemas/ContractVersion'
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+security:
+  - bearerAuth: []
