@@ -1,20 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 2.0.0
-- Modified principles:
-  - V. Cambios verificables -> VIII. Testing proporcional y cambios verificables
-  - VI. Simplicidad deliberada -> IX. Simplicidad deliberada
-  - VII. Gobierno explícito de versiones -> X. Gobierno explícito de versiones
-- Added principles:
-  - V. Separación entre especificación y plan técnico
-  - VI. Arquitectura móvil de tres capas
-  - VII. Estado confiable y operaciones críticas en línea
-- Added sections: Stack tecnológico; Flujo de Trabajo SDD
-- Removed sections: Quality and Compliance Constraints;
-  Development Workflow and Quality Gates
-- Removed rules: mandatory peer review for security or data changes; formal quality
-  gates beyond the constitution principles
-- Follow-up TODOs: none
+- Version change: 2.0.0 -> 3.0.0
+- Modified sections: Stack tecnológico; Governance
+- Added sections: Modo de candidato local
+- Removed sections: none
+- Follow-up TODOs: validar integración, Android e iOS antes de cualquier piloto
 -->
 
 # KeyOps Constitution
@@ -22,6 +12,7 @@ Sync Impact Report
 ## Core Principles
 
 ### I. Seguridad de credenciales API (NON-NEGOTIABLE)
+
 Las credenciales API MUST permanecer protegidas durante su generación, consulta,
 renovación, exportación, uso y revocación. La aplicación móvil MUST NOT generar ni
 almacenar Client Secrets, contraseñas de ZIP u OTP en almacenamiento persistente. El
@@ -31,6 +22,7 @@ autorización y transporte cifrado; la emisión real de secretos MUST ejecutarse
 servicio de confianza fuera del dispositivo.
 
 ### II. Mínimo privilegio
+
 Cada usuario, sesión, servicio y operación MUST disponer únicamente de los permisos
 necesarios para su propósito y durante el tiempo necesario. La interfaz MUST mostrar
 solo las acciones permitidas, pero el servicio remoto MUST volver a autorizar cada
@@ -39,6 +31,7 @@ denegarse por defecto y cualquier elevación temporal MUST quedar autorizada y
 registrada.
 
 ### III. Auditabilidad completa
+
 Toda operación relevante sobre acceso, credenciales, aplicaciones, ambientes,
 permisos y configuración MUST generar un registro auditable con actor, acción,
 recurso, ambiente, resultado, IP de origen y marca temporal. Los intentos fallidos y
@@ -47,6 +40,7 @@ consultables solo por perfiles autorizados y conservados durante cinco años. La
 aplicación móvil MUST NOT tratar su estado local o sus logs como registro de auditoría.
 
 ### IV. Privacidad por diseño
+
 KeyOps MUST tratar los datos personales y operativos con minimización, finalidad
 limitada, acceso restringido y retención definida. Las pantallas, logs, eventos,
 notificaciones y exportaciones MUST excluir datos innecesarios y aplicar enmascarado
@@ -55,6 +49,7 @@ sensibles de memoria visual al cerrar sesión, caducar la sesión o pasar a segu
 plano cuando exista riesgo de exposición.
 
 ### V. Separación entre especificación y plan técnico
+
 `spec.md` documenta exclusivamente el **qué** y el comportamiento: historias de
 usuario, requisitos funcionales y criterios de aceptación, sin detalles técnicos.
 `plan.md` concentra exclusivamente el **cómo**: stack, arquitectura, estructura de
@@ -70,6 +65,7 @@ Esta constitución MAY fijar restricciones técnicas transversales del proyecto;
 de comportamiento.
 
 ### VI. Arquitectura móvil de tres capas
+
 La aplicación MUST organizarse en tres capas lógicas claramente separadas:
 
 1. **UI o presentación**: pantallas, componentes, navegación y estado de pantalla.
@@ -87,6 +83,7 @@ capacidad de negocio real; no se crearán abstracciones vacías para operaciones
 triviales.
 
 ### VII. Estado confiable y operaciones críticas en línea
+
 El servicio remoto MUST ser la única fuente de verdad para credenciales, permisos,
 auditoría, versiones y estados operativos. El estado de UI MUST ser inmutable y seguir
 flujo unidireccional: el estado baja hacia las vistas y los eventos suben hacia su
@@ -100,6 +97,7 @@ de pantalla dependiente del ambiente anterior. Ante un fallo, la app MUST conser
 reintento seguro sin duplicar la operación.
 
 ### VIII. Testing proporcional y cambios verificables
+
 El conjunto de pruebas MUST concentrarse en riesgo y comportamiento observable:
 
 - Pruebas unitarias para permisos, transiciones de estado, validaciones, separación de
@@ -117,6 +115,7 @@ ser trazable a una especificación o decisión y aportar evidencia repetible de 
 validación aplicable.
 
 ### IX. Simplicidad deliberada
+
 KeyOps MUST resolver cada necesidad con la solución más sencilla que cumpla seguridad,
 privacidad, auditabilidad y operación. MUST preferirse capacidades estándar de React,
 React Native y Expo antes de añadir librerías. Un gestor global de estado, base de
@@ -124,6 +123,7 @@ datos local, sincronización offline, generación de código o nueva capa arquit
 MUST NOT incorporarse sin un caso de uso verificable y una justificación en `plan.md`.
 
 ### X. Gobierno explícito de versiones
+
 Las versiones de APIs, contratos, esquemas y dependencias que puedan afectar al
 comportamiento MUST estar identificadas y gobernadas. Todo cambio incompatible MUST
 declarar impacto, migración, compatibilidad temporal y retirada antes de adoptarse.
@@ -135,10 +135,10 @@ respuesta de API incompatible en lugar de continuar con datos ambiguos.
 
 El stack obligatorio de la aplicación móvil es:
 
-- **Lenguaje y runtime de desarrollo**: TypeScript en modo estricto, Node.js LTS y
-  `npm`.
-- **Aplicación móvil**: React Native sobre el framework Expo, para Android e iOS, sin
-  código nativo personalizado mientras no exista una necesidad demostrada.
+- **Lenguaje y runtime de desarrollo**: TypeScript en modo estricto y `npm`; la
+  versión concreta de Node se decide en `plan.md` y queda fijada en `.nvmrc`.
+- **Aplicación móvil**: React Native sobre Expo. La validación nativa Android/iOS
+  se exige solo cuando exista la infraestructura correspondiente.
 - **Navegación**: Expo Router con rutas tipadas.
 - **UI**: React, componentes de React Native, `StyleSheet` y los tokens del sistema de
   diseño existente en `design/DESIGN.md`; no se adopta una librería de componentes
@@ -150,15 +150,24 @@ El stack obligatorio de la aplicación móvil es:
 - **Sesión segura**: `expo-secure-store` exclusivamente para tokens de sesión. Client
   Secrets, contraseñas de ZIP y OTP MUST permanecer solo en memoria el tiempo mínimo
   indispensable y MUST NOT persistirse.
-- **Testing**: Jest con `jest-expo`, React Native Testing Library y Maestro para los
-  pocos flujos E2E críticos.
+- **Testing**: Jest con `jest-expo` y React Native Testing Library. Maestro se exige
+  cuando haya binarios y dispositivos disponibles para E2E nativo.
 - **Calidad local**: TypeScript, ESLint y Prettier ejecutables con scripts de `npm`.
 
 La aplicación consume servicios remotos existentes para catálogo, autenticación,
-credenciales y auditoría. Durante el caso de estudio MAY utilizarse un adaptador falso
-en memoria que implemente los mismos contratos de repositorio y utilice únicamente
-datos sintéticos. Expo Application Services es opcional y MUST NOT ser requisito para
-desarrollar, probar o ejecutar el caso de estudio localmente.
+credenciales y auditoría cuando están disponibles. Durante el caso de estudio MAY
+utilizarse un adaptador falso en memoria y un stub HTTP local que implementen los
+contratos de repositorio con datos exclusivamente sintéticos. Expo Application Services
+es opcional y MUST NOT ser requisito para desarrollar, probar o ejecutar localmente.
+
+## Modo de candidato local
+
+Cuando no existen entornos remotos, dispositivos o tooling E2E, el proyecto MAY cerrar
+un candidato local mediante fake, stub HTTP y exportación Expo Web. La evidencia MUST
+identificarse como local y MUST NOT afirmar autenticación corporativa, autorización
+remota, atomicidad, OTP de un uso, revocación efectiva, auditoría inmutable, retención
+ni compatibilidad Android/iOS. Antes de un piloto, estas garantías MUST validarse contra
+los servicios y dispositivos reales.
 
 ## Flujo de Trabajo SDD
 
@@ -186,4 +195,4 @@ artefacto técnico correspondiente; una excepción de seguridad, privacidad o
 auditabilidad MUST incluir alcance, riesgo, mitigación, responsable y caducidad. No se
 considerará aprobada una excepción implícita.
 
-**Version**: 2.0.0 | **Ratified**: 2026-08-08 | **Last Amended**: 2026-08-08
+**Version**: 3.0.0 | **Ratified**: 2026-08-08 | **Last Amended**: 2026-08-10

@@ -24,15 +24,15 @@ cada tarea debe producir un cambio verificable en una sola sesión.
 **Objetivo**: crear la aplicación Expo, fijar versiones y dejar disponibles los
 comandos de calidad sin implementar todavía comportamiento funcional.
 
-- [ ] T001 Crear el proyecto Expo SDK 57 con template `default@sdk-57` en `mobile/package.json` y `mobile/app.json`; verificar desde `mobile/` con `npx expo-doctor@latest`
-- [ ] T002 Fijar Node `24.19.0` en `.nvmrc` y npm `11.17.0` en `mobile/package.json`; verificar con `node --version`, `npm --version` y `npm pkg get engines packageManager`
-- [ ] T003 Instalar Zod, módulos Expo 57, `expo-dev-client`, Jest 29.7, `jest-expo`, React Native Testing Library 14 y tipos en `mobile/package.json` y `mobile/package-lock.json`; verificar con `npm ci` y `npx expo install --check`
-- [ ] T004 Configurar nombre, scheme `keyops`, identificadores de aplicación, plugins y `experiments.typedRoutes` en `mobile/app.json`; verificar con `npx expo config --type public`
-- [ ] T005 Mover el routing inicial a `mobile/src/app/_layout.tsx` y `mobile/src/app/index.tsx`, y configurar includes/aliases en `mobile/tsconfig.json`; verificar con `npm run typecheck`
-- [ ] T006 [P] Configurar ESLint, Prettier y scripts `lint`, `format:check`, `typecheck` y `doctor` en `mobile/eslint.config.js`, `mobile/.prettierrc.json` y `mobile/package.json`; verificar ejecutando los cuatro scripts
-- [ ] T007 [P] Configurar Jest y el setup de React Native Testing Library en `mobile/jest.config.js` y `mobile/tests/setup.ts`; verificar con un smoke test en `mobile/tests/smoke.test.ts`
-- [ ] T008 [P] Crear la configuración base de Maestro 2.7.0 en `mobile/.maestro/config.yaml`; verificar la instalación con `maestro --version` y validar que el YAML carga al ejecutar el smoke flow de T040
-- [ ] T009 [P] Definir las variables públicas no sensibles y su validación en `mobile/.env.example` y `mobile/src/composition/runtimeConfig.ts`; verificar con `mobile/tests/unit/composition/runtimeConfig.test.ts`
+- [x] T001 Crear el proyecto Expo SDK 57 con template `default@sdk-57` en `mobile/package.json` y `mobile/app.json`; verificar desde `mobile/` con `npx expo-doctor@latest`
+- [x] T002 Fijar Node `25.9.0` en `.nvmrc` y npm `11.12.1` en `mobile/package.json`; verificar con `node --version`, `npm --version` y `npm pkg get engines packageManager`
+- [x] T003 Instalar Zod, módulos Expo 57, `expo-dev-client`, Jest 29.7, `jest-expo`, React Native Testing Library 14 y tipos en `mobile/package.json` y `mobile/package-lock.json`; verificar con `npm ci` y `npx expo install --check`
+- [x] T004 Configurar nombre, scheme `keyops`, identificadores de aplicación, plugins y `experiments.typedRoutes` en `mobile/app.json`; verificar con `npx expo config --type public`
+- [x] T005 Mover el routing inicial a `mobile/src/app/_layout.tsx` y `mobile/src/app/index.tsx`, y configurar includes/aliases en `mobile/tsconfig.json`; verificar con `npm run typecheck`
+- [x] T006 [P] Configurar ESLint, Prettier y scripts `lint`, `format:check`, `typecheck` y `doctor` en `mobile/eslint.config.js`, `mobile/.prettierrc.json` y `mobile/package.json`; verificar ejecutando los cuatro scripts
+- [x] T007 [P] Configurar Jest y el setup de React Native Testing Library en `mobile/jest.config.js`; verificar con un smoke test en `mobile/tests/smoke.test.ts`
+- [x] T008 [P] Configurar exportación web local en `mobile/package.json`; verificar con `npx expo export --platform web`
+- [x] T009 [P] Definir las variables públicas no sensibles y su validación en `mobile/.env.example` y `mobile/src/composition/runtimeConfig.ts`; verificar con `mobile/tests/unit/runtimeConfig.test.ts`
 - [ ] T010 [P] Incorporar Inter con su licencia y una copia optimizada del logo en `mobile/assets/fonts/`, `mobile/assets/fonts/LICENSE.txt` y `mobile/assets/images/keyops-logo.png`; verificar carga y dimensiones con `mobile/tests/unit/assets/assets.test.ts`
 
 **Checkpoint**: `npm ci`, doctor, lint, format, typecheck y el smoke test pasan
@@ -77,7 +77,7 @@ de diseño, dominio puro, contratos, HTTP seguro, sesión, reducers y composici�
 - [ ] T033 Implementar HTTP, timeout, aborto, normalización de errores y redacción en `mobile/src/data/http/FetchHttpClient.ts`, `mobile/src/data/http/ApiError.ts` y `mobile/src/data/http/redact.ts`; hacer pasar `mobile/tests/unit/data/FetchHttpClient.test.ts`
 - [ ] T034 Implementar el almacén async de tokens en `mobile/src/data/session/SecureStoreSessionStore.ts`; hacer pasar `mobile/tests/unit/data/SecureStoreSessionStore.test.ts`
 - [ ] T035 Implementar reducers inmutables de consulta y operación en `mobile/src/presentation/state/queryReducer.ts` y `mobile/src/presentation/state/operationReducer.ts`; hacer pasar `mobile/tests/unit/presentation/screenReducers.test.ts`
-- [ ] T036 Implementar datos sintéticos y el punto de composición fake/remoto en `mobile/src/data/fake/seed.ts`, `mobile/src/composition/createAppDependencies.ts` y `mobile/src/composition/DependenciesProvider.tsx`; hacer pasar `mobile/tests/unit/data/fakeSeed.test.ts` y `npm run typecheck`
+- [ ] T036 Implementar datos sintéticos y el punto de composición fake en `mobile/src/data/fake/seed.ts`, `mobile/src/composition/createAppDependencies.ts` y `mobile/src/composition/DependenciesProvider.tsx`; hacer pasar `mobile/tests/unit/data/fakeSeed.test.ts` y `npm run typecheck`
 
 **Checkpoint**: las tres capas compilan, UI no importa red/storage, el dominio no
 importa React Native/Expo y todos los tests fundacionales pasan.
@@ -98,14 +98,14 @@ cerrar sesión elimina tokens y estado.
 - [ ] T037 [P] [US1] Escribir contract tests para `CreateSessionRequest`, `SessionResponse` y `SessionView` en `mobile/tests/contract/sessionSchemas.test.ts`; verificar fallo con `npm test -- sessionSchemas.test.ts`
 - [ ] T038 [P] [US1] Escribir pruebas de iniciar, restaurar, caducar y cerrar sesión en `mobile/tests/unit/domain/sessionUseCases.test.ts`; verificar fallo con `npm test -- sessionUseCases.test.ts`
 - [ ] T039 [P] [US1] Escribir pruebas de estados y protección de rutas de acceso en `mobile/tests/component/auth/signInFlow.test.tsx`; verificar fallo con `npm test -- signInFlow.test.tsx`
-- [ ] T040 [P] [US1] Definir el recorrido autorizado y rechazado en `mobile/.maestro/sign-in.yaml`; verificar que falla antes de implementar con `maestro test mobile/.maestro/sign-in.yaml`
+- [ ] T040 [P] [US1] Definir el recorrido autorizado y rechazado en `mobile/tests/integration/auth/signInFlow.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
 - [ ] T041 [US1] Implementar schemas, mapper y `RestAuthRepository` para `/v1/sessions` y `/v1/session` en `mobile/src/data/schemas/session.ts`, `mobile/src/data/mappers/sessionMapper.ts` y `mobile/src/data/repositories/RestAuthRepository.ts`; hacer pasar `mobile/tests/contract/sessionSchemas.test.ts`
 - [ ] T042 [US1] Implementar `FakeAuthRepository` y casos de uso de iniciar, restaurar y cerrar sesión en `mobile/src/data/fake/FakeAuthRepository.ts` y `mobile/src/domain/use-cases/auth/`; hacer pasar `mobile/tests/unit/domain/sessionUseCases.test.ts`
 - [ ] T043 [US1] Implementar `SessionProvider` y `useSignInController` en `mobile/src/presentation/state/SessionProvider.tsx` y `mobile/src/presentation/controllers/useSignInController.ts`; hacer pasar los estados de `mobile/tests/component/auth/signInFlow.test.tsx`
-- [ ] T044 [US1] Implementar `mobile/src/app/(auth)/sign-in.tsx` y la protección/redirect de `mobile/src/app/_layout.tsx`; completar `mobile/tests/component/auth/signInFlow.test.tsx` y `mobile/.maestro/sign-in.yaml`
+- [ ] T044 [US1] Implementar `mobile/src/app/(auth)/sign-in.tsx` y la protección/redirect de `mobile/src/app/_layout.tsx`; completar las pruebas de componente e integración de acceso
 
 **Checkpoint**: US-01 funciona de forma aislada con fake y contrato de sesión.
 
@@ -125,14 +125,14 @@ mantiene la misma matriz de permisos.
 - [ ] T045 [P] [US13] Escribir pruebas de selección, bloqueo durante operación y reset de ambiente en `mobile/tests/unit/presentation/environmentState.test.ts`; verificar fallo con `npm test -- environmentState.test.ts`
 - [ ] T046 [P] [US13] Escribir pruebas del selector, aviso de Producción y texto accesible en `mobile/tests/component/environment/environmentSelector.test.tsx`; verificar fallo con `npm test -- environmentSelector.test.tsx`
 - [ ] T047 [P] [US13] Escribir pruebas de ambiente en URL, aborto e ignorado de respuesta tardía en `mobile/tests/integration/data/environmentRequests.test.ts`; verificar fallo con `npm test -- environmentRequests.test.ts`
-- [ ] T048 [P] [US13] Definir el recorrido Pruebas → Producción sin mezcla en `mobile/.maestro/switch-environment.yaml`; verificar que falla antes de implementar con `maestro test mobile/.maestro/switch-environment.yaml`
+- [ ] T048 [P] [US13] Definir el recorrido Pruebas → Producción sin mezcla en `mobile/tests/integration/environment/switchEnvironment.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
 - [ ] T049 [US13] Implementar `EnvironmentProvider` y el coordinador de reset en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`; hacer pasar `mobile/tests/unit/presentation/environmentState.test.ts`
 - [ ] T050 [P] [US13] Implementar `EnvironmentTabs` y `ProductionEnvironmentAlert` en `mobile/src/presentation/components/environment/`; hacer pasar `mobile/tests/component/environment/environmentSelector.test.tsx`
 - [ ] T051 [P] [US13] Implementar scope ambiental, secuencia de petición y cancelación en `mobile/src/data/http/EnvironmentRequestScope.ts`; hacer pasar `mobile/tests/integration/data/environmentRequests.test.ts`
-- [ ] T052 [US13] Integrar ambiente, bloqueo y retorno al inventario en `mobile/src/app/(protected)/_layout.tsx`; completar `mobile/.maestro/switch-environment.yaml`
+- [ ] T052 [US13] Integrar ambiente, bloqueo y retorno al inventario en `mobile/src/app/(protected)/_layout.tsx`; completar la prueba de integración de ambiente
 
 **Checkpoint**: ningún dato o respuesta de un ambiente aparece en el otro.
 
@@ -207,7 +207,7 @@ o un fallo conserva un estado coherente.
 - [ ] T069 [P] [US4] Escribir pruebas del caso de uso de emisión, precondición y fallo atómico en `mobile/tests/unit/domain/issueCredential.test.ts`; verificar fallo con `npm test -- issueCredential.test.ts`
 - [ ] T070 [P] [US4] Escribir pruebas de `Idempotency-Key`, doble pulsación y último estado confirmado en `mobile/tests/unit/presentation/credentialOperationController.test.ts`; verificar fallo con `npm test -- credentialOperationController.test.ts`
 - [ ] T071 [P] [US4] Escribir pruebas de confirmación, resultado, OTP, enlace, expiración, portapapeles y `Share` en `mobile/tests/component/credentials/issueCredentialScreen.test.tsx`; verificar fallo con `npm test -- issueCredentialScreen.test.tsx`
-- [ ] T072 [P] [US4] Definir el recorrido completo de emisión en `mobile/.maestro/issue-credential.yaml`; verificar que falla antes de implementar con `maestro test mobile/.maestro/issue-credential.yaml`
+- [ ] T072 [P] [US4] Definir el recorrido completo de emisión en `mobile/tests/integration/credentials/issueCredentialFlow.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
@@ -215,7 +215,7 @@ o un fallo conserva un estado coherente.
 - [ ] T074 [US4] Implementar `issueCredential` en `mobile/src/domain/use-cases/credentials/issueCredential.ts`; hacer pasar `mobile/tests/unit/domain/issueCredential.test.ts`
 - [ ] T075 [US4] Implementar `useCredentialOperationController` con idempotencia y estado confirmado en `mobile/src/presentation/controllers/useCredentialOperationController.ts`; hacer pasar `mobile/tests/unit/presentation/credentialOperationController.test.ts`
 - [ ] T076 [P] [US4] Implementar confirmación, resultado, `DeliveryLinkCard` y `OtpCard` en `mobile/src/presentation/components/credentials/`; hacer pasar las aserciones visuales de `mobile/tests/component/credentials/issueCredentialScreen.test.tsx`
-- [ ] T077 [US4] Implementar emisión, privacidad en background, bloqueo de captura, copia y share separado en `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx`; completar `mobile/tests/component/credentials/issueCredentialScreen.test.tsx` y `mobile/.maestro/issue-credential.yaml`
+- [ ] T077 [US4] Implementar emisión, privacidad en background, bloqueo de captura, copia y share separado en `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx`; completar las pruebas de componente e integración de emisión
 
 **Checkpoint**: primer corte demostrable end-to-end; aún no es el MVP P1 completo.
 
@@ -235,14 +235,14 @@ reintento seguro.
 - [ ] T078 [P] [US5] Escribir contract tests de `regenerateCredential` y fallo seguro en `mobile/tests/contract/regenerateCredential.test.ts`; verificar fallo con `npm test -- regenerateCredential.test.ts`
 - [ ] T079 [P] [US5] Escribir pruebas de rotación, versión previa y conservación ante fallo en `mobile/tests/unit/domain/regenerateCredential.test.ts`; verificar fallo con `npm test -- regenerateCredential.test.ts`
 - [ ] T080 [P] [US5] Escribir pruebas del resultado de regeneración y mensaje de credencial anterior activa en `mobile/tests/component/credentials/regenerateCredentialScreen.test.tsx`; verificar fallo con `npm test -- regenerateCredentialScreen.test.tsx`
-- [ ] T081 [P] [US5] Definir el flujo determinista de regeneración fallida en `mobile/.maestro/regenerate-failure.yaml`; verificar que falla antes de implementar con `maestro test mobile/.maestro/regenerate-failure.yaml`
+- [ ] T081 [P] [US5] Definir el flujo determinista de regeneración fallida en `mobile/tests/integration/credentials/regenerateFailure.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
 - [ ] T082 [US5] Implementar respuesta, error y métodos remote/fake de regeneración en `mobile/src/data/schemas/credentialOperation.ts`, `mobile/src/data/repositories/RestCredentialRepository.ts` y `mobile/src/data/fake/FakeCredentialRepository.ts`; hacer pasar `mobile/tests/contract/regenerateCredential.test.ts`
 - [ ] T083 [US5] Implementar `regenerateCredential` en `mobile/src/domain/use-cases/credentials/regenerateCredential.ts`; hacer pasar `mobile/tests/unit/domain/regenerateCredential.test.ts`
 - [ ] T084 [US5] Añadir la variante `regenerate` al controlador en `mobile/src/presentation/controllers/useCredentialOperationController.ts`; hacer pasar las pruebas de estado de US-05
-- [ ] T085 [US5] Integrar regeneración y fallo seguro en `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx`; completar `mobile/tests/component/credentials/regenerateCredentialScreen.test.tsx` y `mobile/.maestro/regenerate-failure.yaml`
+- [ ] T085 [US5] Integrar regeneración y fallo seguro en `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx`; completar las pruebas de componente e integración de regeneración
 
 **Checkpoint**: la rotación queda probada sin depender de intervención técnica.
 
@@ -288,14 +288,14 @@ la revocación se rechaza y la credencial no puede reactivarse.
 - [ ] T095 [P] [US7] Escribir contract tests de `revokeCredential`, 403 y conflicto terminal en `mobile/tests/contract/revokeCredential.test.ts`; verificar fallo con `npm test -- revokeCredential.test.ts`
 - [ ] T096 [P] [US7] Escribir pruebas de permiso, motivo y transición terminal en `mobile/tests/unit/domain/revokeCredential.test.ts`; verificar fallo con `npm test -- revokeCredential.test.ts`
 - [ ] T097 [P] [US7] Escribir pruebas de ocultación por perfil y confirmación irreversible en `mobile/tests/component/credentials/revokeCredentialScreen.test.tsx`; verificar fallo con `npm test -- revokeCredentialScreen.test.tsx`
-- [ ] T098 [P] [US7] Definir el recorrido senior y el rechazo del analista en `mobile/.maestro/revoke-credential.yaml`; verificar que falla antes de implementar con `maestro test mobile/.maestro/revoke-credential.yaml`
+- [ ] T098 [P] [US7] Definir el recorrido senior y el rechazo del analista en `mobile/tests/integration/credentials/revokeCredentialFlow.test.tsx`; verificar que falla antes de implementar con Jest
 
 ### Implementación
 
 - [ ] T099 [US7] Implementar métodos remote/fake y errores de revocación en `mobile/src/data/repositories/RestCredentialRepository.ts` y `mobile/src/data/fake/FakeCredentialRepository.ts`; hacer pasar `mobile/tests/contract/revokeCredential.test.ts`
 - [ ] T100 [US7] Implementar `revokeCredential` en `mobile/src/domain/use-cases/credentials/revokeCredential.ts`; hacer pasar `mobile/tests/unit/domain/revokeCredential.test.ts`
 - [ ] T101 [US7] Implementar `RevokeConfirmation` en `mobile/src/presentation/components/credentials/RevokeConfirmation.tsx`; hacer pasar `mobile/tests/component/credentials/revokeCredentialScreen.test.tsx`
-- [ ] T102 [US7] Integrar la variante revoke y permisos en `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx`; completar `mobile/.maestro/revoke-credential.yaml`
+- [ ] T102 [US7] Integrar la variante revoke y permisos en `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx`; completar la prueba de integración de revocación
 
 **Checkpoint**: el ciclo de vida P1 está completo; falta cerrar su evidencia
 transversal de auditoría.
@@ -319,9 +319,9 @@ ningún error contiene secretos.
 ### Implementación
 
 - [ ] T105 [US8] Implementar `requireAuditEvidence` sin fabricar actor/IP/hora en `mobile/src/domain/policies/auditEvidence.ts`; hacer pasar `mobile/tests/unit/domain/auditEvidence.test.ts`
-- [ ] T106 [US8] Integrar `requestId`, `auditEventId` y resultado en mappers y repositorios P1 bajo `mobile/src/data/mappers/`; hacer pasar los casos remotos de `mobile/tests/integration/p1AuditCoverage.test.ts`
+- [ ] T106 [US8] Integrar `requestId`, `auditEventId` y resultado en mappers y repositorios P1 bajo `mobile/src/data/mappers/`; hacer pasar los casos del stub local de `mobile/tests/integration/p1AuditCoverage.test.ts`
 - [ ] T107 [US8] Implementar resultados sintéticos exitosos, fallidos y rechazados en `mobile/src/data/fake/FakeAuditRecorder.ts` y conectarlos desde los repositorios fake; completar la matriz de `mobile/tests/integration/p1AuditCoverage.test.ts`
-- [ ] T108 [US8] Ejecutar todo P1 y registrar evidencia repetible en `mobile/docs/validation/p1-audit.md`; verificar con `npm test -- --runInBand` y los flujos Maestro P1
+- [ ] T108 [US8] Ejecutar todo P1 y registrar evidencia repetible en `mobile/docs/validation/p1-audit.md`; verificar con `npm test -- --runInBand` y la exportación web local
 
 **Checkpoint MVP P1**: US-01, US-13 y US-02 a US-08 funcionan y son auditables.
 
@@ -470,16 +470,16 @@ gates ajenos a la constitución.
 - [ ] T149 [P] Añadir pruebas de contraste, font scaling 200 %, labels, foco, 48 px y movimiento reducido en `mobile/tests/accessibility/accessibilityRegression.test.tsx`; verificar con `npm test -- accessibilityRegression.test.tsx`
 - [ ] T150 [P] Escribir pruebas del temporizador y correlación de rendimiento en `mobile/tests/unit/observability/operationTiming.test.ts`; verificar fallo con `npm test -- operationTiming.test.ts`
 - [ ] T151 Implementar medición cliente/servicio sin cuerpos sensibles en `mobile/src/data/http/OperationTiming.ts`; hacer pasar `mobile/tests/unit/observability/operationTiming.test.ts`
-- [ ] T152 Crear el script único `validate` en `mobile/package.json` para doctor, lint, format, typecheck, tests y contract tests; verificar desde instalación limpia con `npm ci && npm run validate`
-- [ ] T153 [P] Validar development build en Android API 24 y API 36 con `npx expo run:android` y registrar dispositivo, comandos y resultados en `mobile/docs/validation/android.md`
-- [ ] T154 [P] Validar development build en iOS 16.4 y una versión actual con `npx expo run:ios` y registrar dispositivo, comandos y resultados en `mobile/docs/validation/ios.md`
-- [ ] T155 Ejecutar todos los flujos de `mobile/.maestro/` en Android e iOS y registrar resultados reproducibles en `mobile/docs/validation/maestro.md`
-- [ ] T156 Implementar el runner opt-in del contrato remoto en `mobile/tests/contract/remote/remoteContract.test.ts` y el script `test:contract:remote` en `mobile/package.json`; verificar contra un stub local compatible
-- [ ] T157 Ejecutar `test:contract:remote` contra el ambiente de Pruebas autorizado y registrar atomicidad, idempotencia, OTP, revocación y auditoría en `mobile/docs/validation/remote-contract.md`
-- [ ] T158 Ejecutar todos los escenarios de `specs/001-gestion-credenciales-api/quickstart.md` y consolidar versión, tests, p95, accesibilidad y limitaciones en `mobile/docs/validation/final.md`
+- [x] T152 Crear el script único `validate` en `mobile/package.json` para doctor, lint, format, typecheck, tests, contrato local y exportación web; verificar desde instalación limpia con `npm ci && npm run validate`
+- [x] T153 [P] Exportar el bundle local con `npx expo export --platform web` y registrar el resultado en `mobile/docs/validation/web-export.md`
+- [ ] T154 [P] Validar los anchos web 360, 390 y 430 px y registrar resultados en `mobile/docs/validation/web-layout.md`
+- [ ] T155 Ejecutar los recorridos manuales de `quickstart.md` con el adaptador fake y registrar resultados en `mobile/docs/validation/manual.md`
+- [x] T156 Implementar el runner de contrato local en `mobile/tests/contract/local/localContract.test.ts` y el script `test:contract:local`; verificar contra un stub local compatible
+- [x] T157 Ejecutar `test:contract:local` y registrar los DTO, errores, idempotencia y auditoría simuladas en `mobile/docs/validation/local-contract.md`
+- [ ] T158 Ejecutar todos los escenarios de `specs/001-gestion-credenciales-api/quickstart.md` y consolidar versión, tests, exportación, accesibilidad y limitaciones en `mobile/docs/validation/final.md`
 
-**Checkpoint final**: el candidato puede avanzar al piloto solo si T157 confirma
-las garantías remotas; el fake no sustituye esa evidencia.
+**Checkpoint final**: el candidato local queda construido y validado cuando T158
+pasa. No constituye aprobación para un piloto ni evidencia de garantías remotas.
 
 ---
 
@@ -532,22 +532,22 @@ Todas las historias ────────────────────
 
 ## Oportunidades de paralelismo por historia
 
-| Historia | Tareas que pueden prepararse en paralelo |
-|---|---|
-| US-01 | T037–T040; después T041 y T042 en archivos distintos. |
-| US-13 | T045–T048; después T050 y T051. |
-| US-02 | T053–T055; T058 puede avanzar tras estabilizar los tipos. |
-| US-03 | T060–T063; T066 puede avanzar tras estabilizar el detalle. |
-| US-04 | T068–T072; T076 puede avanzar tras fijar el receipt. |
-| US-05 | T078–T081. |
-| US-06 | T086–T089; después T091 y T092. |
-| US-07 | T095–T098. |
-| US-08 | T103 y T104. |
-| US-09 | T109–T112. |
-| US-10 | T117–T119; T122 tras fijar el schema. |
-| US-11 | T124–T126; T129 tras fijar el modelo. |
-| US-12 | T131–T134; T137 tras fijar el modelo. |
-| US-14 | T139–T142; T145 tras fijar el modelo. |
+| Historia | Tareas que pueden prepararse en paralelo                   |
+| -------- | ---------------------------------------------------------- |
+| US-01    | T037–T040; después T041 y T042 en archivos distintos.      |
+| US-13    | T045–T048; después T050 y T051.                            |
+| US-02    | T053–T055; T058 puede avanzar tras estabilizar los tipos.  |
+| US-03    | T060–T063; T066 puede avanzar tras estabilizar el detalle. |
+| US-04    | T068–T072; T076 puede avanzar tras fijar el receipt.       |
+| US-05    | T078–T081.                                                 |
+| US-06    | T086–T089; después T091 y T092.                            |
+| US-07    | T095–T098.                                                 |
+| US-08    | T103 y T104.                                               |
+| US-09    | T109–T112.                                                 |
+| US-10    | T117–T119; T122 tras fijar el schema.                      |
+| US-11    | T124–T126; T129 tras fijar el modelo.                      |
+| US-12    | T131–T134; T137 tras fijar el modelo.                      |
+| US-14    | T139–T142; T145 tras fijar el modelo.                      |
 
 ## Ejemplo de ejecución paralela
 
@@ -586,30 +586,30 @@ todo el alcance P1 de la especificación.
 1. Añadir US-09, US-10 y US-11 en paralelo cuando haya capacidad.
 2. Añadir US-12 tras cerrar la auditoría P1.
 3. Añadir US-14 únicamente para la fase P3.
-4. Ejecutar Polish y las garantías remotas antes del piloto.
+4. Ejecutar Polish y la validación local antes de cerrar el candidato.
 
 ## Resumen de tareas
 
-| Alcance | Tareas |
-|---|---:|
-| Setup | 10 |
-| Foundational | 26 |
-| US-01 | 8 |
-| US-13 | 8 |
-| US-02 | 7 |
-| US-03 | 8 |
-| US-04 | 10 |
-| US-05 | 8 |
-| US-06 | 9 |
-| US-07 | 8 |
-| US-08 | 6 |
-| US-09 | 8 |
-| US-10 | 7 |
-| US-11 | 7 |
-| US-12 | 8 |
-| US-14 | 9 |
-| Polish | 11 |
-| **Total** | **158** |
+| Alcance      |  Tareas |
+| ------------ | ------: |
+| Setup        |      10 |
+| Foundational |      26 |
+| US-01        |       8 |
+| US-13        |       8 |
+| US-02        |       7 |
+| US-03        |       8 |
+| US-04        |      10 |
+| US-05        |       8 |
+| US-06        |       9 |
+| US-07        |       8 |
+| US-08        |       6 |
+| US-09        |       8 |
+| US-10        |       7 |
+| US-11        |       7 |
+| US-12        |       8 |
+| US-14        |       9 |
+| Polish       |      11 |
+| **Total**    | **158** |
 
 ## Notas
 
@@ -621,5 +621,5 @@ todo el alcance P1 de la especificación.
   código nativo personalizado.
 - Los commits deben contener una tarea o un grupo inseparable y seguir
   Conventional Commits; nunca incluir cambios ajenos.
-- T157 es la única tarea que necesita acceso al servicio remoto autorizado; si
-  no existe, el desarrollo puede continuar, pero el piloto queda bloqueado.
+- Esta variante no requiere acceso remoto; la validación contra un servicio real
+  queda explícitamente fuera de sus criterios de cierre.

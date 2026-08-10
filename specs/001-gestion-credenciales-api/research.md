@@ -6,6 +6,12 @@
 
 **Estado**: decisiones cerradas para planificación
 
+> **Actualización de alcance local (2026-08-10):** no hay entorno remoto,
+> emulador Android ni Maestro disponibles. La ejecución se limita a Node
+> `25.9.0`, npm `11.12.1`, Expo Web, el adaptador fake y un stub HTTP local. Las
+> afirmaciones sobre un servicio de producción se conservan como requisitos de
+> integración futura, no como evidencia de este candidato.
+
 ## 1. Runtime y stack móvil
 
 **Decisión**: usar Node.js `24.19.0` LTS con npm `11.17.0`, Expo SDK 57,
@@ -241,8 +247,7 @@ obligación constitucional de minimizar exposición.
 
 **Decisión**: traducir colores, espaciado, tipografía, radios y componentes de
 `design/DESIGN.md` a constantes TypeScript y `StyleSheet`. Inter se incorpora
-localmente con licencia mediante `expo-font`; el peso 650 se mapea a SemiBold
-600. El PNG oficial se usa solo en acceso y la app bar muestra `KeyOps` como
+localmente con licencia mediante `expo-font`; el peso 650 se mapea a SemiBold 600. El PNG oficial se usa solo en acceso y la app bar muestra `KeyOps` como
 texto hasta disponer de un símbolo compacto aprobado.
 
 **Rationale**: evita una librería de componentes, conserva la fuente de verdad

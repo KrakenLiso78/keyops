@@ -17,12 +17,10 @@
 
 ## Resumen
 
-KeyOps se construirá como una aplicación móvil interna para Android e iOS con
-React Native sobre Expo. El cliente implementará tres capas —presentación,
-dominio y datos— y consumirá una API REST/JSON versionada mediante puertos de
-dominio. La misma frontera tendrá un adaptador remoto y otro falso con datos
-sintéticos, de modo que el caso de estudio pueda desarrollarse y validarse sin
-convertir el móvil en fuente de verdad ni simular garantías del servidor.
+KeyOps se construirá y validará localmente con Expo Web. El cliente implementará
+tres capas —presentación, dominio y datos— y una frontera REST/JSON versionada
+con un adaptador fake determinista. Un stub HTTP local probará el contrato sin
+presentar esas simulaciones como garantías de producción.
 
 La entrega se realizará en cortes verticales: primero la base técnica,
 autenticación y separación de ambientes; después inventario y detalle; a
@@ -33,8 +31,8 @@ posterior.
 
 ## Contexto técnico
 
-**Lenguaje/versión**: TypeScript `~6.0.3` en modo estricto; Node.js `24.19.0`
-LTS; npm `11.17.0`.
+**Lenguaje/versión**: TypeScript `~6.0.3` en modo estricto; Node.js `25.9.0`;
+npm `11.12.1`, las versiones disponibles en la máquina de construcción.
 
 **Dependencias principales**: Expo SDK 57; React Native `0.86.x`; React
 `19.2.3`; Expo Router `~57.0.x` con rutas tipadas; Zod 4.x; `expo-secure-store`,
@@ -42,17 +40,15 @@ LTS; npm `11.17.0`.
 compatibles con SDK 57; `fetch` y `Share` de la plataforma.
 
 **Persistencia**: sin base de datos local. SecureStore conserva exclusivamente
-los tokens de sesión. Inventario, detalle, permisos y resultados operativos se
-mantienen en memoria y siempre se reconstruyen desde el servicio remoto.
+los tokens de sesión. En este candidato, inventario, detalle, permisos y
+resultados operativos se mantienen en memoria y se reconstruyen desde el fake.
 
 **Testing**: Jest `29.7.x` con `jest-expo ~57.0.x`, React Native Testing Library
-14.x, pruebas de contrato sobre schemas Zod y Maestro CLI `2.7.0` para un
-conjunto pequeño de recorridos E2E.
+14.x, pruebas de contrato sobre schemas Zod, stub HTTP local y exportación Expo
+Web. No se exige Maestro ni un simulador.
 
-**Plataforma objetivo**: aplicación móvil Expo con New Architecture y
-Continuous Native Generation; Android 7.0+ (API 24, compile/target SDK 36) e iOS
-16.4+ con Xcode 26.4+; orientación vertical, ancho 360–430 px y contenido
-centrado hasta 600 px en tablet.
+**Plataforma de validación**: Expo Web local, orientación vertical y anchos de
+360–430 px. Android e iOS quedan fuera de la evidencia de este repositorio.
 
 **Objetivos de rendimiento**: inventario y detalle disponibles en menos de dos
 segundos en el 95 % de los casos; emisión y regeneración en menos de 30
@@ -73,46 +69,45 @@ no incluye el site de entrega ni los servicios remotos.
 
 ### Versiones gobernadas
 
-| Componente | Versión inicial | Regla de actualización |
-|---|---|---|
-| Node.js | `24.19.0` LTS | Fijado en `.nvmrc` y `engines`; solo LTS compatible con Expo 57. |
-| npm | `11.17.0` | Fijado en `packageManager`; instalaciones reproducibles con `npm ci`. |
-| Expo | SDK `57` | Crear con `default@sdk-57`; no usar canary ni beta. |
-| React Native | `0.86.x` | La versión exacta la resuelve el template de Expo 57. |
-| React | `19.2.3` | La versión exacta la resuelve el template de Expo 57. |
-| TypeScript | `~6.0.3` | TypeScript 7 queda fuera hasta verificar compatibilidad con Expo/Jest. |
-| Expo Router | `~57.0.x` | Instalar y comprobar con `npx expo install --check`. |
-| Módulos Expo | familia SDK 57 | Instalar con `npx expo install`; el lockfile fija cada parche. |
-| Jest / RNTL | `29.7.x` / `14.x` | Mantener la combinación soportada por Expo 57 y React 19. |
-| Maestro | `2.7.0` | Fijar la versión local/CI antes de automatizar los flujos. |
-| API móvil | `/v1`, contrato `1` | Un cambio incompatible exige `/v2` o compatibilidad temporal explícita. |
+| Componente   | Versión inicial     | Regla de actualización                                                  |
+| ------------ | ------------------- | ----------------------------------------------------------------------- |
+| Node.js      | `25.9.0`            | Fijado en `.nvmrc` y `engines`; runtime disponible localmente.          |
+| npm          | `11.12.1`           | Fijado en `packageManager`; instalaciones reproducibles con `npm ci`.   |
+| Expo         | SDK `57`            | Crear con `default@sdk-57`; no usar canary ni beta.                     |
+| React Native | `0.86.x`            | La versión exacta la resuelve el template de Expo 57.                   |
+| React        | `19.2.3`            | La versión exacta la resuelve el template de Expo 57.                   |
+| TypeScript   | `~6.0.3`            | TypeScript 7 queda fuera hasta verificar compatibilidad con Expo/Jest.  |
+| Expo Router  | `~57.0.x`           | Instalar y comprobar con `npx expo install --check`.                    |
+| Módulos Expo | familia SDK 57      | Instalar con `npx expo install`; el lockfile fija cada parche.          |
+| Jest / RNTL  | `29.7.x` / `14.x`   | Mantener la combinación soportada por Expo 57 y React 19.               |
+| E2E nativo   | No aplica           | La validación se limita a Jest, stub local y exportación web.           |
+| API móvil    | `/v1`, contrato `1` | Un cambio incompatible exige `/v2` o compatibilidad temporal explícita. |
 
 `package-lock.json` será la evidencia de las versiones exactas finalmente
 resueltas. Antes de aceptar una actualización se ejecutarán `expo-doctor`,
-typecheck, pruebas y los E2E críticos en Android e iOS.
+typecheck, pruebas, contrato contra stub local y exportación web.
 
 ## Comprobación de la constitución
 
-*GATE: debe pasar antes de Phase 0 y se reevalúa tras Phase 1.*
+_GATE: debe pasar antes de Phase 0 y se reevalúa tras Phase 1._
 
-| Principio | Evidencia prevista | Pre-diseño | Post-diseño |
-|---|---|---|---|
-| I. Seguridad | Secretos emitidos en servicio remoto; OTP/enlace solo en memoria; sin descarga móvil. | PASA | PASA |
-| II. Mínimo privilegio | Política local de visibilidad y reautorización del servidor en cada endpoint. | PASA | PASA |
-| III. Auditabilidad | Cada respuesta incluye correlación y evidencia de auditoría; el servidor registra actor e IP. | PASA | PASA |
-| IV. Privacidad | Schemas sin Client Secret/contraseña ZIP; limpieza al caducar, salir o ir a segundo plano. | PASA | PASA |
-| V. Spec/plan | Este documento solo decide el cómo y no altera comportamiento de `spec.md`. | PASA | PASA |
-| VI. Tres capas | UI → casos de uso/puertos ← adaptadores de datos, unidos en composición. | PASA | PASA |
-| VII. Estado confiable | Servidor como fuente de verdad, estado unidireccional y operaciones online sin optimismo. | PASA | PASA |
-| VIII. Testing proporcional | Unitarias de dominio, componentes, contratos y tres recorridos E2E críticos. | PASA | PASA |
-| IX. Simplicidad | Sin Redux, base local, BFF en este repo, librería UI ni código nativo personalizado. | PASA | PASA |
-| X. Versiones | Runtime, SDK, tooling y API fijados; dependencias exactas en lockfile. | PASA | PASA |
+| Principio                  | Evidencia prevista                                                                            | Pre-diseño | Post-diseño |
+| -------------------------- | --------------------------------------------------------------------------------------------- | ---------- | ----------- |
+| I. Seguridad               | Secretos emitidos en servicio remoto; OTP/enlace solo en memoria; sin descarga móvil.         | PASA       | PASA        |
+| II. Mínimo privilegio      | Política local de visibilidad y reautorización del servidor en cada endpoint.                 | PASA       | PASA        |
+| III. Auditabilidad         | Cada respuesta incluye correlación y evidencia de auditoría; el servidor registra actor e IP. | PASA       | PASA        |
+| IV. Privacidad             | Schemas sin Client Secret/contraseña ZIP; limpieza al caducar, salir o ir a segundo plano.    | PASA       | PASA        |
+| V. Spec/plan               | Este documento solo decide el cómo y no altera comportamiento de `spec.md`.                   | PASA       | PASA        |
+| VI. Tres capas             | UI → casos de uso/puertos ← adaptadores de datos, unidos en composición.                      | PASA       | PASA        |
+| VII. Estado confiable      | Servidor como fuente de verdad, estado unidireccional y operaciones online sin optimismo.     | PASA       | PASA        |
+| VIII. Testing proporcional | Unitarias de dominio, componentes, contratos y tres recorridos E2E críticos.                  | PASA       | PASA        |
+| IX. Simplicidad            | Sin Redux, base local, BFF en este repo, librería UI ni código nativo personalizado.          | PASA       | PASA        |
+| X. Versiones               | Runtime, SDK, tooling y API fijados; dependencias exactas en lockfile.                        | PASA       | PASA        |
 
-No se requiere ninguna excepción constitucional. La integración remota solo se
-considerará validada cuando el entorno de Pruebas supere los contratos de
-[mobile-api.openapi.yaml](./contracts/mobile-api.openapi.yaml); el adaptador
-falso no demuestra atomicidad, OTP de un uso, revocación efectiva, auditoría
-inmutable ni retención de cinco años.
+Esta variante local no puede certificar garantías de producción. El fake y el
+stub prueban que el cliente interpreta el contrato y sus errores de forma
+consistente, pero no demuestran atomicidad, OTP de un uso, revocación efectiva,
+auditoría inmutable ni retención de cinco años.
 
 ## Estructura del proyecto
 
@@ -180,10 +175,6 @@ mobile/
 │   ├── contract/
 │   ├── integration/
 │   └── fixtures/
-└── .maestro/
-    ├── sign-in.yaml
-    ├── switch-environment.yaml
-    └── issue-credential.yaml
 ```
 
 **Decisión estructural**: la app vive en `mobile/` porque el repositorio ya
@@ -203,16 +194,15 @@ Caso de uso de dominio
       ↓ depende de un puerto
 Repositorio de dominio
       ↑ implementa
-Adaptador REST + Zod  ───── o ───── Adaptador fake sintético
+Stub HTTP local + Zod  ───── o ───── Adaptador fake sintético
       ↓
-Servicio remoto (única fuente de verdad)
+Datos sintéticos locales
 ```
 
 `createAppDependencies(config)` construye una sola vez el grafo de objetos y lo
-expone mediante `DependenciesProvider`. Habrá dos composiciones, no dos
-arquitecturas: `createRemoteDependencies` y `createFakeDependencies`. Pantallas,
-controladores y casos de uso no instancian repositorios ni importan `fetch` o
-SecureStore.
+expone mediante `DependenciesProvider`. La composición fake y el stub local
+comparten puertos; pantallas, controladores y casos de uso no instancian
+repositorios ni importan `fetch` o SecureStore.
 
 `SessionProvider` contiene usuario y vigencia de sesión; `EnvironmentProvider`
 contiene únicamente el ambiente activo. El estado de lista, detalle y operación
@@ -251,10 +241,9 @@ Decisiones de contrato:
 - Actor, IP, hora, atomicidad y evento de auditoría los determina el servicio;
   el cliente no los envía como datos fiables.
 
-Para desarrollo, `Fake*Repository` implementa los mismos puertos y cubre todos
-los estados con datos sintéticos. Para el piloto, pruebas de contrato en el
-ambiente de Pruebas verificarán que los adaptadores reales preservan el contrato
-y las garantías del servidor.
+Para desarrollo y validación local, `Fake*Repository` implementa los puertos y
+cubre todos los estados con datos sintéticos. Un stub HTTP local verifica los
+DTO y errores definidos en el OpenAPI.
 
 ## Seguridad y datos sensibles
 
@@ -278,8 +267,7 @@ y las garantías del servidor.
 
 Los tokens de `design/DESIGN.md` se traducen a constantes TypeScript y estilos
 `StyleSheet`; los nombres de token nunca aparecen como texto. Inter se incorpora
-como fuente local mediante `expo-font` y los pesos 650 se normalizan a SemiBold
-600. La app usa una columna, una acción primaria por pantalla, zonas táctiles de
+como fuente local mediante `expo-font` y los pesos 650 se normalizan a SemiBold 600. La app usa una columna, una acción primaria por pantalla, zonas táctiles de
 48 px, safe areas y estados carga/vacío/error persistentes.
 
 Pruebas y Producción mantienen colores y texto diferenciados en todas las
@@ -298,8 +286,8 @@ hasta disponer de un símbolo compacto aprobado; no se recorta el PNG original.
 1. Crear `mobile/` con el template estable Expo SDK 57 y npm.
 2. Fijar Node/npm, lockfile, TypeScript estricto, ESLint, Prettier, Jest y scripts
    `lint`, `typecheck`, `test`, `test:contract` y `doctor`.
-3. Configurar `src/app`, rutas tipadas, identificadores de app, development
-   builds y composición fake/remota.
+3. Configurar `src/app`, rutas tipadas, identificadores de app, exportación web
+   y composición fake.
 4. Traducir tokens de diseño, cargar Inter y construir los componentes base
    accesibles.
 5. Implementar puertos, cliente HTTP, schemas Zod, mappers, fakes y sesión
@@ -309,7 +297,7 @@ hasta disponer de un símbolo compacto aprobado; no se recorta el PNG original.
 
 Implementar US-01 y US-13: acceso, restauración/caducidad de sesión, protección
 de rutas, permisos, selector Pruebas/Producción y descarte de estado al cambiar.
-Validar primero el flujo con el fake y después el contrato de sesión remoto.
+Validar el flujo y el contrato de sesión con datos sintéticos y stub local.
 
 ### 2. Corte P1 de consulta
 
@@ -344,62 +332,57 @@ Implementar US-14 solo después de estabilizar el piloto: lista, alta,
 modificación, perfil y habilitación de usuarios. Reutiliza permisos, errores,
 paginación y auditoría; no crea una cuarta capa ni un segundo proyecto.
 
-### 7. Validación del candidato a piloto
+### 7. Validación del candidato local
 
-Ejecutar `expo-doctor`, lint, typecheck, unitarias, componentes, contratos y los
-tres E2E. Validar binarios de development build en Android e iOS mínimos,
-accesibilidad, ausencia de secretos, separación de ambientes y tiempos de
-extremo a extremo. EAS puede adoptarse después para distribución, pero no es
-requisito para construir o validar localmente.
+Ejecutar `expo-doctor`, lint, typecheck, unitarias, componentes, contratos contra
+stub local y `expo export --platform web`. Validar accesibilidad, ausencia de
+secretos, separación de ambientes y tiempos locales. La distribución nativa y
+la validación de piloto requieren una fase posterior con sus entornos reales.
 
 ## Estrategia de pruebas
 
-| Nivel | Riesgo cubierto | Evidencia principal |
-|---|---|---|
-| Unitarias | Permisos, transiciones, motivo, ambientes, errores e idempotencia local. | Casos de uso y políticas TypeScript puras con repositorios falsos. |
-| Componentes | Carga/vacío/error, acciones por rol, confirmaciones, accesibilidad y secretos ausentes. | React Native Testing Library por comportamiento observable. |
-| Contrato | DTO/versiones incompatibles, errores, ambiente, redacción y mappers. | Fixtures válidos/inválidos contra Zod y OpenAPI. |
-| Integración | Sesión SecureStore, 401/403, timeout, cancelación y cambio de adaptador. | Repositorios reales con HTTP simulado en el límite. |
-| E2E | Acceso, cambio de ambiente y emisión completa. | Maestro sobre binarios Android e iOS con `testID` estables. |
+| Nivel       | Riesgo cubierto                                                                         | Evidencia principal                                                |
+| ----------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Unitarias   | Permisos, transiciones, motivo, ambientes, errores e idempotencia local.                | Casos de uso y políticas TypeScript puras con repositorios falsos. |
+| Componentes | Carga/vacío/error, acciones por rol, confirmaciones, accesibilidad y secretos ausentes. | React Native Testing Library por comportamiento observable.        |
+| Contrato    | DTO/versiones incompatibles, errores, ambiente, redacción y mappers.                    | Fixtures válidos/inválidos contra Zod y OpenAPI.                   |
+| Integración | Sesión SecureStore, 401/403, timeout, cancelación y cambio de adaptador.                | Repositorios reales con HTTP simulado en el límite.                |
+| Web         | El bundle se genera sin errores.                                                        | `npx expo export --platform web`.                                  |
 
-No se fija cobertura porcentual. Una regresión de regeneración fallida se añade
-a Maestro solo si el entorno permite provocarla de manera determinista; siempre
-debe existir como prueba de caso de uso y componente.
+No se fija cobertura porcentual. Una regresión de regeneración fallida debe
+existir como prueba de caso de uso y componente.
 
 ## Trazabilidad de requisitos
 
-| Prioridad | Historia | Requisitos | Corte técnico |
-|---|---|---|---|
-| P1 | US-01 | FR-001, FR-002, FR-013 | Autenticación, sesión y rutas protegidas. |
-| P1 | US-13 | FR-018 | Ambiente explícito y descarte de estado. |
-| P1 | US-02 | FR-003, FR-004, FR-013, FR-018 | Inventario y consultas por ambiente. |
-| P1 | US-03 | FR-005, FR-006, FR-013, FR-018 | Detalle y política de acciones. |
-| P1 | US-04 | FR-007, FR-008, FR-010, FR-013, FR-018 | Emisión y entrega externa. |
-| P1 | US-05 | FR-008, FR-009, FR-010, FR-013, FR-018 | Rotación y fallo seguro. |
-| P1 | US-06 | FR-011, FR-013, FR-018 | Transiciones temporales con motivo. |
-| P1 | US-07 | FR-012, FR-013, FR-018 | Revocación y autorización. |
-| P1 | US-08 | FR-013 | Auditoría remota transversal. |
-| P2 | US-09 | FR-016, FR-013, FR-018 | Nueva entrega sin descarga móvil. |
-| P2 | US-10 | FR-014, FR-013, FR-018 | Contexto de gestión. |
-| P2 | US-11 | FR-017, FR-013, FR-018 | Proyección de uso. |
-| P2 | US-12 | FR-015, FR-018 | Consulta autorizada de auditoría. |
-| P3 | US-14 | FR-001, FR-013, FR-019 | Administración de usuarios y perfiles. |
+| Prioridad | Historia | Requisitos                             | Corte técnico                             |
+| --------- | -------- | -------------------------------------- | ----------------------------------------- |
+| P1        | US-01    | FR-001, FR-002, FR-013                 | Autenticación, sesión y rutas protegidas. |
+| P1        | US-13    | FR-018                                 | Ambiente explícito y descarte de estado.  |
+| P1        | US-02    | FR-003, FR-004, FR-013, FR-018         | Inventario y consultas por ambiente.      |
+| P1        | US-03    | FR-005, FR-006, FR-013, FR-018         | Detalle y política de acciones.           |
+| P1        | US-04    | FR-007, FR-008, FR-010, FR-013, FR-018 | Emisión y entrega externa.                |
+| P1        | US-05    | FR-008, FR-009, FR-010, FR-013, FR-018 | Rotación y fallo seguro.                  |
+| P1        | US-06    | FR-011, FR-013, FR-018                 | Transiciones temporales con motivo.       |
+| P1        | US-07    | FR-012, FR-013, FR-018                 | Revocación y autorización.                |
+| P1        | US-08    | FR-013                                 | Auditoría remota transversal.             |
+| P2        | US-09    | FR-016, FR-013, FR-018                 | Nueva entrega sin descarga móvil.         |
+| P2        | US-10    | FR-014, FR-013, FR-018                 | Contexto de gestión.                      |
+| P2        | US-11    | FR-017, FR-013, FR-018                 | Proyección de uso.                        |
+| P2        | US-12    | FR-015, FR-018                         | Consulta autorizada de auditoría.         |
+| P3        | US-14    | FR-001, FR-013, FR-019                 | Administración de usuarios y perfiles.    |
 
 ## Compatibilidad, migración y riesgos
 
-- **Servicios sin contrato publicado**: el OpenAPI de esta feature es la
-  frontera esperada por el móvil. Las diferencias se resuelven en adaptadores;
-  si el servicio no ofrece atomicidad, idempotencia o auditoría, el piloto real
-  queda bloqueado y el fake no se presenta como sustituto.
+- **Servicios sin contrato publicado**: el OpenAPI es la frontera local. El
+  stub valida la forma de sus respuestas; las garantías remotas quedan fuera
+  del alcance de este candidato local.
 - **Autenticación corporativa**: el dominio depende de `AuthRepository`; el
   contrato inicial usa sesión Bearer compatible con el formulario aprobado. Un
   proveedor SSO futuro sustituye solo el adaptador y la pantalla de acceso.
-- **Site de entrega externo**: el móvil solo consume `deliveryUrl`; construir o
-  operar ese site está fuera de este plan. La emisión P1 no se acepta contra el
-  remoto hasta verificar que enlace y OTP funcionan separados.
-- **Soporte de dispositivos**: Expo 57 eleva iOS mínimo a 16.4. Se comprobará el
-  inventario del piloto antes de distribuir; soportar sistemas anteriores exige
-  revisar SDK y plan, no añadir parches nativos.
+- **Site de entrega externo**: el móvil consume una URL sintética; construir u
+  operar el site queda fuera de este candidato local.
+- **Soporte de dispositivos**: Android e iOS no se validan en esta máquina. La
+  exportación web es el límite verificable del candidato local.
 - **Spec aún rotulada como borrador**: la petición explícita de planificación
   fija esta versión como baseline técnica. Cambios funcionales posteriores
   vuelven a `spec.md` y requieren analizar impacto antes de tocar el plan.
@@ -413,6 +396,5 @@ debe existir como prueba de caso de uso y componente.
 ## Seguimiento de complejidad
 
 No hay violaciones constitucionales ni complejidad excepcional que justificar.
-La carpeta `mobile/`, los puertos de dominio y los dos adaptadores existen para
-aislar los servicios remotos y permitir validación sintética, no como proyectos
-o capas adicionales.
+La carpeta `mobile/`, los puertos de dominio, el fake y el stub existen para
+permitir validación sintética, no como proyectos o capas adicionales.

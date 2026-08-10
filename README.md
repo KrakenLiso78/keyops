@@ -6,7 +6,8 @@ KeyOps permite a analistas autorizados consultar aplicaciones, generar y renovar
 
 ## Estado del proyecto
 
-El proyecto cuenta con un candidato móvil Expo funcional con adaptador fake.
+El proyecto cuenta con un candidato móvil Expo Web funcional con adaptador fake
+y validación local autocontenida.
 
 - [x] Lean Canvas
 - [x] Especificación funcional
