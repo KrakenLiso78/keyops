@@ -3,7 +3,7 @@ import { Button, Card } from '@/presentation/components/base';
 
 export function RevokeConfirmation({ onConfirm }: { onConfirm: () => void }) {
   return (
-    <Card>
+    <Card tone="rose">
       <Text accessibilityRole="alert">Esta acción es irreversible.</Text>
       <Button title="Revocar credenciales" danger onPress={onConfirm} />
     </Card>

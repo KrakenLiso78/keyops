@@ -5,7 +5,7 @@ import { Body, Card } from '@/presentation/components/base';
 export function ApplicationUsageCard({ usage }: { usage: UsageSummary }) {
   if (usage.availability !== 'available') {
     return (
-      <Card>
+      <Card tone="sky">
         <Text style={{ fontWeight: '700' }}>Uso</Text>
         <Body>
           {usage.availability === 'no_data'
@@ -16,7 +16,7 @@ export function ApplicationUsageCard({ usage }: { usage: UsageSummary }) {
     );
   }
   return (
-    <Card>
+    <Card tone="sky">
       <Text style={{ fontWeight: '700' }}>Uso</Text>
       <Body>{usage.messagesSent} mensajes enviados</Body>
       <Body>{usage.consumedServices.join(', ') || 'Sin servicios registrados'}</Body>
