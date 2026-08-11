@@ -1,6 +1,9 @@
 export const colors = {
   primary: '#5645d4',
   primaryPressed: '#4534b3',
+  primaryDeep: '#3a2a99',
+  navy: '#0a1530',
+  cyan: '#12b8c8',
   canvas: '#ffffff',
   surface: '#f6f5f4',
   ink: '#1a1a1a',
@@ -11,5 +14,12 @@ export const colors = {
   error: '#c62828',
   test: '#5645d4',
   production: '#c62828',
+  peach: '#fff0e8',
+  rose: '#fde8ef',
+  mint: '#e4f6ed',
+  lavender: '#eeeafd',
+  sky: '#e8f5fb',
+  yellow: '#fff6d8',
+  muted: '#efefed',
 };
-export const space = { xs: 8, sm: 12, md: 16, lg: 20, xl: 24, xxl: 32 };
+export const space = { xxs: 4, xs: 8, sm: 12, md: 16, lg: 20, xl: 24, xxl: 32 };

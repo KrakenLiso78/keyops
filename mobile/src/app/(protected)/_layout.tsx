@@ -1,29 +1,11 @@
 import { Stack, router } from 'expo-router';
-import { Pressable, Text } from 'react-native';
 import { useApp } from '@/presentation/state/AppProvider';
 
 export default function ProtectedLayout() {
-  const { user, signOut } = useApp();
+  const { user } = useApp();
   if (!user) {
     router.replace('/sign-in');
     return null;
   }
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        headerTitle: 'KeyOps',
-        headerRight: () => (
-          <Pressable
-            onPress={() => {
-              signOut();
-              router.replace('/sign-in');
-            }}
-          >
-            <Text>Salir</Text>
-          </Pressable>
-        ),
-      }}
-    />
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
