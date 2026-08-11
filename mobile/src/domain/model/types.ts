@@ -36,10 +36,17 @@ export interface Application {
   credentialState: CredentialState;
   clientId?: string;
   lastChangedAt: string;
+  credentialHistory?: CredentialHistoryEntry[];
   messagesSent?: number;
   consumedServices?: string[];
   usedIps?: string[];
   lastConsumedAt?: string;
+}
+
+export interface CredentialHistoryEntry {
+  state: CredentialState;
+  changedAt: string;
+  actorDisplayName?: string;
 }
 
 export interface Delivery {

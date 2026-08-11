@@ -43,6 +43,7 @@ export const fakeApplications: Application[] = [
     requestOrTicketId: 'REQ-2026-001',
     credentialState: 'no_credentials',
     lastChangedAt: '2026-08-10T08:30:00Z',
+    credentialHistory: [{ state: 'no_credentials', changedAt: '2026-08-10T08:30:00Z' }],
   },
   {
     id: 'app-002',
@@ -56,6 +57,15 @@ export const fakeApplications: Application[] = [
     credentialState: 'active',
     clientId: 'cli_test_6sR9',
     lastChangedAt: '2026-08-09T15:20:00Z',
+    credentialHistory: [
+      {
+        state: 'active',
+        changedAt: '2026-08-09T15:20:00Z',
+        actorDisplayName: 'Ana Torres',
+      },
+      { state: 'rotated_inactive', changedAt: '2026-07-24T10:44:00Z' },
+      { state: 'no_credentials', changedAt: '2026-07-20T09:15:00Z' },
+    ],
     messagesSent: 1240,
     consumedServices: ['Consulta', 'Notificación'],
     usedIps: ['10.20.2.40'],
@@ -73,5 +83,14 @@ export const fakeApplications: Application[] = [
     credentialState: 'suspended',
     clientId: 'cli_prod_4dX1',
     lastChangedAt: '2026-08-08T10:10:00Z',
+    credentialHistory: [
+      {
+        state: 'suspended',
+        changedAt: '2026-08-08T10:10:00Z',
+        actorDisplayName: 'Sergio Vidal',
+      },
+      { state: 'active', changedAt: '2026-07-30T11:30:00Z' },
+      { state: 'no_credentials', changedAt: '2026-07-29T08:00:00Z' },
+    ],
   },
 ];

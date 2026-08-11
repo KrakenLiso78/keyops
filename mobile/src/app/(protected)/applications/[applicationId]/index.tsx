@@ -1,7 +1,8 @@
 import { useLocalSearchParams, router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
-import type { CredentialState } from '@/domain/model/types';
+import type { CredentialHistoryEntry, CredentialState } from '@/domain/model/types';
 import { permittedActions } from '@/domain/policies/permittedActions';
 import { Body, Button, Card, Heading, Screen } from '@/presentation/components/base';
 import {
@@ -23,30 +24,42 @@ const actionLabels: Record<string, string> = {
   revoke: 'Revocar credenciales',
 };
 
-function DetailRow({
-  label,
-  value,
-  code = false,
-}: {
-  label: string;
-  value: string;
-  code?: boolean;
-}) {
-  return (
-    <View style={styles.detailRow}>
-      <Text style={styles.detailLabel}>{label}</Text>
-      <Text selectable={code} style={[styles.detailValue, code && styles.code]}>
-        {value}
-      </Text>
-    </View>
-  );
-}
-
 function stateTone(state: CredentialState) {
   if (state === 'active') return colors.success;
   if (state === 'revoked') return colors.error;
   if (state === 'suspended') return colors.warning;
-  return colors.primary;
+  if (state === 'no_credentials') return colors.error;
+  return '#b8b8b8';
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+    .format(new Date(value))
+    .replace(',', ' ·');
+}
+
+function HistoryItem({ entry, last }: { entry: CredentialHistoryEntry; last: boolean }) {
+  return (
+    <View style={styles.timelineRow}>
+      <View style={styles.timelineRail}>
+        <View style={[styles.timelineDot, { backgroundColor: stateTone(entry.state) }]} />
+        {!last ? <View style={styles.timelineLine} /> : null}
+      </View>
+      <View style={styles.timelineContent}>
+        <CredentialStateBadge state={entry.state} />
+        {entry.actorDisplayName ? (
+          <Text style={styles.historyActor}>{entry.actorDisplayName}</Text>
+        ) : null}
+        <Text style={styles.historyDate}>{formatDate(entry.changedAt)}</Text>
+      </View>
+    </View>
+  );
 }
 
 export default function ApplicationDetailScreen() {
@@ -60,95 +73,113 @@ export default function ApplicationDetailScreen() {
         <Heading>Aplicación no encontrada</Heading>
       </Screen>
     );
+
   const actions = permittedActions(user.profile, app.credentialState);
-  const changedAt = new Intl.DateTimeFormat('es-ES', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(app.lastChangedAt));
+  const featuredAction = actions.includes('delivery') ? 'delivery' : actions[0];
+  const additionalActions = actions.filter((action) => action !== featuredAction);
+  const history = app.credentialHistory ?? [
+    {
+      state: app.credentialState,
+      changedAt: app.lastChangedAt,
+    },
+  ];
+  const openOperation = (action: string) =>
+    router.push({
+      pathname: '/applications/[applicationId]/operation',
+      params: { applicationId, action },
+    });
 
   return (
-    <Screen>
+    <Screen style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.topBar}>
+        <View style={styles.topControls}>
           <BackHeader onBack={() => router.back()} />
           <EnvironmentBadge environment={environment} />
         </View>
-        <View style={styles.titleBlock}>
-          <Heading level={1}>{app.institution}</Heading>
-          <Body>{app.name}</Body>
+        <View style={styles.titleRow}>
+          <Heading level={1}>Detalle de aplicación</Heading>
+          <View style={[styles.decorativeSquare, styles.squareMint]} />
+          <View style={[styles.decorativeSquare, styles.squareYellow]} />
+          <View style={[styles.decorativeSquare, styles.squareRed]} />
         </View>
 
         <Card style={styles.credentialCard}>
-          <View style={styles.cardHeader}>
-            <Heading level={4}>Credencial API</Heading>
+          <Heading level={3}>Credencial API</Heading>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Estado</Text>
             <CredentialStateBadge state={app.credentialState} />
           </View>
-          <RoleBadge>{app.apiRole}</RoleBadge>
-          <View style={styles.divider} />
-          <DetailRow
-            label="Client ID"
-            value={app.clientId ?? 'Aún no disponible'}
-            code={Boolean(app.clientId)}
-          />
-          <DetailRow label="Contacto técnico" value={app.technicalContact ?? 'Sin registrar'} />
-          <DetailRow label="Solicitud" value={app.requestOrTicketId ?? 'Sin registrar'} />
-          <DetailRow label="IPs declaradas" value={app.declaredIps.join(', ') || 'Sin registrar'} />
+          <View style={styles.infoBlock}>
+            <Text style={styles.label}>Contacto técnico</Text>
+            <Text style={styles.value}>{app.technicalContact ?? 'Sin registrar'}</Text>
+          </View>
+          <View style={styles.infoBlock}>
+            <Text style={styles.label}>Client ID</Text>
+            <View style={styles.clientIdBox}>
+              <Text numberOfLines={1} selectable style={styles.clientId}>
+                {app.clientId ?? 'Aún no disponible'}
+              </Text>
+              {app.clientId ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Copiar Client ID"
+                  onPress={() => Clipboard.setStringAsync(app.clientId!)}
+                  style={styles.copyButton}
+                >
+                  <Text style={styles.copyIcon}>▢</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          </View>
+          {featuredAction ? (
+            <Button
+              title={actionLabels[featuredAction]}
+              onPress={() => openOperation(featuredAction)}
+            />
+          ) : null}
         </Card>
 
-        {actions.length ? (
-          <View style={styles.actions}>
-            <SectionLabel>Acciones disponibles</SectionLabel>
-            {actions.map((action, index) => (
-              <Button
-                key={action}
-                title={actionLabels[action] ?? action}
-                variant={index === 0 ? 'primary' : 'secondary'}
-                danger={action === 'revoke'}
-                onPress={() =>
-                  router.push({
-                    pathname: '/applications/[applicationId]/operation',
-                    params: { applicationId, action },
-                  })
-                }
-              />
-            ))}
-          </View>
-        ) : null}
-
-        <Button
-          title="Editar información de gestión"
-          variant="ghost"
-          onPress={() =>
-            router.push({
-              pathname: '/applications/[applicationId]/management',
-              params: { applicationId },
-            })
-          }
-        />
-
-        {app.messagesSent !== undefined ? (
-          <Card tone="sky">
-            <SectionLabel>Uso de la aplicación</SectionLabel>
-            <Text style={styles.usageValue}>{app.messagesSent.toLocaleString('es-ES')}</Text>
-            <Body>mensajes enviados · {app.consumedServices?.join(', ')}</Body>
-          </Card>
-        ) : null}
-
         <View style={styles.history}>
-          <Heading level={3}>Historial de estados</Heading>
-          <View style={styles.timelineRow}>
-            <View style={styles.timelineRail}>
-              <View
-                style={[styles.timelineDot, { backgroundColor: stateTone(app.credentialState) }]}
-              />
-              <View style={styles.timelineLine} />
+          {history.map((entry, index) => (
+            <HistoryItem
+              key={`${entry.state}-${entry.changedAt}`}
+              entry={entry}
+              last={index === history.length - 1}
+            />
+          ))}
+        </View>
+
+        <View style={styles.additionalContent}>
+          {additionalActions.length ? (
+            <View style={styles.actions}>
+              <SectionLabel>Otras acciones</SectionLabel>
+              {additionalActions.map((action) => (
+                <Button
+                  key={action}
+                  title={actionLabels[action] ?? action}
+                  variant="secondary"
+                  danger={action === 'revoke'}
+                  onPress={() => openOperation(action)}
+                />
+              ))}
             </View>
-            <View style={styles.timelineContent}>
-              <CredentialStateBadge state={app.credentialState} />
-              <Text style={styles.historyDate}>{changedAt}</Text>
-              <Body>Último cambio registrado para esta credencial.</Body>
-            </View>
-          </View>
+          ) : null}
+          <Button
+            title="Editar información de gestión"
+            variant="ghost"
+            onPress={() =>
+              router.push({
+                pathname: '/applications/[applicationId]/management',
+                params: { applicationId },
+              })
+            }
+          />
+          <Card tone="sky">
+            <SectionLabel>Aplicación</SectionLabel>
+            <Text style={styles.applicationName}>{app.institution}</Text>
+            <Body>{app.name}</Body>
+            <RoleBadge>{app.apiRole}</RoleBadge>
+          </Card>
         </View>
       </ScrollView>
     </Screen>
@@ -156,45 +187,56 @@ export default function ApplicationDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: space.md, paddingBottom: space.xxl },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  titleBlock: { gap: space.xxs },
+  screen: { backgroundColor: colors.canvas },
+  content: { gap: space.md, paddingHorizontal: 12, paddingBottom: space.xxl },
+  topControls: { alignItems: 'flex-start', gap: space.xs },
+  titleRow: { position: 'relative', minHeight: 42, justifyContent: 'center' },
+  decorativeSquare: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
+    borderRadius: 3,
+    transform: [{ rotate: '9deg' }],
+  },
+  squareMint: { right: 54, top: -42, backgroundColor: '#ccefd8' },
+  squareYellow: { right: -4, top: -18, backgroundColor: '#ffe29a' },
+  squareRed: { right: 2, top: 28, backgroundColor: '#f45a67' },
   credentialCard: {
-    padding: space.lg,
-    shadowColor: colors.navy,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 14,
-    elevation: 3,
+    gap: 14,
+    borderColor: colors.hairline,
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: colors.ink,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.14,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  cardHeader: {
+  infoRow: { minHeight: 30, flexDirection: 'row', alignItems: 'center', gap: space.md },
+  infoBlock: { gap: 2 },
+  label: { color: colors.ink, fontSize: 16 },
+  value: { color: colors.ink, fontSize: 16, lineHeight: 22 },
+  clientIdBox: {
+    minHeight: 44,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: space.sm,
-  },
-  divider: { height: 1, backgroundColor: colors.hairline, marginVertical: space.xs },
-  detailRow: { gap: space.xxs, paddingVertical: space.xs },
-  detailLabel: { color: colors.slate, fontSize: 13, fontWeight: '700' },
-  detailValue: { color: colors.ink, fontSize: 16, lineHeight: 22 },
-  code: {
-    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.hairline,
     borderRadius: 8,
-    backgroundColor: colors.surface,
-    paddingHorizontal: space.sm,
-    paddingVertical: space.xs,
-    color: colors.primaryDeep,
-    fontFamily: 'monospace',
-    fontSize: 14,
+    paddingLeft: space.sm,
   },
+  clientId: { flex: 1, color: colors.ink, fontFamily: 'monospace', fontSize: 15 },
+  copyButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  copyIcon: { color: colors.slate, fontSize: 24 },
+  history: { marginTop: space.xs },
+  timelineRow: { minHeight: 76, flexDirection: 'row', gap: space.sm },
+  timelineRail: { width: 22, alignItems: 'center' },
+  timelineDot: { width: 14, height: 14, borderRadius: 7, marginTop: 5 },
+  timelineLine: { width: 1, flex: 1, backgroundColor: colors.hairline },
+  timelineContent: { flex: 1, gap: 2, paddingBottom: space.sm },
+  historyActor: { color: colors.ink, fontSize: 14 },
+  historyDate: { color: colors.ink, fontSize: 14 },
+  additionalContent: { gap: space.md, marginTop: space.md },
   actions: { gap: space.sm },
-  usageValue: { color: colors.navy, fontSize: 30, fontWeight: '800' },
-  history: { gap: space.md, paddingTop: space.xs },
-  timelineRow: { flexDirection: 'row', gap: space.sm },
-  timelineRail: { width: 18, alignItems: 'center' },
-  timelineDot: { width: 14, height: 14, borderRadius: 7, marginTop: 6 },
-  timelineLine: { width: 2, flex: 1, minHeight: 66, backgroundColor: colors.hairline },
-  timelineContent: { flex: 1, gap: space.xxs, paddingBottom: space.md },
-  historyDate: { color: colors.slate, fontSize: 13 },
+  applicationName: { color: colors.navy, fontSize: 17, fontWeight: '800' },
 });

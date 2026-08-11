@@ -94,6 +94,14 @@ export const fakeRepository = {
       application.credentialState = credentialState;
       application.clientId ??= `cli_${environment}_${id()}`;
       application.lastChangedAt = now();
+      application.credentialHistory = [
+        {
+          state: credentialState,
+          changedAt: application.lastChangedAt,
+          actorDisplayName: actor.displayName,
+        },
+        ...(application.credentialHistory ?? []),
+      ];
     }
     return receipt(
       actor,

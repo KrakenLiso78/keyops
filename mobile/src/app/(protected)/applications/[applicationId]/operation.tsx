@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import { actionNeedsReason } from '@/domain/policies/credentialTransitions';
 import type { Delivery, Receipt } from '@/domain/model/types';
@@ -48,7 +48,7 @@ function Countdown({ delivery }: { delivery: Delivery }) {
   const remainder = String(seconds % 60).padStart(2, '0');
   return (
     <Text style={styles.countdown}>
-      Caduca en {minutes}:{remainder}
+      Válido {minutes}:{remainder}
     </Text>
   );
 }
@@ -96,41 +96,46 @@ export default function OperationScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.topBar}>
+        <View style={styles.topControls}>
           <BackHeader onBack={() => (result ? returnToDetail() : router.back())} />
           <EnvironmentBadge environment={environment} />
         </View>
 
         {result?.delivery ? (
           <>
-            <View style={styles.titleBlock}>
-              <Heading level={1}>Entrega al cliente</Heading>
-              <Body>Comparte el enlace y el OTP por canales separados.</Body>
-            </View>
+            <Heading level={1}>Entrega al cliente</Heading>
             <Card tone="sky" style={styles.deliveryCard}>
-              <SectionLabel>Enlace seguro de entrega</SectionLabel>
-              <Text style={styles.institution}>{application.institution}</Text>
-              <Body>{application.name}</Body>
-              <View style={styles.linkBox}>
-                <Text numberOfLines={2} selectable style={styles.linkText}>
+              <Text style={styles.institution}>
+                {application.institution} /{`\n`}
+                {application.name}
+              </Text>
+              <Text style={styles.deliveryText}>
+                Contacto: {application.technicalContact ?? 'Sin registrar'}
+              </Text>
+              <Text style={styles.deliveryText}>Enlace seguro</Text>
+              <View style={styles.linkRow}>
+                <Text numberOfLines={1} selectable style={styles.linkText}>
                   {result.delivery.deliveryUrl}
                 </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Copiar enlace"
+                  onPress={() => Clipboard.setStringAsync(result.delivery!.deliveryUrl)}
+                  style={styles.copyLinkButton}
+                >
+                  <Text style={styles.copyLinkIcon}>▢</Text>
+                </Pressable>
               </View>
-              <Button
-                title="Compartir enlace"
-                onPress={() => Share.share({ message: result.delivery!.deliveryUrl })}
-              />
-              <Button
-                title="Copiar enlace"
-                variant="secondary"
-                onPress={() => Clipboard.setStringAsync(result.delivery!.deliveryUrl)}
-              />
             </Card>
+            <Button
+              title="Compartir enlace"
+              onPress={() => Share.share({ message: result.delivery!.deliveryUrl })}
+            />
 
             <Card tone="lavender" style={styles.otpCard}>
-              <SectionLabel>OTP de un solo uso</SectionLabel>
+              <Text style={styles.otpLabel}>OTP de un solo uso</Text>
               <Text selectable style={styles.otp}>
-                {result.delivery.otp}
+                {result.delivery.otp.slice(0, 3)} {result.delivery.otp.slice(3)}
               </Text>
               <Countdown delivery={result.delivery} />
               <Button
@@ -142,16 +147,15 @@ export default function OperationScreen() {
 
             <View accessibilityRole="alert" style={styles.warning}>
               <Text style={styles.warningIcon}>!</Text>
-              <Text style={styles.warningText}>
-                No envíes el enlace y el OTP en el mismo mensaje. El OTP solo puede utilizarse una
-                vez.
-              </Text>
+              <Text style={styles.warningText}>Envía el OTP por separado.</Text>
             </View>
-            <Card tone="mint">
-              <Text style={styles.confirmed}>Operación completada y auditada</Text>
-              <Body>Solicitud {result.requestId}</Body>
-            </Card>
-            <Button title="Volver al detalle" variant="ghost" onPress={returnToDetail} />
+            <View style={styles.resultFooter}>
+              <Card tone="mint">
+                <Text style={styles.confirmed}>Operación completada y auditada</Text>
+                <Body>Solicitud {result.requestId}</Body>
+              </Card>
+              <Button title="Volver al detalle" variant="ghost" onPress={returnToDetail} />
+            </View>
           </>
         ) : result ? (
           <>
@@ -206,35 +210,32 @@ export default function OperationScreen() {
 
 const styles = StyleSheet.create({
   content: { gap: space.md, paddingBottom: space.xxl },
-  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  topControls: { alignItems: 'flex-start', gap: space.xs },
   titleBlock: { gap: space.xxs },
-  deliveryCard: { padding: space.lg, gap: space.sm },
-  otpCard: { padding: space.lg, alignItems: 'center', gap: space.sm },
+  deliveryCard: { padding: space.lg, gap: 12 },
+  otpCard: { padding: space.lg, alignItems: 'flex-start', gap: 6 },
   institution: { color: colors.navy, fontSize: 18, fontWeight: '800' },
-  linkBox: {
-    borderRadius: 10,
-    backgroundColor: colors.canvas,
-    borderWidth: 1,
-    borderColor: '#cce7f2',
-    padding: space.sm,
-  },
-  linkText: { color: colors.primaryDeep, fontFamily: 'monospace', fontSize: 13, lineHeight: 18 },
+  deliveryText: { color: colors.ink, fontSize: 15, lineHeight: 21 },
+  linkRow: { minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  linkText: { flex: 1, color: colors.ink, fontFamily: 'monospace', fontSize: 13 },
+  copyLinkButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  copyLinkIcon: { color: colors.slate, fontSize: 24 },
+  otpLabel: { color: colors.ink, fontSize: 16 },
   otp: {
-    color: colors.navy,
+    color: colors.primaryDeep,
     fontFamily: 'monospace',
     fontSize: 32,
     fontWeight: '800',
     letterSpacing: 6,
   },
-  countdown: { color: colors.primaryDeep, fontSize: 14, fontWeight: '700' },
+  countdown: { color: colors.ink, fontSize: 14 },
   warning: {
     minHeight: 48,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
-    borderRadius: 12,
-    backgroundColor: colors.rose,
-    padding: space.sm,
+    paddingHorizontal: space.xxs,
+    paddingVertical: space.xs,
   },
   warningIcon: {
     width: 24,
@@ -246,7 +247,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '800',
   },
-  warningText: { flex: 1, color: colors.error, fontSize: 13, lineHeight: 18, fontWeight: '600' },
+  warningText: { flex: 1, color: colors.error, fontSize: 14, lineHeight: 20, fontWeight: '600' },
+  resultFooter: { gap: space.sm, marginTop: 120 },
   confirmed: { color: colors.success, fontSize: 17, fontWeight: '800' },
   error: { color: colors.error, fontWeight: '600' },
 });
