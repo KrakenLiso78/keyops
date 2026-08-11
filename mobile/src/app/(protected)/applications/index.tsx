@@ -27,12 +27,22 @@ export default function ApplicationsScreen() {
       {menuOpen ? (
         <View style={styles.menu}>
           {user?.profile !== 'analyst' ? (
-            <Pressable onPress={() => router.push('/audit')} style={styles.menuItem}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Abrir auditoría"
+              onPress={() => router.push('/audit')}
+              style={styles.menuItem}
+            >
               <Text style={styles.menuText}>Auditoría</Text>
             </Pressable>
           ) : null}
           {user?.profile === 'administrator' ? (
-            <Pressable onPress={() => router.push('/users')} style={styles.menuItem}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Gestionar usuarios autorizados"
+              onPress={() => router.push('/users')}
+              style={styles.menuItem}
+            >
               <Text style={styles.menuText}>Usuarios autorizados</Text>
             </Pressable>
           ) : null}
