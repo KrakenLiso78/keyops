@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { CredentialState, Environment } from '@/domain/model/types';
 import { colors, space } from '@/presentation/design-system';
 
@@ -27,10 +27,12 @@ export function AppHeader({ onMenu, onSignOut }: { onMenu?: () => void; onSignOu
       >
         <Text style={styles.menuIcon}>☰</Text>
       </Pressable>
-      <View style={styles.brandMark} />
-      <Text style={styles.brand}>
-        Key<Text style={styles.brandAccent}>Ops</Text>
-      </Text>
+      <Image
+        source={require('../../../assets/images/keyops-compact-v4.png')}
+        accessibilityLabel="KeyOps"
+        resizeMode="contain"
+        style={styles.brand}
+      />
       <View style={styles.headerSpacer} />
       {onSignOut ? (
         <Pressable
@@ -69,7 +71,6 @@ export function EnvironmentBadge({ environment }: { environment: Environment }) 
       accessibilityLabel={`Ambiente: ${production ? 'Producción' : 'Pruebas'}`}
       style={[styles.environmentBadge, production ? styles.production : styles.test]}
     >
-      <View style={[styles.environmentDot, production ? styles.productionDot : styles.testDot]} />
       <Text style={[styles.environmentText, production && styles.productionText]}>
         {production ? 'PRODUCCIÓN' : 'PRUEBAS'}
       </Text>
@@ -84,7 +85,6 @@ export function CredentialStateBadge({ state }: { state: CredentialState }) {
       accessibilityLabel={`Estado: ${content.label}`}
       style={[styles.badge, { backgroundColor: content.background }]}
     >
-      <View style={[styles.badgeDot, { backgroundColor: content.color }]} />
       <Text style={[styles.badgeText, { color: content.color }]}>{content.label}</Text>
     </View>
   );
@@ -104,7 +104,7 @@ export function SectionLabel({ children }: PropsWithChildren) {
 
 const styles = StyleSheet.create({
   header: {
-    minHeight: 56,
+    minHeight: 88,
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: -space.md,
@@ -121,17 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   menuIcon: { color: colors.navy, fontSize: 24, fontWeight: '700' },
-  brandMark: {
-    width: 22,
-    height: 22,
-    borderRadius: 7,
-    borderWidth: 4,
-    borderColor: colors.cyan,
-    transform: [{ rotate: '45deg' }],
-    marginRight: space.xs,
-  },
-  brand: { color: colors.navy, fontSize: 20, fontWeight: '800' },
-  brandAccent: { color: colors.cyan },
+  brand: { position: 'absolute', left: '50%', width: 166, height: 64, marginLeft: -83 },
   headerSpacer: { flex: 1 },
   signOut: { minHeight: 48, justifyContent: 'center', paddingHorizontal: space.sm },
   signOutText: { color: colors.primary, fontWeight: '700' },
@@ -159,10 +149,11 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   test: { backgroundColor: colors.lavender },
-  production: { backgroundColor: colors.rose },
-  environmentDot: { width: 7, height: 7, borderRadius: 4 },
-  testDot: { backgroundColor: colors.test },
-  productionDot: { backgroundColor: colors.production },
+  production: {
+    backgroundColor: colors.canvas,
+    borderWidth: 1,
+    borderColor: colors.production,
+  },
   environmentText: { color: colors.primaryDeep, fontSize: 12, fontWeight: '800' },
   productionText: { color: colors.production },
   badge: {
@@ -174,10 +165,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 10,
   },
-  badgeDot: { width: 7, height: 7, borderRadius: 4 },
   badgeText: { fontSize: 13, fontWeight: '700' },
-  roleBadge: { backgroundColor: colors.lavender },
-  roleText: { color: colors.primaryDeep },
+  roleBadge: { backgroundColor: colors.primary },
+  roleText: { color: colors.canvas },
   sectionLabel: {
     color: colors.slate,
     fontSize: 13,

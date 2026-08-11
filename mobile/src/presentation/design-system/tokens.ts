@@ -9,6 +9,7 @@ export const tokens = {
     surface: '#f6f5f4',
     ink: '#1a1a1a',
     slate: '#5d5b54',
+    steel: '#787671',
     hairline: '#e5e3df',
     success: '#168a2f',
     warning: '#b54708',

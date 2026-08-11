@@ -27,6 +27,20 @@ assets:
     format: "PNG"
     dimensions: "1697x927"
     intendedUse: "Referencia visual final para implementación"
+  login-hero-v4:
+    path: "../mobile/assets/images/login-hero-v4.png"
+    repositoryPath: "mobile/assets/images/login-hero-v4.png"
+    format: "PNG"
+    dimensions: "364x287"
+    source: "Hero de acceso de la pantalla V4 aprobada"
+    intendedUse: "Cabecera de la pantalla de acceso"
+  logo-compact-v4:
+    path: "../mobile/assets/images/keyops-compact-v4.png"
+    repositoryPath: "mobile/assets/images/keyops-compact-v4.png"
+    format: "PNG"
+    dimensions: "166x64"
+    source: "Cabecera de la pantalla V4 aprobada"
+    intendedUse: "Marca compacta de la barra superior"
 
 colors:
   primary: "#5645d4"
@@ -459,16 +473,16 @@ La marca se escribe siempre **KeyOps**, con `K` y `O` mayúsculas.
 
 El logotipo oficial es [logo.png](./logo.png).
 
-| Propiedad | Valor |
-|---|---|
-| Token | `{assets.logo-primary}` |
-| Ruta relativa al documento | `./logo.png` |
-| Ruta desde la raíz | `design/logo.png` |
-| Formato | PNG RGBA |
-| Dimensiones | 2816 × 1536 px |
-| Composición | Símbolo y logotipo KeyOps |
-| Fondo visible | Blanco texturizado |
-| Texto alternativo | `KeyOps` |
+| Propiedad                  | Valor                     |
+| -------------------------- | ------------------------- |
+| Token                      | `{assets.logo-primary}`   |
+| Ruta relativa al documento | `./logo.png`              |
+| Ruta desde la raíz         | `design/logo.png`         |
+| Formato                    | PNG RGBA                  |
+| Dimensiones                | 2816 × 1536 px            |
+| Composición                | Símbolo y logotipo KeyOps |
+| Fondo visible              | Blanco texturizado        |
+| Texto alternativo          | `KeyOps`                  |
 
 La imagen combina un engranaje, una `K`, una llave y una flecha ascendente. El
 nombre usa navy para `Key` y cyan para `Ops`.
@@ -483,11 +497,11 @@ nombre usa navy para `Key` y cyan para `Ops`.
 - Usar siempre el texto alternativo `KeyOps`.
 - En documentación y presentaciones puede utilizarse a mayor tamaño.
 
-El PNG actual incluye mucho margen y un fondo blanco texturizado. Debe tratarse
+El PNG original incluye mucho margen y un fondo blanco texturizado. Debe tratarse
 como el original de referencia, no como un icono listo para la barra superior.
-Hasta disponer de una variante compacta y transparente, la app bar debe mostrar
-el nombre `KeyOps` como texto junto al espacio reservado para el futuro símbolo,
-sin recortar manualmente este archivo.
+La app bar usa la variante aprobada `{assets.logo-compact-v4}`, extraída una sola
+vez de la pantalla V4 y almacenada como activo propio; no se recorta el original
+en tiempo de ejecución.
 
 ### Usos no permitidos
 
@@ -539,17 +553,17 @@ El nombre de un componente tampoco se muestra. Un badge puede usar
 
 Toda la aplicación usa Inter con fallback a las fuentes del sistema.
 
-| Token | Tamaño | Uso |
-|---|---:|---|
-| `{typography.heading-1}` | 32 px | Título principal de una pantalla |
-| `{typography.heading-2}` | 26 px | Acceso y resultados importantes |
-| `{typography.heading-3}` | 22 px | Títulos de sección |
-| `{typography.heading-4}` | 18 px | Títulos de tarjeta |
-| `{typography.subtitle}` | 16 px | Introducciones breves |
-| `{typography.body-md}` | 16 px | Contenido y formularios |
-| `{typography.body-sm}` | 14 px | Metadatos y ayuda |
-| `{typography.caption}` | 13 px | Badges y etiquetas |
-| `{typography.code}` | 14 px | Client ID, enlace y OTP |
+| Token                    | Tamaño | Uso                              |
+| ------------------------ | -----: | -------------------------------- |
+| `{typography.heading-1}` |  32 px | Título principal de una pantalla |
+| `{typography.heading-2}` |  26 px | Acceso y resultados importantes  |
+| `{typography.heading-3}` |  22 px | Títulos de sección               |
+| `{typography.heading-4}` |  18 px | Títulos de tarjeta               |
+| `{typography.subtitle}`  |  16 px | Introducciones breves            |
+| `{typography.body-md}`   |  16 px | Contenido y formularios          |
+| `{typography.body-sm}`   |  14 px | Metadatos y ayuda                |
+| `{typography.caption}`   |  13 px | Badges y etiquetas               |
+| `{typography.code}`      |  14 px | Client ID, enlace y OTP          |
 
 No reducir el texto operativo por debajo de 14 px. El OTP puede aumentar hasta
 32 px para facilitar su lectura.
@@ -558,13 +572,13 @@ No reducir el texto operativo por debajo de 14 px. El OTP puede aumentar hasta
 
 El morado identifica la acción principal. No representa estados.
 
-| Estado | Tratamiento |
-|---|---|
-| Activa | Verde y texto `Activa` |
-| Suspendida | Ámbar y texto `Suspendida` |
-| Sin credenciales | Gris y texto `Sin credenciales` |
-| Inactiva por rotación | Lavanda y texto completo |
-| Revocada | Rojo suave y texto `Revocada` |
+| Estado                | Tratamiento                     |
+| --------------------- | ------------------------------- |
+| Activa                | Verde y texto `Activa`          |
+| Suspendida            | Ámbar y texto `Suspendida`      |
+| Sin credenciales      | Gris y texto `Sin credenciales` |
+| Inactiva por rotación | Lavanda y texto completo        |
+| Revocada              | Rojo suave y texto `Revocada`   |
 
 El color nunca es el único indicador. Cada estado incluye una etiqueta textual y,
 cuando ayude, un icono.

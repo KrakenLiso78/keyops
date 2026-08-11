@@ -56,10 +56,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 4,
     borderColor: 'transparent',
   },
-  selectedTab: { borderColor: colors.test },
+  selectedTab: { borderColor: colors.ink },
   productionTab: { borderColor: colors.production },
   text: { fontSize: 13, fontWeight: '700', color: colors.slate, letterSpacing: 0.5 },
-  selectedText: { color: colors.primary },
+  selectedText: { color: colors.ink },
   productionText: { color: colors.production },
   alert: {
     backgroundColor: colors.rose,
