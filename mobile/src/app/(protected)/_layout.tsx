@@ -5,7 +5,7 @@ import { useApp } from '@/presentation/state/AppProvider';
 export default function ProtectedLayout() {
   const { user, signOut } = useApp();
   if (!user) {
-    router.replace('/(auth)/sign-in');
+    router.replace('/sign-in');
     return null;
   }
   return (
@@ -17,7 +17,7 @@ export default function ProtectedLayout() {
           <Pressable
             onPress={() => {
               signOut();
-              router.replace('/(auth)/sign-in');
+              router.replace('/sign-in');
             }}
           >
             <Text>Salir</Text>

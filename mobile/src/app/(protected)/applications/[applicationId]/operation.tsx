@@ -72,7 +72,7 @@ export default function OperationScreen() {
               title="Volver al detalle"
               onPress={() =>
                 router.replace({
-                  pathname: '/(protected)/applications/[applicationId]',
+                  pathname: '/applications/[applicationId]',
                   params: { applicationId },
                 })
               }

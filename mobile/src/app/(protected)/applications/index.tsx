@@ -24,12 +24,12 @@ export default function ApplicationsScreen() {
         placeholder="Buscar"
       />
       {user?.profile !== 'analyst' ? (
-        <Pressable onPress={() => router.push('/(protected)/audit')}>
+        <Pressable onPress={() => router.push('/audit')}>
           <Text style={styles.link}>Ver auditoría</Text>
         </Pressable>
       ) : null}
       {user?.profile === 'administrator' ? (
-        <Pressable onPress={() => router.push('/(protected)/users')}>
+        <Pressable onPress={() => router.push('/users')}>
           <Text style={styles.link}>Gestionar usuarios</Text>
         </Pressable>
       ) : null}
@@ -41,7 +41,7 @@ export default function ApplicationsScreen() {
             accessibilityLabel={`Abrir ${app.name}`}
             onPress={() =>
               router.push({
-                pathname: '/(protected)/applications/[applicationId]',
+                pathname: '/applications/[applicationId]',
                 params: { applicationId: app.id },
               })
             }

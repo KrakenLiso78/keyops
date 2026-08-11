@@ -11,7 +11,7 @@ export default function SignInScreen() {
   const submit = () => {
     try {
       signIn(login);
-      router.replace('/(protected)/applications');
+      router.replace('/applications');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo iniciar sesión.');
     }

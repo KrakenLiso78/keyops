@@ -50,7 +50,7 @@ export default function ApplicationDetailScreen() {
           title="Editar información de gestión"
           onPress={() =>
             router.push({
-              pathname: '/(protected)/applications/[applicationId]/management',
+              pathname: '/applications/[applicationId]/management',
               params: { applicationId },
             })
           }
@@ -68,7 +68,7 @@ export default function ApplicationDetailScreen() {
             danger={action === 'revoke'}
             onPress={() =>
               router.push({
-                pathname: '/(protected)/applications/[applicationId]/operation',
+                pathname: '/applications/[applicationId]/operation',
                 params: { applicationId, action },
               })
             }
