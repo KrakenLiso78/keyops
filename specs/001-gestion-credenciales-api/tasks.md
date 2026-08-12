@@ -626,5 +626,5 @@ todo el alcance P1 de la especificación.
 
 ## Phase 18: Convergence
 
-- [ ] T159 Corregir la cabecera responsive del detalle para reservar una franja propia a la decoración y añadir una regresión proporcional en `mobile/tests/component/applications/applicationDetailScreen.test.tsx` y `mobile/src/app/(protected)/applications/[applicationId]/index.tsx` per FR-005/T154 (partial); verificar con `npm test -- applicationDetailScreen.test.tsx --runInBand`
+- [X] T159 Corregir la cabecera responsive del detalle para reservar una franja propia a la decoración y añadir una regresión proporcional en `mobile/tests/component/applications/applicationDetailScreen.test.tsx` y `mobile/src/app/(protected)/applications/[applicationId]/index.tsx` per FR-005/T154 (partial); verificar con `npm test -- applicationDetailScreen.test.tsx --runInBand`
 - [ ] T160 Ampliar el seed fake determinista a 24 aplicaciones equilibradas entre ambientes y con los cinco estados, reforzar `mobile/tests/unit/data/fakeSeed.test.ts` y documentar ubicación y ciclo de vida en `specs/001-gestion-credenciales-api/quickstart.md` per plan: fake sintético/T021/T036 (partial); verificar con `npm test -- fakeSeed.test.ts --runInBand` y `npm run typecheck`

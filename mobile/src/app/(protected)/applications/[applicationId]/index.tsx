@@ -5,6 +5,7 @@ import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import type { CredentialHistoryEntry, CredentialState } from '@/domain/model/types';
 import { permittedActions } from '@/domain/policies/permittedActions';
 import { Body, Button, Card, Heading, Screen } from '@/presentation/components/base';
+import { ApplicationDetailTitle } from '@/presentation/components/applications/ApplicationDetailTitle';
 import {
   BackHeader,
   CredentialStateBadge,
@@ -96,12 +97,7 @@ export default function ApplicationDetailScreen() {
           <BackHeader onBack={() => router.back()} />
           <EnvironmentBadge environment={environment} />
         </View>
-        <View style={styles.titleRow}>
-          <Heading level={1}>Detalle de aplicación</Heading>
-          <View style={[styles.decorativeSquare, styles.squareMint]} />
-          <View style={[styles.decorativeSquare, styles.squareYellow]} />
-          <View style={[styles.decorativeSquare, styles.squareRed]} />
-        </View>
+        <ApplicationDetailTitle />
 
         <Card style={styles.credentialCard}>
           <Heading level={3}>Credencial API</Heading>
@@ -190,17 +186,6 @@ const styles = StyleSheet.create({
   screen: { backgroundColor: colors.canvas },
   content: { gap: space.md, paddingHorizontal: 12, paddingBottom: space.xxl },
   topControls: { alignItems: 'flex-start', gap: space.xs },
-  titleRow: { position: 'relative', minHeight: 42, justifyContent: 'center' },
-  decorativeSquare: {
-    position: 'absolute',
-    width: 24,
-    height: 24,
-    borderRadius: 3,
-    transform: [{ rotate: '9deg' }],
-  },
-  squareMint: { right: 54, top: -42, backgroundColor: '#ccefd8' },
-  squareYellow: { right: -4, top: -18, backgroundColor: '#ffe29a' },
-  squareRed: { right: 2, top: 28, backgroundColor: '#f45a67' },
   credentialCard: {
     gap: 14,
     borderColor: colors.hairline,
