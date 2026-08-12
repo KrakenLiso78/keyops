@@ -117,6 +117,7 @@ export default function OperationScreen() {
               <CopyableValue
                 value={result.delivery.deliveryUrl}
                 copyLabel="Copiar enlace"
+                iconBackgroundColor={colors.sky}
                 outlined={false}
                 style={styles.linkRow}
                 textStyle={styles.linkText}

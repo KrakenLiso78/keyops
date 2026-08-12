@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ColorValue,
   type StyleProp,
   type TextStyle,
   type ViewStyle,
@@ -14,16 +15,20 @@ type CopyableValueProps = {
   value?: string;
   placeholder?: string;
   copyLabel: string;
+  iconBackgroundColor?: ColorValue;
   outlined?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 };
 
-function CopyIcon() {
+function CopyIcon({ backgroundColor }: { backgroundColor: ColorValue }) {
   return (
     <View style={styles.iconCanvas}>
       <View testID="copy-icon-back" style={[styles.iconRectangle, styles.iconBack]} />
-      <View testID="copy-icon-front" style={[styles.iconRectangle, styles.iconFront]} />
+      <View
+        testID="copy-icon-front"
+        style={[styles.iconRectangle, styles.iconFront, { backgroundColor }]}
+      />
     </View>
   );
 }
@@ -32,6 +37,7 @@ export function CopyableValue({
   value,
   placeholder = '',
   copyLabel,
+  iconBackgroundColor = colors.canvas,
   outlined = true,
   style,
   textStyle,
@@ -49,7 +55,7 @@ export function CopyableValue({
           onPress={() => Clipboard.setStringAsync(value)}
           style={({ pressed }) => [styles.copyButton, pressed && styles.pressed]}
         >
-          <CopyIcon />
+          <CopyIcon backgroundColor={iconBackgroundColor} />
         </Pressable>
       ) : null}
     </View>
@@ -90,6 +96,6 @@ const styles = StyleSheet.create({
     borderColor: colors.slate,
     borderRadius: 2,
   },
-  iconBack: { left: 3, top: 2 },
-  iconFront: { left: 7, top: 6 },
+  iconBack: { left: 3, top: 6 },
+  iconFront: { left: 8, top: 2, zIndex: 1 },
 });
