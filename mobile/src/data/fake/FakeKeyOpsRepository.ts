@@ -16,6 +16,47 @@ let events: AuditEvent[] = [];
 const now = () => new Date().toISOString();
 const id = () => Math.random().toString(36).slice(2, 10);
 
+const credentialStateLabels: Record<CredentialState, string> = {
+  no_credentials: 'Sin credenciales',
+  active: 'Activa',
+  suspended: 'Suspendida',
+  rotated_inactive: 'Inactiva por rotación',
+  revoked: 'Revocada',
+};
+
+function normalizeSearchValue(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('es')
+    .trim();
+}
+
+function applicationMatches(app: Application, query: string) {
+  const normalizedQuery = normalizeSearchValue(query);
+  if (!normalizedQuery) return true;
+
+  const authorizedValues = [
+    app.id,
+    app.name,
+    app.institution,
+    app.apiRole,
+    app.technicalContact,
+    app.requestOrTicketId,
+    app.clientId,
+    app.credentialState,
+    credentialStateLabels[app.credentialState],
+    ...app.declaredIps,
+    ...(app.usedIps ?? []),
+    ...(app.consumedServices ?? []),
+    ...(app.credentialHistory?.map((entry) => entry.actorDisplayName) ?? []),
+  ];
+
+  return authorizedValues.some(
+    (value) => value !== undefined && normalizeSearchValue(value).includes(normalizedQuery),
+  );
+}
+
 function receipt(
   actor: User,
   operation: AuditEvent['operation'],
@@ -63,11 +104,7 @@ export const fakeRepository = {
   },
   listApplications(environment: Environment, query = ''): Application[] {
     return applications.filter(
-      (app) =>
-        app.environment === environment &&
-        `${app.name} ${app.institution} ${app.requestOrTicketId}`
-          .toLowerCase()
-          .includes(query.toLowerCase()),
+      (app) => app.environment === environment && applicationMatches(app, query),
     );
   },
   getApplication(id: string, environment: Environment): Application | undefined {
