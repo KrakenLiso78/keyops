@@ -1,14 +1,14 @@
 # Validación de layout web
 
-**Fecha**: 2026-08-10  
-**Entorno**: exportación Expo Web local.
+**Fecha**: 2026-08-12
+**Entorno**: servidor Expo Web local con viewport móvil.
 
-La comprobación automatizada de esta máquina cubre el bundle web, etiquetas
-accesibles y controles con altura mínima de 48 px. No hay un navegador
-automatizado ni un dispositivo remoto disponible para certificar capturas
-visuales a 360, 390 y 430 px.
+Una captura real de Safari en iPhone reveló que los cuadrados decorativos del
+detalle invadían el título. La cabecera se corrigió reservando una franja de
+44 px, independiente del texto y con desbordamiento oculto.
 
-Los anchos de 360, 390 y 430 px se cubren por el layout fluido de React Native
-Web (contenedores flexibles, campos y botones de anchura disponible) y por las
-regresiones de accesibilidad. La inspección visual humana sigue fuera del
-alcance de esta máquina.
+La comprobación posterior en navegador cubrió 360, 390 y 430 px. En los tres
+anchos, la franja decorativa terminó en `y=159` y el título comenzó en `y=167`,
+sin intersección. A 360 px el título ocupa dos líneas; a 390 y 430 px permanece
+en una. También se verificó que el inventario de Pruebas renderiza las 12
+aplicaciones del seed ampliado.

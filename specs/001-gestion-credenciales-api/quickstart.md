@@ -45,6 +45,13 @@ bundle estático en `dist/`.
 EXPO_PUBLIC_DATA_SOURCE=fake npm run start -- --web
 ```
 
+El inventario inicial se define en `mobile/src/data/fake/seed.ts`: contiene 24
+aplicaciones deterministas, 12 por ambiente, y cubre los cinco estados de
+credencial. `FakeKeyOpsRepository.ts` carga una copia en la memoria JavaScript
+de cada cliente. Las operaciones modifican solo esa copia: no existe base de
+datos, almacenamiento local ni escritura de archivos. Una recarga completa
+restaura el seed y dos navegadores no comparten sus cambios.
+
 En el navegador, comprobar:
 
 1. Acceso con `analista`, `senior`, `admin` y `auditor`; cada perfil ve solo sus
