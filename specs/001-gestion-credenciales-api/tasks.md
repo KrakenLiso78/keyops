@@ -636,3 +636,8 @@ todo el alcance P1 de la especificación.
 ## Phase 20: Convergence
 
 - [x] T162 Corregir el icono de copia compartido para reproducir el diseño aprobado con rectángulo delantero opaco desplazado arriba a la derecha, rectángulo trasero parcialmente oculto y relleno adaptado al fondo en `mobile/src/presentation/components/CopyableValue.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx` y `mobile/tests/component/presentation/copyableValue.test.tsx` per T161 y `design/DESIGN.md` (partial); verificar con `npm test -- copyableValue.test.tsx --runInBand`, `npm run typecheck` y comparación a 390 × 844
+
+## Phase 21: Convergence
+
+- [ ] T163 Implementar una proyección de búsqueda segura e insensible a mayúsculas y acentos sobre todos los campos operativos autorizados y los actores del historial, manteniendo el ambiente como frontera y excluyendo datos sensibles, en `mobile/src/data/fake/FakeKeyOpsRepository.ts` y `mobile/tests/unit/domain/fakeRepository.test.ts` per FR-004/US-02/AC1 y `plan: búsqueda global segura` (missing); verificar con `npm test -- fakeRepository.test.ts --runInBand` y `npm run typecheck`
+- [ ] T164 Añadir una línea de búsqueda accesible al inventario con filtrado inmediato, contador de resultados y estado vacío que conserve la consulta en `mobile/src/app/(protected)/applications/index.tsx` y `mobile/tests/component/applications/applicationListScreen.test.tsx` per FR-004/US-02/AC1-AC2/SC-008 (missing); verificar con `npm test -- applicationListScreen.test.tsx --runInBand`, `npm run typecheck` y comparación a 390 × 844

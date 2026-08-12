@@ -57,10 +57,14 @@ En el navegador, comprobar:
 1. Acceso con `analista`, `senior`, `admin` y `auditor`; cada perfil ve solo sus
    acciones.
 2. Cambio entre Pruebas y Producción sin mezclar aplicaciones.
-3. Emisión para una aplicación sin credenciales y entrega con enlace y OTP
+3. Búsqueda desde el inventario por aplicación, institución, actor del
+   historial, contacto, ticket, Client ID, rol, estado e IP; repetir una
+   consulta con cambios de mayúsculas y acentos y comprobar el estado sin
+   resultados.
+4. Emisión para una aplicación sin credenciales y entrega con enlace y OTP
    separados.
-4. Suspensión/reactivación con motivo y revocación solo para senior/admin.
-5. Consulta de auditoría por senior/admin/auditor y gestión de usuarios por admin.
+5. Suspensión/reactivación con motivo y revocación solo para senior/admin.
+6. Consulta de auditoría por senior/admin/auditor y gestión de usuarios por admin.
 
 ## Limitaciones conocidas
 

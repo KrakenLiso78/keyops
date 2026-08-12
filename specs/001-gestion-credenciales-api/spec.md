@@ -16,14 +16,14 @@ El resultado de negocio buscado es reducir el tiempo de ciclo de emisión o reno
 
 ### 1.1 Usuarios y responsabilidades
 
-| Usuario o parte interesada | Necesidad y responsabilidad |
-|---|---|
-| Propietario de la plataforma | Patrocina la solución, asume el coste y valida que reduzca carga operativa y riesgo. |
-| Analista autorizado | Opera el flujo habitual: consulta, emisión, descarga, regeneración y acciones permitidas sobre credenciales. Actualmente no emite credenciales. |
-| Analista senior | Puede realizar todas las acciones del analista y revocar credenciales. |
-| Administrador de KeyOps | Pertenece al equipo técnico del propietario. Gestiona usuarios y permisos, resuelve excepciones y mantiene la supervisión; actualmente realiza la emisión manual. |
-| Auditor | Consulta la trazabilidad de las operaciones. |
-| Responsable de integración de la institución | Recibe y utiliza credenciales válidas para integrar su aplicación. No se contempla como usuario directo de KeyOps en este MVP. |
+| Usuario o parte interesada                   | Necesidad y responsabilidad                                                                                                                                       |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Propietario de la plataforma                 | Patrocina la solución, asume el coste y valida que reduzca carga operativa y riesgo.                                                                              |
+| Analista autorizado                          | Opera el flujo habitual: consulta, emisión, descarga, regeneración y acciones permitidas sobre credenciales. Actualmente no emite credenciales.                   |
+| Analista senior                              | Puede realizar todas las acciones del analista y revocar credenciales.                                                                                            |
+| Administrador de KeyOps                      | Pertenece al equipo técnico del propietario. Gestiona usuarios y permisos, resuelve excepciones y mantiene la supervisión; actualmente realiza la emisión manual. |
+| Auditor                                      | Consulta la trazabilidad de las operaciones.                                                                                                                      |
+| Responsable de integración de la institución | Recibe y utiliza credenciales válidas para integrar su aplicación. No se contempla como usuario directo de KeyOps en este MVP.                                    |
 
 ### 1.2 Alcance del MVP
 
@@ -62,7 +62,7 @@ El MVP consulta las instituciones, aplicaciones y roles de un catálogo existent
 - **FR-001**: KeyOps DEBE permitir el acceso únicamente a usuarios internos autorizados y mostrarles solo las acciones permitidas por su perfil.
 - **FR-002**: KeyOps DEBE rechazar los accesos de usuarios inexistentes, deshabilitados o no autorizados e informar del rechazo sin revelar información sensible.
 - **FR-003**: El sistema DEBE ofrecer un inventario paginado de aplicaciones y sus credenciales, con institución, aplicación, ambiente, estado y fecha del último cambio.
-- **FR-004**: El inventario DEBE permitir buscar por institución, aplicación e identificador de solicitud, filtrar por estado y ordenar los resultados.
+- **FR-004**: El inventario DEBE ofrecer una búsqueda única, limitada al ambiente activo y a los datos autorizados, que encuentre coincidencias por institución, aplicación, identificador de aplicación, usuario registrado en el historial de la credencial, contacto técnico, solicitud o ticket, Client ID, rol de API, estado e IP declarada. La búsqueda DEBE ignorar diferencias entre mayúsculas, minúsculas y acentos, permitir filtrar por estado y ordenar los resultados, y NO DEBE incluir Client Secrets, OTP, contraseñas ni enlaces de entrega.
 - **FR-005**: El sistema DEBE mostrar el detalle de una aplicación con su institución, ambiente, rol, contacto técnico, IP declaradas, datos de solicitud, historial de estados e información de credenciales.
 - **FR-006**: El detalle DEBE identificar el Client ID cuando exista y NO DEBE mostrar el Client Secret.
 - **FR-007**: Un analista autorizado DEBE poder generar, entregar y activar credenciales para una aplicación que no tenga credenciales activas en una misma operación, dejando el resultado trazado.
@@ -83,13 +83,13 @@ El MVP consulta las instituciones, aplicaciones y roles de un catálogo existent
 
 ### 4.1 Estados mínimos de una credencial
 
-| Estado | Significado | Acciones esperadas |
-|---|---|---|
-| Sin credenciales | La aplicación no dispone de una credencial utilizable. | Generar. |
-| Activa | La credencial se ha emitido, se ha generado su entrega protegida y puede utilizarse. | Solicitar una nueva entrega, regenerar, suspender o revocar según permisos. |
-| Suspendida | La credencial queda temporalmente inutilizable. | Reactivar o revocar. |
-| Inactiva por rotación | Versión anterior sustituida por una regeneración; deja de poder utilizarse inmediatamente. | Consulta histórica. |
-| Revocada | La credencial ha quedado definitivamente inutilizable. | Consulta histórica; no descargar ni reactivar. |
+| Estado                | Significado                                                                                | Acciones esperadas                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| Sin credenciales      | La aplicación no dispone de una credencial utilizable.                                     | Generar.                                                                    |
+| Activa                | La credencial se ha emitido, se ha generado su entrega protegida y puede utilizarse.       | Solicitar una nueva entrega, regenerar, suspender o revocar según permisos. |
+| Suspendida            | La credencial queda temporalmente inutilizable.                                            | Reactivar o revocar.                                                        |
+| Inactiva por rotación | Versión anterior sustituida por una regeneración; deja de poder utilizarse inmediatamente. | Consulta histórica.                                                         |
+| Revocada              | La credencial ha quedado definitivamente inutilizable.                                     | Consulta histórica; no descargar ni reactivar.                              |
 
 La emisión, la generación de la entrega protegida y la activación ocurren en una misma operación.
 
@@ -106,15 +106,15 @@ La emisión, la generación de la entrega protegida y la activación ocurren en 
 
 ### 4.3 Matriz de permisos
 
-| Acción | Analista | Analista senior | Administrador | Auditor |
-|---|---|---|---|---|
-| Consultar inventario, detalle y uso | Sí | Sí | Sí | No |
-| Generar, entregar y regenerar | Sí | Sí | Sí | No |
-| Suspender y reactivar | Sí | Sí | Sí | No |
-| Revocar | No | Sí | Sí | No |
-| Registrar información de gestión | Sí | Sí | Sí | No |
-| Consultar auditoría | No | Sí | Sí | Sí |
-| Gestionar usuarios y perfiles | No | No | Sí | No |
+| Acción                              | Analista | Analista senior | Administrador | Auditor |
+| ----------------------------------- | -------- | --------------- | ------------- | ------- |
+| Consultar inventario, detalle y uso | Sí       | Sí              | Sí            | No      |
+| Generar, entregar y regenerar       | Sí       | Sí              | Sí            | No      |
+| Suspender y reactivar               | Sí       | Sí              | Sí            | No      |
+| Revocar                             | No       | Sí              | Sí            | No      |
+| Registrar información de gestión    | Sí       | Sí              | Sí            | No      |
+| Consultar auditoría                 | No       | Sí              | Sí            | Sí      |
+| Gestionar usuarios y perfiles       | No       | No              | Sí            | No      |
 
 La matriz anterior se aplica de igual forma en pruebas y en producción.
 
@@ -166,12 +166,23 @@ Escenario: Consulta del inventario
   Y muestra institución, aplicación, ambiente, estado de credencial y fecha del último cambio
   Y permite ordenarlos por institución, aplicación y fecha de cambio
 
+Escenario: Búsqueda por cualquier dato operativo autorizado
+  Dado que el inventario contiene aplicaciones con distintos datos operativos
+  Cuando el analista busca por aplicación, institución, usuario del historial, contacto técnico, solicitud, Client ID, rol, estado o IP declarada
+  Entonces el sistema muestra únicamente los registros coincidentes del ambiente activo
+  Y obtiene el mismo resultado aunque cambie mayúsculas, minúsculas o acentos
+
 Escenario: Búsqueda y filtrado sin resultados
   Dado que el inventario contiene aplicaciones con distintos estados
-  Cuando el analista busca por institución, aplicación o identificador de solicitud y aplica filtros
+  Cuando el analista introduce una búsqueda sin coincidencias y aplica filtros
   Entonces el sistema muestra únicamente los registros coincidentes
   Y si no hay coincidencias informa que no existen resultados
   Y mantiene disponibles los criterios de búsqueda
+
+Escenario: Exclusión de datos sensibles en la búsqueda
+  Dado que las credenciales disponen de datos sensibles de entrega
+  Cuando el analista utiliza el buscador del inventario
+  Entonces el buscador no consulta ni revela Client Secrets, OTP, contraseñas ni enlaces de entrega
 ```
 
 #### US-03 - Consultar el detalle de una aplicación
@@ -504,26 +515,26 @@ Escenario: Intento de alta duplicada
 - **Trazabilidad**: Los eventos de auditoría deben permitir reconstruir quién hizo qué, sobre qué institución, aplicación y credencial, cuándo, desde qué IP de origen y con qué resultado.
 - **Integridad operativa**: Las operaciones fallidas no pueden dejar estados parciales o contradictorios. Las credenciales vigentes se preservan cuando falla una regeneración.
 - **Separación de ambientes**: La información de pruebas y producción no debe mezclarse ni permitir acciones sobre un ambiente distinto del visible para el usuario.
-- **Usabilidad**: Un analista del piloto debe poder localizar una aplicación y completar la operación permitida sin recurrir a un miembro técnico para el flujo ordinario.
+- **Usabilidad**: Un analista del piloto debe poder localizar una aplicación desde una única línea de búsqueda, conservar la consulta cuando no haya resultados y completar la operación permitida sin recurrir a un miembro técnico para el flujo ordinario.
 - **Cumplimiento**: Los eventos de auditoría son inmutables, se conservan cinco años y solo pueden ser consultados por auditor, administrador y analista senior. Incluyen la IP de origen y los datos de contacto estrictamente necesarios para la gestión.
 - **Disponibilidad y rendimiento**: En el 95 % de los casos del piloto, el inventario y el detalle deben estar disponibles en menos de dos segundos, y la emisión o regeneración en menos de 30 segundos. Ante una operación fallida, el sistema conserva el estado anterior, registra el resultado y permite al usuario reintentarla.
 
 ## 7. Entidades clave
 
-| Entidad | Descripción y datos relevantes |
-|---|---|
-| Institución | Organización conectada a la plataforma; agrupa aplicaciones. |
-| Aplicación integrada | Integración de una institución en un ambiente; incluye identificador, rol, contacto técnico, IP declaradas, solicitud y estados. |
-| Rol de API | Conjunto de servicios de API permitidos para una aplicación. |
-| Credencial | Identidad de acceso asociada a una aplicación, con Client ID, secreto no visible, estado, ambiente y versión. |
-| Versión de credencial | Registro histórico de una emisión o regeneración, incluyendo su relación con la versión previa. |
-| Entrega protegida | ZIP protegido asociado a una emisión, regeneración o reenvío, con contraseña distinta del OTP y acceso mediante OTP de un solo uso válido durante dos minutos. |
-| Ambiente | Contexto operativo de pruebas, producción u otro ambiente aprobado. |
-| Usuario interno | Persona autorizada a acceder a KeyOps. |
-| Perfil de usuario | Conjunto de acciones permitidas para un usuario, por ejemplo analista, analista senior, administrador o auditor. |
-| Gestión | Información operativa asociada a una acción: motivo, contacto técnico y solicitud o ticket. |
-| Evento de auditoría | Evidencia de una acción o intento, con actor, fecha y hora, objetivo, resultado e IP de origen. |
-| Registro de uso | Información disponible sobre mensajes, servicios, IP y último consumo de una aplicación. |
+| Entidad               | Descripción y datos relevantes                                                                                                                                 |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Institución           | Organización conectada a la plataforma; agrupa aplicaciones.                                                                                                   |
+| Aplicación integrada  | Integración de una institución en un ambiente; incluye identificador, rol, contacto técnico, IP declaradas, solicitud y estados.                               |
+| Rol de API            | Conjunto de servicios de API permitidos para una aplicación.                                                                                                   |
+| Credencial            | Identidad de acceso asociada a una aplicación, con Client ID, secreto no visible, estado, ambiente y versión.                                                  |
+| Versión de credencial | Registro histórico de una emisión o regeneración, incluyendo su relación con la versión previa.                                                                |
+| Entrega protegida     | ZIP protegido asociado a una emisión, regeneración o reenvío, con contraseña distinta del OTP y acceso mediante OTP de un solo uso válido durante dos minutos. |
+| Ambiente              | Contexto operativo de pruebas, producción u otro ambiente aprobado.                                                                                            |
+| Usuario interno       | Persona autorizada a acceder a KeyOps.                                                                                                                         |
+| Perfil de usuario     | Conjunto de acciones permitidas para un usuario, por ejemplo analista, analista senior, administrador o auditor.                                               |
+| Gestión               | Información operativa asociada a una acción: motivo, contacto técnico y solicitud o ticket.                                                                    |
+| Evento de auditoría   | Evidencia de una acción o intento, con actor, fecha y hora, objetivo, resultado e IP de origen.                                                                |
+| Registro de uso       | Información disponible sobre mensajes, servicios, IP y último consumo de una aplicación.                                                                       |
 
 ## 8. Criterios de éxito y medición del piloto
 
@@ -534,6 +545,7 @@ Escenario: Intento de alta duplicada
 - **SC-005 - Satisfacción**: Se medirá `respuestas con valoración 4 o 5 sobre 5 / total de respuestas` de los analistas participantes. La satisfacción debe alcanzar al menos el 80 %.
 - **SC-006 - Trazabilidad**: El 100 % de las operaciones P1, tanto exitosas como fallidas, debe poder asociarse a un evento de auditoría completo antes de ampliar el despliegue.
 - **SC-007 - Autonomía operativa**: Las operaciones P1 que no sean excepciones deben poder ser completadas por analistas del piloto sin solicitar intervención del equipo técnico.
+- **SC-008 - Localización de registros**: Con un inventario de al menos 20 aplicaciones, un analista debe poder reducir la lista a los registros coincidentes en menos de un segundo tras introducir una búsqueda por cualquiera de los campos operativos autorizados.
 
 ## 9. Suposiciones
 
@@ -544,6 +556,7 @@ Escenario: Intento de alta duplicada
 - Se dispondrá de datos suficientes para distinguir solicitudes completas, tiempo de ciclo, retrabajo y tipo de operación antes y después del piloto.
 - Los usuarios externos recibirán las credenciales mediante el proceso de entrega definido, sin necesitar un portal propio en esta fase.
 - La matriz de permisos y las transiciones de estado definidas en este documento se aplicarán antes de habilitar acciones irreversibles.
+- La búsqueda se limita al ambiente activo y a campos operativos autorizados. El “usuario” buscable corresponde a los actores registrados en el historial de la credencial, ya que KeyOps consulta aplicaciones creadas en un catálogo externo.
 
 ## 10. Decisiones confirmadas
 
@@ -555,3 +568,4 @@ Escenario: Intento de alta duplicada
 - La institución accede al ZIP protegido con un OTP de un solo uso válido durante dos minutos; la contraseña del ZIP es distinta del OTP.
 - Los eventos de auditoría son inmutables, se conservan cinco años y solo los consultan auditor, administrador y analista senior.
 - El piloto debe cumplir los objetivos de tiempo de ciclo, coste operativo, adopción y satisfacción definidos en la sección 8 antes de iniciar el despliegue por olas.
+- El inventario ofrece una única búsqueda insensible a mayúsculas y acentos sobre los campos operativos autorizados; los datos sensibles de credenciales y entrega quedan siempre fuera de su índice.

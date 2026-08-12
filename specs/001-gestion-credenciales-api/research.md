@@ -311,6 +311,28 @@ de negocio y respeta la prioridad de las historias.
 - Calcular uso o métricas de piloto en el dispositivo: descartado por falta de
   autoridad de datos y alcance.
 
+## 13. Búsqueda global segura del inventario
+
+**Decisión**: usar una única consulta de texto sobre una lista explícita de
+campos operativos autorizados. La comparación normaliza mayúsculas y acentos.
+En el candidato local el fake filtra en memoria; el contrato remoto recibe la
+misma consulta y conserva paginación, permisos y separación de ambientes.
+
+**Rationale**: una lista blanca permite encontrar por aplicación, institución,
+contacto, ticket, Client ID, rol, estado, IP o actor del historial sin indexar
+automáticamente datos sensibles que puedan añadirse al modelo en el futuro.
+Buscar en el servicio remoto evita resultados incompletos cuando el inventario
+está paginado.
+
+**Alternativas consideradas**:
+
+- Serializar el objeto completo: descartado porque podría incorporar secretos o
+  datos no autorizados de forma accidental.
+- Filtrar solo la página visible: descartado porque ocultaría coincidencias de
+  otras páginas.
+- Mantener campos de búsqueda separados: descartado porque aumenta el esfuerzo
+  del analista y no responde a la línea de búsqueda única solicitada.
+
 ## Resultado de Phase 0
 
 No quedan aclaraciones técnicas pendientes para diseñar el cliente. La ausencia

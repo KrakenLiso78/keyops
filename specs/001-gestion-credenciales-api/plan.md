@@ -208,6 +208,15 @@ repositorios ni importan `fetch` o SecureStore.
 contiene únicamente el ambiente activo. El estado de lista, detalle y operación
 es local a la pantalla. Cada caso de uso recibe `environment` explícitamente.
 
+La búsqueda del inventario usa un único `query` controlado por la pantalla y lo
+entrega al caso de uso de listado. El adaptador normaliza mayúsculas y acentos y
+compara una lista explícita de campos autorizados —identificadores, aplicación,
+institución, rol, contacto, ticket, Client ID, estado, IP y actores del historial—
+para impedir que campos sensibles presentes en futuras respuestas entren en el
+índice por accidente. El fake filtra en memoria; el adaptador REST envía el mismo
+`query` al servicio para que paginación y búsqueda se resuelvan sobre el conjunto
+completo en un entorno real.
+
 Al cambiar de ambiente se cancelan las solicitudes mediante `AbortController`,
 se descarta el estado dependiente y se vuelve al inventario. Un identificador de
 solicitud evita que una respuesta tardía del ambiente anterior rehidrate la UI.
