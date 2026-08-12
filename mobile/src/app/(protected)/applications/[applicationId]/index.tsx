@@ -1,11 +1,11 @@
 import { useLocalSearchParams, router } from 'expo-router';
-import * as Clipboard from 'expo-clipboard';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import type { CredentialHistoryEntry, CredentialState } from '@/domain/model/types';
 import { permittedActions } from '@/domain/policies/permittedActions';
 import { Body, Button, Card, Heading, Screen } from '@/presentation/components/base';
 import { ApplicationDetailTitle } from '@/presentation/components/applications/ApplicationDetailTitle';
+import { CopyableValue } from '@/presentation/components/CopyableValue';
 import {
   BackHeader,
   CredentialStateBadge,
@@ -111,21 +111,11 @@ export default function ApplicationDetailScreen() {
           </View>
           <View style={styles.infoBlock}>
             <Text style={styles.label}>Client ID</Text>
-            <View style={styles.clientIdBox}>
-              <Text numberOfLines={1} selectable style={styles.clientId}>
-                {app.clientId ?? 'Aún no disponible'}
-              </Text>
-              {app.clientId ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Copiar Client ID"
-                  onPress={() => Clipboard.setStringAsync(app.clientId!)}
-                  style={styles.copyButton}
-                >
-                  <Text style={styles.copyIcon}>▢</Text>
-                </Pressable>
-              ) : null}
-            </View>
+            <CopyableValue
+              value={app.clientId}
+              placeholder="Aún no disponible"
+              copyLabel="Copiar Client ID"
+            />
           </View>
           {featuredAction ? (
             <Button
@@ -201,18 +191,6 @@ const styles = StyleSheet.create({
   infoBlock: { gap: 2 },
   label: { color: colors.ink, fontSize: 16 },
   value: { color: colors.ink, fontSize: 16, lineHeight: 22 },
-  clientIdBox: {
-    minHeight: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.hairline,
-    borderRadius: 8,
-    paddingLeft: space.sm,
-  },
-  clientId: { flex: 1, color: colors.ink, fontFamily: 'monospace', fontSize: 15 },
-  copyButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  copyIcon: { color: colors.slate, fontSize: 24 },
   history: { marginTop: space.xs },
   timelineRow: { minHeight: 76, flexDirection: 'row', gap: space.sm },
   timelineRail: { width: 22, alignItems: 'center' },

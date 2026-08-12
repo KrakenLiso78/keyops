@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import { actionNeedsReason } from '@/domain/policies/credentialTransitions';
 import type { Delivery, Receipt } from '@/domain/model/types';
 import { Body, Button, Card, Field, Heading, Screen } from '@/presentation/components/base';
+import { CopyableValue } from '@/presentation/components/CopyableValue';
 import {
   BackHeader,
   CredentialStateBadge,
@@ -113,19 +114,13 @@ export default function OperationScreen() {
                 Contacto: {application.technicalContact ?? 'Sin registrar'}
               </Text>
               <Text style={styles.deliveryText}>Enlace seguro</Text>
-              <View style={styles.linkRow}>
-                <Text numberOfLines={1} selectable style={styles.linkText}>
-                  {result.delivery.deliveryUrl}
-                </Text>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Copiar enlace"
-                  onPress={() => Clipboard.setStringAsync(result.delivery!.deliveryUrl)}
-                  style={styles.copyLinkButton}
-                >
-                  <Text style={styles.copyLinkIcon}>▢</Text>
-                </Pressable>
-              </View>
+              <CopyableValue
+                value={result.delivery.deliveryUrl}
+                copyLabel="Copiar enlace"
+                outlined={false}
+                style={styles.linkRow}
+                textStyle={styles.linkText}
+              />
             </Card>
             <Button
               title="Compartir enlace"
@@ -216,10 +211,8 @@ const styles = StyleSheet.create({
   otpCard: { padding: space.lg, alignItems: 'flex-start', gap: 6 },
   institution: { color: colors.navy, fontSize: 18, fontWeight: '800' },
   deliveryText: { color: colors.ink, fontSize: 15, lineHeight: 21 },
-  linkRow: { minHeight: 36, flexDirection: 'row', alignItems: 'center', gap: space.xs },
-  linkText: { flex: 1, color: colors.ink, fontFamily: 'monospace', fontSize: 13 },
-  copyLinkButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  copyLinkIcon: { color: colors.slate, fontSize: 24 },
+  linkRow: { minHeight: 44, paddingLeft: 0 },
+  linkText: { fontSize: 13 },
   otpLabel: { color: colors.ink, fontSize: 16 },
   otp: {
     color: colors.primaryDeep,

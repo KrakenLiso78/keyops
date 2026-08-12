@@ -631,4 +631,4 @@ todo el alcance P1 de la especificación.
 
 ## Phase 19: Convergence
 
-- [ ] T161 Implementar un control reutilizable de valor copiable con icono de doble rectángulo y probar que los botones copian exactamente el Client ID y el enlace seguro en `mobile/src/presentation/components/CopyableValue.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/index.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx` y sus pruebas de componente per T062/T071/T112 y `design/DESIGN.md` (partial); verificar con `npm test -- copyableValue.test.tsx --runInBand` y `npm run typecheck`
+- [X] T161 Implementar un control reutilizable de valor copiable con icono de doble rectángulo y probar que los botones copian exactamente el Client ID y el enlace seguro en `mobile/src/presentation/components/CopyableValue.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/index.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx` y sus pruebas de componente per T062/T071/T112 y `design/DESIGN.md` (partial); verificar con `npm test -- copyableValue.test.tsx --runInBand` y `npm run typecheck`
