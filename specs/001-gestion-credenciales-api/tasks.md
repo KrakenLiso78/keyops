@@ -628,3 +628,7 @@ todo el alcance P1 de la especificación.
 
 - [X] T159 Corregir la cabecera responsive del detalle para reservar una franja propia a la decoración y añadir una regresión proporcional en `mobile/tests/component/applications/applicationDetailScreen.test.tsx` y `mobile/src/app/(protected)/applications/[applicationId]/index.tsx` per FR-005/T154 (partial); verificar con `npm test -- applicationDetailScreen.test.tsx --runInBand`
 - [X] T160 Ampliar el seed fake determinista a 24 aplicaciones equilibradas entre ambientes y con los cinco estados, reforzar `mobile/tests/unit/data/fakeSeed.test.ts` y documentar ubicación y ciclo de vida en `specs/001-gestion-credenciales-api/quickstart.md` per plan: fake sintético/T021/T036 (partial); verificar con `npm test -- fakeSeed.test.ts --runInBand` y `npm run typecheck`
+
+## Phase 19: Convergence
+
+- [ ] T161 Implementar un control reutilizable de valor copiable con icono de doble rectángulo y probar que los botones copian exactamente el Client ID y el enlace seguro en `mobile/src/presentation/components/CopyableValue.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/index.tsx`, `mobile/src/app/(protected)/applications/[applicationId]/operation.tsx` y sus pruebas de componente per T062/T071/T112 y `design/DESIGN.md` (partial); verificar con `npm test -- copyableValue.test.tsx --runInBand` y `npm run typecheck`
