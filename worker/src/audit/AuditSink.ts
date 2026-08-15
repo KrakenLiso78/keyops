@@ -1,7 +1,8 @@
 import type { AuthorizedUser } from "../airtable/userSchema";
 import type { RequestContext } from "../http/requestContext";
+import type { AuditResult } from "./auditEventSchema";
 
-export type AuditResult = "succeeded" | "failed" | "rejected";
+export type { AuditResult } from "./auditEventSchema";
 
 export interface AuditAttempt {
   actor?: AuthorizedUser;
@@ -9,8 +10,12 @@ export interface AuditAttempt {
   resourceType?: string;
   resourceId?: string;
   environment?: "test" | "production";
+  institutionId?: string;
+  applicationId?: string;
+  credentialId?: string;
   result: AuditResult;
   failureCode?: string;
+  operationId?: string;
   context: RequestContext;
 }
 

@@ -15,14 +15,14 @@
 
 ## Phase 2: Foundational
 
-- [ ] T005 [P] Definir schema allowlist y nombres versionados en `worker/src/audit/auditEventSchema.ts`
-- [ ] T006 [P] Implementar redacción/rechazo de campos prohibidos en `worker/src/audit/redactAudit.ts`
-- [ ] T007 [P] Implementar contexto confiable de request ID, IP y actor en `worker/src/http/requestContext.ts`
-- [ ] T008 Implementar fábrica determinista de eventos en `worker/src/audit/auditEventFactory.ts`
-- [ ] T009 Implementar repositorio Airtable solo `append/list` en `worker/src/airtable/AuditEventRepository.ts`
-- [ ] T010 Implementar `AuditRecorder` y conectar el `AuditSink` de 002 en `worker/src/audit/AuditRecorder.ts`
-- [ ] T011 Implementar finalización síncrona de resultado y recuperación idempotente en `worker/src/http/completeOperation.ts`
-- [ ] T012 [P] Crear dobles de append/list/fallo y reloj en `worker/tests/support/InMemoryAuditRepository.ts`
+- [x] T005 [P] Definir schema allowlist y nombres versionados en `worker/src/audit/auditEventSchema.ts`
+- [x] T006 [P] Implementar redacción/rechazo de campos prohibidos en `worker/src/audit/redactAudit.ts`
+- [x] T007 [P] Implementar contexto confiable de request ID, IP y actor en `worker/src/http/requestContext.ts`
+- [x] T008 Implementar fábrica determinista de eventos en `worker/src/audit/auditEventFactory.ts`
+- [x] T009 Implementar repositorio Airtable solo `append/list` en `worker/src/airtable/AuditEventRepository.ts`
+- [x] T010 Implementar `AuditRecorder` y conectar el `AuditSink` de 002 en `worker/src/audit/AuditRecorder.ts`
+- [x] T011 Implementar finalización síncrona de resultado y recuperación idempotente en `worker/src/http/completeOperation.ts`
+- [x] T012 [P] Crear dobles de append/list/fallo y reloj en `worker/tests/support/InMemoryAuditRepository.ts`
 
 **Checkpoint**: Un handler puede completar éxito/fallo/rechazo con un evento validado, sin exponer todavía la consulta.
 
@@ -34,9 +34,9 @@
 
 ### Tests
 
-- [ ] T013 [P] [US-AUD-01] Escribir tests fallidos de fábrica/redacción/empates en `worker/tests/unit/audit-event.test.ts`
-- [ ] T014 [P] [US-AUD-01] Escribir tests fallidos de finalización y fallo de append en `worker/tests/unit/complete-operation.test.ts`
-- [ ] T015 [P] [US-AUD-01] Escribir test de seguridad fallido con password/token/OTP/URL en `worker/tests/security/audit-redaction.test.ts`
+- [x] T013 [P] [US-AUD-01] Escribir tests fallidos de fábrica/redacción/empates en `worker/tests/unit/audit-event.test.ts`
+- [x] T014 [P] [US-AUD-01] Escribir tests fallidos de finalización y fallo de append en `worker/tests/unit/complete-operation.test.ts`
+- [x] T015 [P] [US-AUD-01] Escribir test de seguridad fallido con password/token/OTP/URL en `worker/tests/security/audit-redaction.test.ts`
 - [ ] T016 [US-AUD-01] Escribir integración Airtable fallida para tres resultados y proceso nuevo en `worker/tests/integration/airtable-audit-write.test.ts`
 
 ### Implementation
