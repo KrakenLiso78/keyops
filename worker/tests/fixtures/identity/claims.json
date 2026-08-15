@@ -1,0 +1,9 @@
+{
+  "iss": "https://identity.example.test",
+  "sub": "corporate-subject-001",
+  "aud": "keyops-test",
+  "nonce": "test-nonce-value-12345",
+  "iat": 1786787990,
+  "exp": 1786788300,
+  "name": "Corporate User"
+}

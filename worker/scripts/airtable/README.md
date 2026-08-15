@@ -75,3 +75,17 @@ de KeyOps; no copia nombres corporativos, instituciones o roles.
 El Worker puede listar, crear y actualizar esta tabla. Nunca escribe en el
 catálogo corporativo y rechaza claves `(catalogApplicationId, environment)`
 duplicadas.
+
+## Delta corporativo de `Users`
+
+La tabla `Users` conserva autorización KeyOps, no credenciales ni claims OIDC.
+
+| Campo                 | Tipo         | Regla                                               |
+| --------------------- | ------------ | --------------------------------------------------- |
+| `corporateIssuer`     | URL/texto    | Issuer HTTPS exacto                                 |
+| `corporateSubject`    | texto        | Identificador estable; único junto al issuer        |
+| `identityValidatedAt` | fecha y hora | Última validación corporativa, máximo cinco minutos |
+| `updatedAt`           | fecha y hora | Token de concurrencia de la autorización            |
+
+`loginIdentifier` y `displayName` son atributos visibles, no claves de identidad.
+La aplicación rechaza duplicados de `(corporateIssuer, corporateSubject)`.

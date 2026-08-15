@@ -8,6 +8,10 @@ export interface WorkerEnv {
   DELIVERY_PEPPER: string;
   CATALOG_BASE_URL?: string;
   CATALOG_READ_TOKEN?: string;
+  OIDC_ISSUER?: string;
+  OIDC_CLIENT_ID?: string;
+  OIDC_CLIENT_SECRET?: string;
+  OIDC_REDIRECT_URI?: string;
   ASSETS?: Fetcher;
 }
 
@@ -20,6 +24,10 @@ const workerEnvSchema = z
     DELIVERY_PEPPER: z.string().min(32),
     CATALOG_BASE_URL: z.string().url().optional(),
     CATALOG_READ_TOKEN: z.string().min(12).optional(),
+    OIDC_ISSUER: z.string().url().optional(),
+    OIDC_CLIENT_ID: z.string().min(3).optional(),
+    OIDC_CLIENT_SECRET: z.string().min(12).optional(),
+    OIDC_REDIRECT_URI: z.string().url().optional(),
   })
   .superRefine((value, context) => {
     if (Boolean(value.CATALOG_BASE_URL) !== Boolean(value.CATALOG_READ_TOKEN)) {
@@ -27,6 +35,19 @@ const workerEnvSchema = z
         code: "custom",
         path: ["CATALOG_BASE_URL"],
         message: "Catalog URL and read token must be configured together.",
+      });
+    }
+    const oidc = [
+      value.OIDC_ISSUER,
+      value.OIDC_CLIENT_ID,
+      value.OIDC_CLIENT_SECRET,
+      value.OIDC_REDIRECT_URI,
+    ];
+    if (oidc.some(Boolean) && !oidc.every(Boolean)) {
+      context.addIssue({
+        code: "custom",
+        path: ["OIDC_ISSUER"],
+        message: "All OIDC bindings must be configured together.",
       });
     }
   });
@@ -38,6 +59,12 @@ export interface ValidatedEnv {
   sessionSigningKey: string;
   deliveryPepper: string;
   catalog?: { baseUrl: string; readToken: string };
+  oidc?: {
+    issuer: string;
+    clientId: string;
+    clientSecret: string;
+    redirectUri: string;
+  };
 }
 
 export function validateEnv(env: WorkerEnv): ValidatedEnv {
@@ -56,6 +83,18 @@ export function validateEnv(env: WorkerEnv): ValidatedEnv {
         ? {
             baseUrl: parsed.CATALOG_BASE_URL.replace(/\/$/u, ""),
             readToken: parsed.CATALOG_READ_TOKEN,
+          }
+        : undefined,
+    oidc:
+      parsed.OIDC_ISSUER &&
+      parsed.OIDC_CLIENT_ID &&
+      parsed.OIDC_CLIENT_SECRET &&
+      parsed.OIDC_REDIRECT_URI
+        ? {
+            issuer: parsed.OIDC_ISSUER.replace(/\/$/u, ""),
+            clientId: parsed.OIDC_CLIENT_ID,
+            clientSecret: parsed.OIDC_CLIENT_SECRET,
+            redirectUri: parsed.OIDC_REDIRECT_URI,
           }
         : undefined,
   };

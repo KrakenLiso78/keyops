@@ -6,21 +6,21 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear estructura de identidad y fixtures OIDC en `worker/src/identity/` y `worker/tests/fixtures/identity/`
-- [ ] T002 [P] Añadir bindings OIDC sin secretos al schema y ejemplo en `worker/src/config/env.ts` y `worker/.dev.vars.example`
-- [ ] T003 [P] Documentar registro de cliente, claims y propagación de baja en `worker/docs/corporate-identity-checkpoint.md`
+- [X] T001 Crear estructura de identidad y fixtures OIDC en `worker/src/identity/` y `worker/tests/fixtures/identity/`
+- [X] T002 [P] Añadir bindings OIDC sin secretos al schema y ejemplo en `worker/src/config/env.ts` y `worker/.dev.vars.example`
+- [X] T003 [P] Documentar registro de cliente, claims y propagación de baja en `worker/docs/corporate-identity-checkpoint.md`
 
 ## Phase 2: Foundational
 
-- [ ] T004 [P] Definir `OidcProviderPort` y DTO mínimos en `worker/src/identity/OidcProviderPort.ts`
-- [ ] T005 [P] Implementar discovery/JWKS/claims schemas en `worker/src/identity/oidcSchemas.ts`
-- [ ] T006 [P] Implementar state, nonce y PKCE S256 en `worker/src/auth/authorizationTransaction.ts`
-- [ ] T007 [P] Implementar cookies transaccional/sesión seguras en `worker/src/auth/corporateSession.ts`
-- [ ] T008 Crear stub OIDC con códigos/firmas/errores configurables en `worker/tests/support/OidcProviderStub.ts`
-- [ ] T009 Implementar adapter OIDC HTTP neutral en `worker/src/identity/OidcHttpAdapter.ts`
-- [ ] T010 Implementar validación issuer/audience/nonce/firma/redirect en `worker/src/identity/oidcValidation.ts`
-- [ ] T011 Definir el delta de esquema corporativo de `Users` en `worker/scripts/airtable/README.md` y evolucionar el repositorio por issuer/subject en `worker/src/airtable/UserRepository.ts`
-- [ ] T012 Conectar identidad y autorización en `worker/src/composition/createWorkerDependencies.ts`
+- [X] T004 [P] Definir `OidcProviderPort` y DTO mínimos en `worker/src/identity/OidcProviderPort.ts`
+- [X] T005 [P] Implementar discovery/JWKS/claims schemas en `worker/src/identity/oidcSchemas.ts`
+- [X] T006 [P] Implementar state, nonce y PKCE S256 en `worker/src/auth/authorizationTransaction.ts`
+- [X] T007 [P] Implementar cookies transaccional/sesión seguras en `worker/src/auth/corporateSession.ts`
+- [X] T008 Crear stub OIDC con códigos/firmas/errores configurables en `worker/tests/support/OidcProviderStub.ts`
+- [X] T009 Implementar adapter OIDC HTTP neutral en `worker/src/identity/OidcHttpAdapter.ts`
+- [X] T010 Implementar validación issuer/audience/nonce/firma/redirect en `worker/src/identity/oidcValidation.ts`
+- [X] T011 Definir el delta de esquema corporativo de `Users` en `worker/scripts/airtable/README.md` y evolucionar el repositorio por issuer/subject en `worker/src/airtable/UserRepository.ts`
+- [X] T012 Conectar identidad y autorización en `worker/src/composition/createWorkerDependencies.ts`
 
 **Checkpoint**: Flujo OIDC y autorización persistente pueden probarse con stub y Airtable de test.
 
@@ -32,8 +32,8 @@
 
 ### Tests
 
-- [ ] T013 [P] [US-ID-01] Escribir tests fallidos de PKCE/state/nonce/expiración/un uso en `worker/tests/unit/authorizationTransaction.test.ts`
-- [ ] T014 [P] [US-ID-01] Escribir tests fallidos de issuer/audience/firma/redirect en `worker/tests/security/oidcValidation.test.ts`
+- [X] T013 [P] [US-ID-01] Escribir tests fallidos de PKCE/state/nonce/expiración/un uso en `worker/tests/unit/authorizationTransaction.test.ts`
+- [X] T014 [P] [US-ID-01] Escribir tests fallidos de issuer/audience/firma/redirect en `worker/tests/security/oidcValidation.test.ts`
 - [ ] T015 [P] [US-ID-01] Escribir contrato fallido de login/callback/session en `worker/tests/contract/corporate-auth.contract.test.ts`
 - [ ] T016 [P] [US-ID-01] Escribir tests fallidos de usuario desconocido/deshabilitado y deny-by-default en `worker/tests/unit/corporateAuthorization.test.ts`
 - [ ] T017 [P] [US-ID-01] Escribir test móvil fallido de redirect/restauración/cierre en `mobile/tests/integration/corporate-auth-flow.test.tsx`
