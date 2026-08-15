@@ -3,22 +3,18 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { router } from 'expo-router';
 import { Button, Field, Heading, Screen } from '@/presentation/components/base';
 import { colors, space } from '@/presentation/design-system';
+import { firstAllowedPath } from '@/presentation/navigation/authorization';
+import { useSignInController } from '@/presentation/controllers/useSignInController';
 import { useApp } from '@/presentation/state/AppProvider';
 
 export default function SignInScreen() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const { signIn } = useApp();
-
-  const submit = () => {
-    try {
-      signIn(login);
-      router.replace('/applications');
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'No se pudo iniciar sesión.');
-    }
-  };
+  const { error, setError, submitting, submit } = useSignInController(signIn, (user) => {
+    const path = firstAllowedPath(user);
+    if (path) router.replace(path);
+  });
 
   return (
     <Screen style={styles.screen}>
@@ -43,7 +39,11 @@ export default function SignInScreen() {
               autoCorrect={false}
             />
             <Field label="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-            <Button title="Ingresar" onPress={submit} />
+            <Button
+              disabled={submitting}
+              title="Ingresar"
+              onPress={() => void submit(login, password)}
+            />
             {error ? (
               <Text accessibilityRole="alert" style={styles.error}>
                 {error}

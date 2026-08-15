@@ -1,6 +1,6 @@
 import type { AuthRepository } from '@/domain/ports/AuthRepository';
-import type { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
-export async function restoreSession(repository: AuthRepository, store: SecureStoreSessionStore) {
+import type { SessionStore } from '@/domain/ports/SessionStore';
+export async function restoreSession(repository: AuthRepository, store: SessionStore) {
   if (!(await store.read())) return undefined;
   try {
     return await repository.restore();

@@ -1,8 +1,8 @@
 import type { AuthRepository } from '@/domain/ports/AuthRepository';
-import type { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
+import type { SessionStore } from '@/domain/ports/SessionStore';
 export async function signIn(
   repository: AuthRepository,
-  store: SecureStoreSessionStore,
+  store: SessionStore,
   loginIdentifier: string,
   password: string,
 ) {

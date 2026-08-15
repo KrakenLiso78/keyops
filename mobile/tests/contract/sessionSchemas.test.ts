@@ -17,8 +17,12 @@ describe('schemas de sesión', () => {
       createSessionRequestSchema.parse({ loginIdentifier: 'analista', password: 'demo' }),
     ).toBeTruthy();
     expect(
-      sessionResponseSchema.parse({ contractVersion: '1', user, accessToken: 'token' }).user
-        .profile,
+      sessionResponseSchema.parse({
+        contractVersion: '1',
+        user,
+        accessToken: 'token',
+        expiresAt: '2026-08-15T18:00:00.000Z',
+      }).user.profile,
     ).toBe('analyst');
     expect(sessionViewSchema.parse({ contractVersion: '1', user }).user.id).toBe('u1');
   });

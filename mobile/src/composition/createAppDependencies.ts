@@ -1,16 +1,29 @@
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
+import { FakeAuthRepository } from '@/data/fake/FakeAuthRepository';
+import { FetchHttpClient } from '@/data/http/FetchHttpClient';
+import { RestAuthRepository } from '@/data/repositories/RestAuthRepository';
 import { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
+import type { AuthRepository } from '@/domain/ports/AuthRepository';
 import { runtimeConfig } from './runtimeConfig';
 
 export interface AppDependencies {
-  dataSource: 'fake';
+  dataSource: 'remote' | 'fake';
   sessionStore: SecureStoreSessionStore;
+  auth: AuthRepository;
   keyOps: typeof fakeRepository;
 }
-export function createAppDependencies(): AppDependencies {
+export function createAppDependencies(
+  dataSource: 'remote' | 'fake' = runtimeConfig.EXPO_PUBLIC_DATA_SOURCE,
+): AppDependencies {
+  const sessionStore = new SecureStoreSessionStore();
+  const http = new FetchHttpClient(
+    runtimeConfig.EXPO_PUBLIC_API_BASE_URL,
+    async () => (await sessionStore.read())?.accessToken,
+  );
   return {
-    dataSource: runtimeConfig.EXPO_PUBLIC_DATA_SOURCE,
-    sessionStore: new SecureStoreSessionStore(),
+    dataSource,
+    sessionStore,
+    auth: dataSource === 'remote' ? new RestAuthRepository(http) : new FakeAuthRepository(),
     keyOps: fakeRepository,
   };
 }

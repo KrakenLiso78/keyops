@@ -42,19 +42,19 @@
 
 - [X] T015 [P] [US-WEB-01] Escribir tests unitarios fallidos de token, expiración, usuario deshabilitado y permisos en `worker/tests/unit/auth.test.ts`
 - [X] T016 [P] [US-WEB-01] Escribir tests de contrato fallidos para `POST /v1/sessions` y `GET /v1/session` en `worker/tests/contract/session.contract.test.ts`
-- [ ] T017 [P] [US-WEB-01] Escribir tests móviles fallidos de login, restauración, cierre y rutas protegidas en `mobile/tests/integration/auth-flow.test.tsx`
+- [X] T017 [P] [US-WEB-01] Escribir tests móviles fallidos de login, restauración, cierre y rutas protegidas en `mobile/tests/integration/auth-flow.test.tsx`
 - [X] T018 [P] [US-WEB-01] Escribir test de seguridad fallido para secretos/errores genéricos en `worker/tests/security/session-redaction.test.ts`
 
 ### Implementation
 
 - [X] T019 [US-WEB-01] Implementar creación/restauración de sesión conforme al contrato en `worker/src/routes/v1/sessions.ts`
 - [X] T020 [US-WEB-01] Conectar autenticación y emisión de resultados auditables en `worker/src/index.ts` sin persistir cuerpos ni contraseñas
-- [ ] T021 [P] [US-WEB-01] Actualizar schemas/mappers de sesión en `mobile/src/data/schemas/session.ts` y `mobile/src/data/mappers/sessionMapper.ts`
-- [ ] T022 [US-WEB-01] Sustituir el alias fake por `RestAuthRepository` real en `mobile/src/data/repositories/RestAuthRepository.ts`
-- [ ] T023 [US-WEB-01] Hacer `remote` el origen predeterminado y validar URL/modo en `mobile/src/composition/runtimeConfig.ts` y `mobile/src/composition/createAppDependencies.ts`
-- [ ] T024 [US-WEB-01] Consolidar inyección y estado de sesión en `mobile/src/composition/DependenciesProvider.tsx`, `mobile/src/presentation/state/SessionProvider.tsx` y `mobile/src/presentation/state/AppProvider.tsx`
-- [ ] T025 [US-WEB-01] Aplicar guardas por sesión/permiso a navegación directa en `mobile/app/(protected)/_layout.tsx` y rutas protegidas
-- [ ] T026 [US-WEB-01] Limpiar token y estado sensible al cerrar/caducar sesión en `mobile/src/presentation/controllers/useSignInController.ts` y `mobile/src/data/session/SecureStoreSessionStore.ts`
+- [X] T021 [P] [US-WEB-01] Actualizar schemas/mappers de sesión en `mobile/src/data/schemas/session.ts` y `mobile/src/data/mappers/sessionMapper.ts`
+- [X] T022 [US-WEB-01] Sustituir el alias fake por `RestAuthRepository` real en `mobile/src/data/repositories/RestAuthRepository.ts`
+- [X] T023 [US-WEB-01] Hacer `remote` el origen predeterminado y validar URL/modo en `mobile/src/composition/runtimeConfig.ts` y `mobile/src/composition/createAppDependencies.ts`
+- [X] T024 [US-WEB-01] Consolidar inyección y estado de sesión en `mobile/src/composition/DependenciesProvider.tsx`, retirar el `SessionProvider` redundante y centralizar la sesión en `mobile/src/presentation/state/AppProvider.tsx`
+- [X] T025 [US-WEB-01] Aplicar guardas por sesión/permiso a navegación directa en `mobile/src/app/(protected)/_layout.tsx` y rutas protegidas
+- [X] T026 [US-WEB-01] Limpiar token y estado sensible al cerrar/caducar sesión en `mobile/src/presentation/controllers/useSignInController.ts` y `mobile/src/data/session/SecureStoreSessionStore.ts`
 
 **Checkpoint**: Acceso y autorización funcionan contra Worker; el criterio de evento persistente queda condicionado a la integración de feature 005.
 

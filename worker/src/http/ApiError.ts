@@ -22,6 +22,7 @@ export function errorResponse(error: unknown, requestId: string): Response {
         );
   return Response.json(
     {
+      contractVersion: "1",
       code: controlled.code,
       message: controlled.message,
       requestId,

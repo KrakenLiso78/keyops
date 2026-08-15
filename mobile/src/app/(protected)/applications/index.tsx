@@ -47,8 +47,7 @@ export default function ApplicationsScreen() {
             accessibilityRole="button"
             accessibilityLabel="Cerrar sesión"
             onPress={() => {
-              signOut();
-              router.replace('/sign-in');
+              void signOut().then(() => router.replace('/sign-in'));
             }}
             style={styles.menuItem}
           >

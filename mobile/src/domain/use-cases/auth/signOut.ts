@@ -1,6 +1,6 @@
 import type { AuthRepository } from '@/domain/ports/AuthRepository';
-import type { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
-export async function signOut(repository: AuthRepository, store: SecureStoreSessionStore) {
+import type { SessionStore } from '@/domain/ports/SessionStore';
+export async function signOut(repository: AuthRepository, store: SessionStore) {
   try {
     await repository.signOut();
   } finally {
