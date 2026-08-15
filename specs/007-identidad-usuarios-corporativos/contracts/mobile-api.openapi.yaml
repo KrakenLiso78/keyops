@@ -1,0 +1,119 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Corporate Identity API
+  version: 1.0.0
+servers:
+  - url: /v1
+paths:
+  /auth/login:
+    get:
+      operationId: beginCorporateLogin
+      parameters:
+        - name: returnPath
+          in: query
+          schema: { type: string }
+      responses:
+        '302': { description: Redirect to configured corporate provider }
+  /auth/callback:
+    get:
+      operationId: completeCorporateLogin
+      parameters:
+        - { name: code, in: query, required: true, schema: { type: string } }
+        - { name: state, in: query, required: true, schema: { type: string } }
+      responses:
+        '302': { description: Valid session redirect }
+        '401': { $ref: '#/components/responses/Error' }
+  /users:
+    get:
+      operationId: listAuthorizedUsers
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200':
+          description: Authorized KeyOps users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AuthorizedUser' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      operationId: registerAuthorizedUser
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCommand' }
+      responses:
+        '200':
+          description: Created or existing user without duplication
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthorizedUser' }
+        '403': { $ref: '#/components/responses/Error' }
+  /users/{userId}:
+    patch:
+      operationId: updateAuthorizedUser
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { name: userId, in: path, required: true, schema: { type: string } }
+        - { name: If-Match, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                profile: { type: string, enum: [analyst, senior_analyst, administrator, auditor] }
+                enabled: { type: boolean }
+      responses:
+        '200':
+          description: Persisted authorization
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthorizedUser' }
+        '409': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: keyops_session
+  responses:
+    Error:
+      description: Controlled error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    UserCommand:
+      type: object
+      additionalProperties: false
+      required: [corporateIssuer, corporateSubject, profile, enabled]
+      properties:
+        corporateIssuer: { type: string, format: uri }
+        corporateSubject: { type: string }
+        profile: { type: string, enum: [analyst, senior_analyst, administrator, auditor] }
+        enabled: { type: boolean }
+    AuthorizedUser:
+      type: object
+      additionalProperties: false
+      required: [id, corporateIssuer, corporateSubject, displayName, profile, enabled, permissions, updatedAt]
+      properties:
+        id: { type: string }
+        corporateIssuer: { type: string, format: uri }
+        corporateSubject: { type: string }
+        displayName: { type: string }
+        profile: { type: string, enum: [analyst, senior_analyst, administrator, auditor] }
+        enabled: { type: boolean }
+        permissions: { type: array, uniqueItems: true, items: { type: string } }
+        updatedAt: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        requestId: { type: string }

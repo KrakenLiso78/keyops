@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-15
 
-**Status**: Futuro — requisito previo al piloto real
+**Status**: Siguiente Sprint — requisito previo al piloto real
 
 **Input**: Sustituir los datos representativos por instituciones, aplicaciones y roles procedentes del catálogo corporativo.
 

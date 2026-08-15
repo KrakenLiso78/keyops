@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-15
 
-**Status**: Futuro — requisito previo al piloto real
+**Status**: Siguiente Sprint — requisito previo al piloto real
 
 **Input**: Añadir a la auditoría funcional las garantías de inmutabilidad y conservación exigidas por la constitución.
 

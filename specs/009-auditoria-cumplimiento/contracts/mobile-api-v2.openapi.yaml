@@ -1,0 +1,90 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Compliance Audit API
+  version: 2.0.0
+servers:
+  - url: /v2
+security:
+  - sessionCookie: []
+paths:
+  /audit-events:
+    get:
+      operationId: listComplianceAuditEvents
+      parameters:
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+        - { name: applicationId, in: query, schema: { type: string } }
+        - { name: actorUserId, in: query, schema: { type: string } }
+        - { name: result, in: query, schema: { type: string, enum: [succeeded, failed, rejected] } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Verified compliance event page
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CompliancePage' }
+        '403': { $ref: '#/components/responses/Error' }
+  /audit-events/{eventId}/integrity:
+    get:
+      operationId: verifyComplianceAuditEvent
+      parameters:
+        - { name: eventId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Current integrity verification
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IntegrityResult' }
+        '404': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    sessionCookie: { type: apiKey, in: cookie, name: keyops_session }
+  responses:
+    Error:
+      description: Controlled error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    CompliancePage:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/ComplianceEvent' } }
+        nextCursor: { type: string }
+    ComplianceEvent:
+      type: object
+      additionalProperties: false
+      required: [eventId, schemaVersion, occurredAt, actorUserId, operation, resourceType, result, originIp, requestId, integrity, retentionUntil]
+      properties:
+        eventId: { type: string }
+        schemaVersion: { type: integer, minimum: 1 }
+        occurredAt: { type: string, format: date-time }
+        actorUserId: { type: string }
+        operation: { type: string }
+        resourceType: { type: string }
+        resourceId: { type: string }
+        environment: { type: string, enum: [test, production] }
+        result: { type: string, enum: [succeeded, failed, rejected] }
+        originIp: { type: string }
+        requestId: { type: string }
+        operationId: { type: string }
+        integrity: { type: string, enum: [verified, failed, unavailable] }
+        retentionUntil: { type: string, format: date-time }
+    IntegrityResult:
+      type: object
+      additionalProperties: false
+      required: [eventId, status, verifiedAt, retentionUntil]
+      properties:
+        eventId: { type: string }
+        status: { type: string, enum: [verified, failed, unavailable] }
+        verifiedAt: { type: string, format: date-time }
+        retentionUntil: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        requestId: { type: string }

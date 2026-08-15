@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Real Credentials API
+  version: 2.0.0
+servers:
+  - url: /v2
+security:
+  - sessionCookie: []
+paths:
+  /applications/{applicationId}/credentials:
+    post:
+      operationId: issueRealCredential
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '409': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}/credentials/{credentialId}/regenerations:
+    post:
+      operationId: rotateRealCredential
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/CredentialId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '409': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}/credentials/{credentialId}/transitions:
+    post:
+      operationId: transitionRealCredential
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/CredentialId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [action, reason]
+              properties:
+                action: { type: string, enum: [suspend, reactivate, revoke] }
+                reason: { type: string, minLength: 1, maxLength: 500 }
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /operations/{operationId}:
+    get:
+      operationId: getRealOperationStatus
+      parameters:
+        - { name: operationId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '404': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    sessionCookie: { type: apiKey, in: cookie, name: keyops_session }
+  parameters:
+    ApplicationId: { name: applicationId, in: path, required: true, schema: { type: string } }
+    CredentialId: { name: credentialId, in: path, required: true, schema: { type: string } }
+    Environment: { name: environment, in: query, required: true, schema: { type: string, enum: [test, production] } }
+    IdempotencyKey: { name: Idempotency-Key, in: header, required: true, schema: { type: string, minLength: 16 } }
+  responses:
+    Receipt:
+      description: Confirmed or reconcilable real operation
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Receipt' }
+    Error:
+      description: Controlled error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Receipt:
+      type: object
+      additionalProperties: false
+      required: [operationId, requestId, status, result]
+      properties:
+        operationId: { type: string }
+        requestId: { type: string }
+        status: { type: string, enum: [confirmed, reconciliation_required] }
+        result: { type: string, enum: [succeeded, failed, rejected] }
+        auditEventId: { type: string }
+        delivery:
+          type: object
+          additionalProperties: false
+          required: [deliveryId, expiresAt]
+          properties:
+            deliveryId: { type: string }
+            expiresAt: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        requestId: { type: string }
+

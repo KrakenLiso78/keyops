@@ -26,16 +26,16 @@ Una feature solo puede figurar como **completada** cuando todos sus escenarios s
 
 Estas cuatro features cubren las 12 historias comprometidas para el MVP web. Cuando las cuatro estén validadas podrá afirmarse: “En este Sprint se han completado las features 002, 003, 004 y 005”. Hasta entonces debe informarse su estado real.
 
-### Futuros sprints — requisitos previos al piloto real
+### Siguiente Sprint — requisitos previos al piloto real
 
-| Feature | Resultado futuro | Origen | Motivo para diferirla |
-| ------- | ---------------- | ------ | --------------------- |
-| [006 — Integración con catálogo corporativo](006-integracion-catalogo-corporativo/spec.md) | Instituciones, aplicaciones y roles proceden del sistema corporativo. | Dependencia transversal identificada en US-02 y US-03. | Depende de contratos, permisos y disponibilidad externos. |
-| [007 — Identidad y usuarios corporativos](007-identidad-usuarios-corporativos/spec.md) | Acceso corporativo y administración real de usuarios, perfiles y deshabilitación. | US-01 y US-14. | Añade integración de identidad y un módulo administrativo. |
-| [008 — Credenciales reales y entrega](008-credenciales-reales-entrega/spec.md) | Las operaciones afectan al servicio real de credenciales y la entrega protege secretos reales. | Evolución productiva de US-04, US-05, US-06, US-07 y US-09. | Requiere garantías de seguridad y servicios de confianza fuera del MVP. |
-| [009 — Auditoría de cumplimiento](009-auditoria-cumplimiento/spec.md) | Los eventos son resistentes a administradores y se conservan cinco años. | Evolución de cumplimiento de US-08 y US-12. | La persistencia funcional del MVP no demuestra estas garantías. |
+| Feature | Resultado del siguiente Sprint | Origen | Estado de planificación |
+| ------- | ------------------------------ | ------ | ----------------------- |
+| [006 — Integración con catálogo corporativo](006-integracion-catalogo-corporativo/spec.md) | Instituciones, aplicaciones y roles proceden del sistema corporativo. | Dependencia transversal identificada en US-02 y US-03. | Plan y tareas definidos; conexión bloqueada por contrato y entorno corporativos. |
+| [007 — Identidad y usuarios corporativos](007-identidad-usuarios-corporativos/spec.md) | Acceso corporativo y administración real de usuarios, perfiles y deshabilitación. | US-01 y US-14. | Plan y tareas definidos; conexión bloqueada por registro OIDC corporativo. |
+| [008 — Credenciales reales y entrega](008-credenciales-reales-entrega/spec.md) | Las operaciones afectan al servicio real de credenciales y la entrega protege secretos reales. | Evolución productiva de US-04, US-05, US-06, US-07 y US-09. | Plan y tareas definidos; aceptación bloqueada por servicios y sandbox reales. |
+| [009 — Auditoría de cumplimiento](009-auditoria-cumplimiento/spec.md) | Los eventos son resistentes a administradores y se conservan cinco años. | Evolución de cumplimiento de US-08 y US-12. | Plan y tareas definidos; aceptación bloqueada por proveedor WORM y Compliance. |
 
-Las features 006 a 009 son condiciones previas para afirmar que KeyOps está preparado para un piloto con datos y credenciales reales.
+Las features 006 a 009 forman el alcance del siguiente Sprint y son condiciones previas para afirmar que KeyOps está preparado para un piloto con datos y credenciales reales. Su inclusión no elimina los checkpoints externos ni permite declarar como superada una historia validada solo con stubs.
 
 ### Futuro posterior al MVP
 
@@ -47,4 +47,4 @@ La administración de usuarios original US-14 se incorpora en la feature 007. La
 
 ## Secuencia de planificación
 
-Cada directorio de feature tendrá su propio `plan.md` y sus propias `tasks.md`. La secuencia recomendada para el Sprint actual es 002 → 003 → 004 → 005. Los artefactos técnicos existentes dentro de `001-gestion-credenciales-api` son anteriores a esta división y se conservan solo como referencia histórica hasta que cada nueva feature disponga de sus propios artefactos.
+Cada directorio de feature tiene su propio `plan.md` y sus propias `tasks.md`. La secuencia del Sprint MVP web es 002 → 003 → 004 → 005. Para el siguiente Sprint, 006 y 007 pueden avanzar en paralelo; 008 requiere ambas y 009 completa transversalmente la evidencia del piloto. Los artefactos de `001-gestion-credenciales-api` se conservan solo como referencia histórica. La feature 010 permanece como único futuro posterior y no dispone todavía de `plan.md` ni `tasks.md`.

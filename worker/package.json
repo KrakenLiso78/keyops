@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "airtable:models:validate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env ./scripts/airtable/validate-data-models.mjs",
     "airtable:seed:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON ./scripts/airtable/reset-base.mjs --dry-run",
     "airtable:reset": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env ./scripts/airtable/reset-base.mjs",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test"
