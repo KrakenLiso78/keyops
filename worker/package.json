@@ -4,10 +4,29 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:contract": "vitest run tests/contract",
     "airtable:models:validate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env ./scripts/airtable/validate-data-models.mjs",
     "airtable:seed:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON ./scripts/airtable/reset-base.mjs --dry-run",
     "airtable:reset": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env ./scripts/airtable/reset-base.mjs",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test"
+    "test:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.mjs",
+    "test": "npm run test:legacy && npm run test:unit",
+    "validate": "npm run typecheck && npm test && npm run test:contract"
+  },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260815.1",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10",
+    "wrangler": "4.115.0"
   },
   "engines": {
     "node": "25.9.0",

@@ -20,3 +20,10 @@
 # Exportaciones y comprobaciones locales
 outputs/
 *.inspect.ndjson
+
+# Dependencias y artefactos generados
+node_modules/
+dist/
+coverage/
+.wrangler/
+*.tsbuildinfo

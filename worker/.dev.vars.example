@@ -1,0 +1,5 @@
+AIRTABLE_BASE_ID="app00000000000000"
+AIRTABLE_PAT="pat-example-not-a-secret"
+DEMO_CREDENTIALS_JSON='{"analyst@example.invalid":"change-me"}'
+SESSION_SIGNING_KEY="replace-with-at-least-32-random-characters"
+DELIVERY_PEPPER="replace-with-a-different-random-secret"
