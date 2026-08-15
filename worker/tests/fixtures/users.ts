@@ -7,7 +7,7 @@ export const userFixtures: UserFields[] = [
     displayName: "Analista Demo",
     profile: "analyst",
     enabled: true,
-    permissions: ["applications:read", "credentials:issue"],
+    permissions: ["applications:read", "credentials:issue", "management:write"],
     updatedAt: "2026-08-15T09:00:00.000Z",
   },
   {

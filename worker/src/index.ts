@@ -1,9 +1,12 @@
 import { AirtableClient } from "./airtable/AirtableClient";
 import { UserRepository } from "./airtable/UserRepository";
+import { ApplicationRepository } from "./airtable/ApplicationRepository";
 import { noOpAuditSink } from "./audit/AuditSink";
 import { validateEnv, type WorkerEnv } from "./config/env";
 import { ApiError, errorResponse } from "./http/ApiError";
 import { createRequestContext } from "./http/requestContext";
+import { ApplicationCache } from "./cache/applicationCache";
+import { applicationsRoute } from "./routes/v1/applications";
 import { healthResponse } from "./routes/v1/health";
 import { createSession, restoreSession } from "./routes/v1/sessions";
 
@@ -20,12 +23,11 @@ export async function handleRequest(
 
     if (url.pathname.startsWith("/v1/")) {
       const config = validateEnv(env);
-      const users = new UserRepository(
-        new AirtableClient({
-          baseId: config.airtableBaseId,
-          token: config.airtablePat,
-        }),
-      );
+      const airtable = new AirtableClient({
+        baseId: config.airtableBaseId,
+        token: config.airtablePat,
+      });
+      const users = new UserRepository(airtable);
       const sessionDependencies = {
         users,
         demoCredentials: config.demoCredentials,
@@ -38,6 +40,13 @@ export async function handleRequest(
       if (url.pathname === "/v1/session" && request.method === "GET") {
         return await restoreSession(request, context, sessionDependencies);
       }
+      const applicationResponse = await applicationsRoute(request, context, {
+        users,
+        applications: new ApplicationRepository(airtable),
+        signingKey: config.sessionSigningKey,
+        cache: applicationCache,
+      });
+      if (applicationResponse) return applicationResponse;
       throw new ApiError(
         404,
         "not_found",
@@ -55,5 +64,7 @@ export async function handleRequest(
     return errorResponse(error, context.requestId);
   }
 }
+
+const applicationCache = new ApplicationCache();
 
 export default { fetch: handleRequest } satisfies ExportedHandler<WorkerEnv>;
