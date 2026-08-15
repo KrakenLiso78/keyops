@@ -68,11 +68,11 @@ export function EnvironmentBadge({ environment }: { environment: Environment }) 
   const production = environment === 'production';
   return (
     <View
-      accessibilityLabel={`Ambiente: ${production ? 'Producción' : 'Pruebas'}`}
+      accessibilityLabel={`Ambiente activo: ${production ? 'Producción' : 'Pruebas'} de demostración`}
       style={[styles.environmentBadge, production ? styles.production : styles.test]}
     >
       <Text style={[styles.environmentText, production && styles.productionText]}>
-        {production ? 'PRODUCCIÓN' : 'PRUEBAS'}
+        DEMO · {production ? 'PRODUCCIÓN' : 'PRUEBAS'}
       </Text>
     </View>
   );

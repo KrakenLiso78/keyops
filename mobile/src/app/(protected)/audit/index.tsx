@@ -39,7 +39,7 @@ function Unauthorized() {
 }
 
 export default function AuditScreen() {
-  const { user } = useApp();
+  const { environment, user } = useApp();
   if (!user) return <Unauthorized />;
   let events;
   try {
@@ -50,7 +50,10 @@ export default function AuditScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
-        <BackHeader onBack={() => router.back()} />
+        <View style={styles.topControls}>
+          <BackHeader onBack={() => router.back()} />
+          <EnvironmentBadge environment={environment} />
+        </View>
         <View style={styles.titleBlock}>
           <Heading level={1}>Auditoría</Heading>
           <Body>Trazabilidad de las acciones realizadas durante esta sesión.</Body>
@@ -97,6 +100,7 @@ export default function AuditScreen() {
 
 const styles = StyleSheet.create({
   content: { gap: space.md, paddingBottom: space.xxl },
+  topControls: { alignItems: 'flex-start', gap: space.xs },
   titleBlock: { gap: space.xxs },
   eventCard: { gap: space.sm },
   eventHeader: {

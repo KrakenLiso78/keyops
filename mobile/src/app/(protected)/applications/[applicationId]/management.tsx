@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
+import type { Application, Environment } from '@/domain/model/types';
 import { updateManagementContext } from '@/domain/use-cases/applications/updateManagementContext';
 import { Body, Button, Card, Field, Heading, Screen } from '@/presentation/components/base';
 import { BackHeader, EnvironmentBadge, SectionLabel } from '@/presentation/components/chrome';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
+import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
 
 export default function ManagementScreen() {
   const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
   const { environment } = useApp();
   const app = fakeRepository.getApplication(applicationId, environment);
-  const [contact, setContact] = useState(app?.technicalContact ?? '');
-  const [ticket, setTicket] = useState(app?.requestOrTicketId ?? '');
   if (!app)
     return (
       <Screen>
@@ -21,6 +21,36 @@ export default function ManagementScreen() {
         <Heading>Aplicación no encontrada</Heading>
       </Screen>
     );
+  return (
+    <ManagementContent
+      key={`${environment}:${applicationId}`}
+      app={app}
+      applicationId={applicationId}
+      environment={environment}
+    />
+  );
+}
+
+function ManagementContent({
+  app,
+  applicationId,
+  environment,
+}: {
+  app: Application;
+  applicationId: string;
+  environment: Environment;
+}) {
+  const [contact, setContact] = useState(app?.technicalContact ?? '');
+  const [ticket, setTicket] = useState(app?.requestOrTicketId ?? '');
+  const { registerReset } = useEnvironment();
+  useEffect(
+    () =>
+      registerReset(() => {
+        setContact('');
+        setTicket('');
+      }),
+    [registerReset],
+  );
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">

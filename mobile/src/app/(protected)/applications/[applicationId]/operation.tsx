@@ -15,6 +15,7 @@ import {
 } from '@/presentation/components/chrome';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
+import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
 
 const titles: Record<string, string> = {
   issue: 'Generar credenciales',
@@ -67,6 +68,16 @@ export default function OperationScreen() {
   const [reason, setReason] = useState('');
   const [result, setResult] = useState<Receipt>();
   const [error, setError] = useState('');
+  const { registerReset } = useEnvironment();
+  useEffect(
+    () =>
+      registerReset(() => {
+        setReason('');
+        setResult(undefined);
+        setError('');
+      }),
+    [registerReset],
+  );
   const title = titles[action] ?? 'Operación sobre credencial';
 
   const submit = () => {

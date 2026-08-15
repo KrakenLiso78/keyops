@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
@@ -7,11 +7,21 @@ import { AppHeader, CredentialStateBadge, RoleBadge } from '@/presentation/compo
 import { EnvironmentBar } from '@/presentation/components/environment';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
+import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
 
 export default function ApplicationsScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState('');
   const { environment, user, signOut } = useApp();
+  const { registerReset } = useEnvironment();
+  useEffect(
+    () =>
+      registerReset(() => {
+        setMenuOpen(false);
+        setQuery('');
+      }),
+    [registerReset],
+  );
   const apps = useMemo(
     () => fakeRepository.listApplications(environment, query),
     [environment, query],

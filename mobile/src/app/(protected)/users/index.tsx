@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-nat
 import { listAuthorizedUsers, updateAuthorizedUser } from '@/domain/use-cases/users/manageUsers';
 import type { UserProfile } from '@/domain/model/types';
 import { Body, Card, Heading, Screen } from '@/presentation/components/base';
-import { BackHeader, SectionLabel } from '@/presentation/components/chrome';
+import { BackHeader, EnvironmentBadge, SectionLabel } from '@/presentation/components/chrome';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
 
@@ -25,7 +25,7 @@ function Unauthorized() {
 }
 
 export default function UsersScreen() {
-  const { user } = useApp();
+  const { environment, user } = useApp();
   const [, refresh] = useState(0);
   if (!user) return <Unauthorized />;
   const update = (id: string, profile: UserProfile, enabled: boolean) => {
@@ -41,7 +41,10 @@ export default function UsersScreen() {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
-        <BackHeader onBack={() => router.back()} />
+        <View style={styles.topControls}>
+          <BackHeader onBack={() => router.back()} />
+          <EnvironmentBadge environment={environment} />
+        </View>
         <View style={styles.titleBlock}>
           <Heading level={1}>Usuarios autorizados</Heading>
           <Body>Asigna perfiles y controla el acceso a KeyOps.</Body>
@@ -101,6 +104,7 @@ export default function UsersScreen() {
 
 const styles = StyleSheet.create({
   content: { gap: space.md, paddingBottom: space.xxl },
+  topControls: { alignItems: 'flex-start', gap: space.xs },
   titleBlock: { gap: space.xxs },
   userCard: { gap: space.sm },
   userHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },

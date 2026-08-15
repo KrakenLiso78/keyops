@@ -1,18 +1,24 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '@/presentation/design-system';
-import { useApp } from '@/presentation/state/AppProvider';
+import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
 
 export function EnvironmentBar() {
-  const { environment, setEnvironment } = useApp();
+  const { environment, changeEnvironment } = useEnvironment();
+  const environmentName = environment === 'test' ? 'Pruebas' : 'Producción';
   return (
-    <View style={styles.container}>
+    <View
+      accessibilityLabel={`Ambiente activo: ${environmentName} de demostración`}
+      style={styles.container}
+    >
+      <Text style={styles.demoLabel}>AMBIENTE DE DEMOSTRACIÓN</Text>
       <View accessibilityRole="tablist" style={styles.tabs}>
         {(['test', 'production'] as const).map((value) => (
           <Pressable
             key={value}
             accessibilityRole="tab"
+            accessibilityLabel={value === 'test' ? 'Pruebas' : 'Producción'}
             accessibilityState={{ selected: environment === value }}
-            onPress={() => setEnvironment(value)}
+            onPress={() => changeEnvironment(value)}
             style={[
               styles.tab,
               environment === value && styles.selectedTab,
@@ -46,6 +52,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.canvas,
     borderBottomWidth: 1,
     borderBottomColor: colors.hairline,
+  },
+  demoLabel: {
+    color: colors.steel,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.7,
+    paddingHorizontal: 16,
+    paddingTop: 6,
+    textAlign: 'center',
   },
   tabs: { flexDirection: 'row' },
   tab: {

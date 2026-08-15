@@ -3,6 +3,7 @@ import ApplicationsScreen from '@/app/(protected)/applications';
 import { DependenciesProvider } from '@/composition/DependenciesProvider';
 import { createAppDependencies } from '@/composition/createAppDependencies';
 import { AppProvider } from '@/presentation/state/AppProvider';
+import { EnvironmentProvider } from '@/presentation/state/EnvironmentProvider';
 
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), replace: jest.fn() },
@@ -12,9 +13,11 @@ describe('inventario de aplicaciones', () => {
   const renderScreen = async () => {
     const screen = render(
       <DependenciesProvider value={createAppDependencies('fake')}>
-        <AppProvider>
-          <ApplicationsScreen />
-        </AppProvider>
+        <EnvironmentProvider>
+          <AppProvider>
+            <ApplicationsScreen />
+          </AppProvider>
+        </EnvironmentProvider>
       </DependenciesProvider>,
     );
     await act(async () => {

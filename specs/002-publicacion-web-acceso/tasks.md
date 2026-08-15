@@ -66,14 +66,14 @@
 
 ### Tests
 
-- [ ] T027 [P] [US-WEB-02] Escribir tests fallidos de reducción/reset y carrera de cambio de ambiente en `mobile/tests/unit/environment-state.test.ts`
-- [ ] T028 [P] [US-WEB-02] Escribir test de componente fallido de identificación visible en `mobile/tests/component/environment-banner.test.tsx`
+- [X] T027 [P] [US-WEB-02] Escribir tests fallidos de reducción/reset y carrera de cambio de ambiente en `mobile/tests/unit/environment-state.test.tsx`
+- [X] T028 [P] [US-WEB-02] Escribir test de componente fallido de identificación visible en `mobile/tests/component/environment-banner.test.tsx`
 
 ### Implementation
 
-- [ ] T029 [US-WEB-02] Centralizar cambio y reset inmutable en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`
+- [X] T029 [US-WEB-02] Centralizar cambio y reset inmutable en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`
 - [ ] T030 [US-WEB-02] Cancelar/ignorar respuestas del ambiente anterior en `mobile/src/data/http/EnvironmentRequestScope.ts` y controladores dependientes
-- [ ] T031 [US-WEB-02] Mostrar ambiente y etiqueta de demostración en todo el chrome protegido desde `mobile/src/presentation/components/environment/index.tsx` y `mobile/src/presentation/components/chrome.tsx`
+- [X] T031 [US-WEB-02] Mostrar ambiente y etiqueta de demostración en todo el chrome protegido desde `mobile/src/presentation/components/environment/index.tsx` y `mobile/src/presentation/components/chrome.tsx`
 
 **Checkpoint**: Ningún dato visual del ambiente anterior sobrevive al cambio.
 

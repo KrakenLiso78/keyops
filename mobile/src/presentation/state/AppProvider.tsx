@@ -8,26 +8,26 @@ import {
 } from 'react';
 import { useDependencies } from '@/composition/DependenciesProvider';
 import type { AuthenticatedUser } from '@/domain/model/user';
-import type { Environment } from '@/domain/model/types';
 import { restoreSession } from '@/domain/use-cases/auth/restoreSession';
 import { signIn as signInUseCase } from '@/domain/use-cases/auth/signIn';
 import { signOut as signOutUseCase } from '@/domain/use-cases/auth/signOut';
+import { useEnvironment } from './EnvironmentProvider';
 
 type AppContextValue = {
   user?: AuthenticatedUser;
   restoring: boolean;
-  environment: Environment;
+  environment: ReturnType<typeof useEnvironment>['environment'];
   signIn: (login: string, password: string) => Promise<AuthenticatedUser>;
   signOut: () => Promise<void>;
-  setEnvironment: (environment: Environment) => void;
+  setEnvironment: ReturnType<typeof useEnvironment>['changeEnvironment'];
 };
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export function AppProvider({ children }: PropsWithChildren) {
   const { auth, sessionStore } = useDependencies();
+  const { environment, changeEnvironment, resetToTest } = useEnvironment();
   const [user, setUser] = useState<AuthenticatedUser>();
   const [restoring, setRestoring] = useState(true);
-  const [environment, setEnvironment] = useState<Environment>('test');
 
   useEffect(() => {
     let mounted = true;
@@ -59,11 +59,11 @@ export function AppProvider({ children }: PropsWithChildren) {
       signOut: async () => {
         await signOutUseCase(auth, sessionStore);
         setUser(undefined);
-        setEnvironment('test');
+        resetToTest();
       },
-      setEnvironment,
+      setEnvironment: changeEnvironment,
     }),
-    [auth, environment, restoring, sessionStore, user],
+    [auth, changeEnvironment, environment, resetToTest, restoring, sessionStore, user],
   );
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
