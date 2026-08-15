@@ -1,0 +1,161 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Representative Data API
+  version: 1.0.0
+servers:
+  - url: /v1
+security:
+  - bearerAuth: []
+paths:
+  /applications:
+    get:
+      operationId: listApplications
+      parameters:
+        - $ref: '#/components/parameters/Environment'
+        - { name: query, in: query, schema: { type: string } }
+        - { name: state, in: query, schema: { type: string } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, lastChangedAt] } }
+        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+      responses:
+        '200':
+          description: Authorized application page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationPage'
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}:
+    get:
+      operationId: getApplication
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/Environment'
+      responses:
+        '200':
+          description: Application detail
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Application' }
+        '404': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}/management:
+    patch:
+      operationId: updateApplicationManagement
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/Environment'
+        - name: If-Match
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ManagementCommand' }
+      responses:
+        '200':
+          description: Persisted application
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Application' }
+        '409': { $ref: '#/components/responses/Error' }
+        '503': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  parameters:
+    Environment:
+      name: environment
+      in: query
+      required: true
+      schema: { type: string, enum: [test, production] }
+    ApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      schema: { type: string }
+  responses:
+    Error:
+      description: Controlled error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    ApplicationPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Application' } }
+        page: { type: integer }
+        pageSize: { type: integer, const: 20 }
+        total: { type: integer }
+    Application:
+      type: object
+      additionalProperties: false
+      required: [id, name, institution, environment, apiRole, declaredIps, management, credentialState, stateHistory, lastChangedAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        institution: { $ref: '#/components/schemas/Institution' }
+        environment: { type: string, enum: [test, production] }
+        apiRole: { $ref: '#/components/schemas/ApiRole' }
+        declaredIps: { type: array, items: { type: string } }
+        management: { $ref: '#/components/schemas/Management' }
+        credentialState:
+          type: string
+          enum: [no_credentials, active, suspended, rotated_inactive, revoked]
+        stateHistory: { type: array, items: { type: object } }
+        lastChangedAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    Institution:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id: { type: string }
+        name: { type: string }
+    ApiRole:
+      type: object
+      additionalProperties: false
+      required: [id, name, serviceIdentifiers]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        serviceIdentifiers: { type: array, items: { type: string } }
+    Management:
+      type: object
+      additionalProperties: false
+      properties:
+        technicalContact:
+          type: object
+          additionalProperties: false
+          required: [name]
+          properties:
+            name: { type: string }
+            email: { type: string, format: email }
+            phone: { type: string }
+        reason: { type: string }
+        requestOrTicketId: { type: string }
+        updatedAt: { type: string, format: date-time }
+    ManagementCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        technicalContact:
+          type: object
+          additionalProperties: false
+          required: [name]
+          properties:
+            name: { type: string }
+            email: { type: string, format: email }
+            phone: { type: string }
+        reason: { type: string, maxLength: 500 }
+        requestOrTicketId: { type: string, maxLength: 100 }
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        requestId: { type: string }

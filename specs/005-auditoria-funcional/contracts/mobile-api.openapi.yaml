@@ -1,0 +1,74 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Functional Audit API
+  version: 1.0.0
+servers:
+  - url: /v1
+security:
+  - bearerAuth: []
+paths:
+  /audit-events:
+    get:
+      operationId: listAuditEvents
+      parameters:
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+        - { name: institutionId, in: query, schema: { type: string } }
+        - { name: applicationId, in: query, schema: { type: string } }
+        - { name: actorUserId, in: query, schema: { type: string } }
+        - { name: result, in: query, schema: { type: string, enum: [succeeded, failed, rejected] } }
+        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+      responses:
+        '200':
+          description: Authorized event page
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditPage' }
+        '403': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  responses:
+    Error:
+      description: Controlled error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    AuditPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/AuditEvent' }
+        page: { type: integer }
+        pageSize: { type: integer, const: 20 }
+        total: { type: integer }
+    AuditEvent:
+      type: object
+      additionalProperties: false
+      required: [id, occurredAt, actorUserId, actorDisplayName, operation, resourceType, result, originIp, requestId]
+      properties:
+        id: { type: string }
+        occurredAt: { type: string, format: date-time }
+        actorUserId: { type: string }
+        actorDisplayName: { type: string }
+        operation: { type: string }
+        resourceType: { type: string }
+        resourceId: { type: string }
+        environment: { type: string, enum: [test, production] }
+        institutionId: { type: string }
+        applicationId: { type: string }
+        credentialId: { type: string }
+        result: { type: string, enum: [succeeded, failed, rejected] }
+        originIp: { type: string }
+        failureCause: { type: string }
+        requestId: { type: string }
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        requestId: { type: string }

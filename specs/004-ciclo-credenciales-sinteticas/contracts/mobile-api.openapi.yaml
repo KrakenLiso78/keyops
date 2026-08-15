@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: KeyOps Synthetic Credentials API
+  version: 1.0.0
+servers:
+  - url: /v1
+security:
+  - bearerAuth: []
+paths:
+  /applications/{applicationId}/credentials:
+    post:
+      operationId: issueCredential
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '409': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}/credentials/{credentialId}/regenerations:
+    post:
+      operationId: regenerateCredential
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/CredentialId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '409': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}/credentials/{credentialId}/transitions:
+    post:
+      operationId: transitionCredential
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/CredentialId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action, reason]
+              properties:
+                action: { type: string, enum: [suspend, reactivate, revoke] }
+                reason: { type: string, minLength: 1, maxLength: 500 }
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /applications/{applicationId}/credentials/{credentialId}/deliveries:
+    post:
+      operationId: createSyntheticDelivery
+      parameters:
+        - $ref: '#/components/parameters/ApplicationId'
+        - $ref: '#/components/parameters/CredentialId'
+        - $ref: '#/components/parameters/Environment'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200': { $ref: '#/components/responses/Receipt' }
+        '409': { $ref: '#/components/responses/Error' }
+  /deliveries/{deliveryId}/artifact:
+    post:
+      operationId: consumeSyntheticDelivery
+      parameters:
+        - name: deliveryId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string }
+      responses:
+        '200':
+          description: Synthetic non-functional artifact
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SyntheticArtifact' }
+        '410': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  parameters:
+    ApplicationId: { name: applicationId, in: path, required: true, schema: { type: string } }
+    CredentialId: { name: credentialId, in: path, required: true, schema: { type: string } }
+    Environment: { name: environment, in: query, required: true, schema: { type: string, enum: [test, production] } }
+    IdempotencyKey: { name: Idempotency-Key, in: header, required: true, schema: { type: string, minLength: 16 } }
+  responses:
+    Receipt:
+      description: Confirmed operation receipt
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Receipt' }
+    Error:
+      description: Controlled error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Receipt:
+      type: object
+      additionalProperties: false
+      required: [operationId, requestId, result]
+      properties:
+        operationId: { type: string }
+        requestId: { type: string }
+        auditEventId: { type: string }
+        result: { type: string, enum: [succeeded, failed, rejected] }
+        delivery:
+          type: object
+          additionalProperties: false
+          required: [deliveryId, credentialVersionId, deliveryUrl, otp, otpExpiresAt, createdAt]
+          properties:
+            deliveryId: { type: string }
+            credentialVersionId: { type: string }
+            deliveryUrl: { type: string, format: uri }
+            otp: { type: string }
+            otpExpiresAt: { type: string, format: date-time }
+            createdAt: { type: string, format: date-time }
+    SyntheticArtifact:
+      type: object
+      additionalProperties: false
+      required: [classification, applicationId, credentialVersionId, generatedAt]
+      properties:
+        classification: { type: string, const: SYNTHETIC-NON-FUNCTIONAL }
+        applicationId: { type: string }
+        credentialVersionId: { type: string }
+        generatedAt: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        requestId: { type: string }
