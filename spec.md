@@ -6,6 +6,8 @@
 **Estado**: Borrador actualizado para MVP web persistente\
 **Entradas**: `Lean Canvas Full · Gestión autónoma de credenciales API · Escuadrón 04.docx` y `docs/product/historias-de-usuario-keyops.docx`
 
+> **Especificación paraguas**: este documento conserva el alcance global y la trazabilidad histórica de las 14 historias originales. La planificación nueva se realiza por las features independientes del mapa `specs/README.md`. No debe utilizarse esta especificación paraguas para generar un nuevo plan o nuevas tareas.
+
 ## 1. Contexto y objetivo
 
 La plataforma de notificaciones legales conecta instituciones que, a su vez, pueden tener muchas aplicaciones integradas. Cada aplicación necesita credenciales y un rol que delimita los servicios de la API que puede utilizar. Actualmente, la emisión, entrega y renovación de esas credenciales depende de un miembro del equipo técnico con acceso directo a los sistemas internos. Esto convierte una operación repetitiva en un cuello de botella, especialmente para las instituciones con más de 20 aplicaciones y varias renovaciones mensuales.
