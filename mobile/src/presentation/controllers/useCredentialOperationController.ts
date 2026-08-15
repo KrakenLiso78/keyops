@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import type { Environment } from '@/domain/model/common';
 import type { OperationReceipt } from '@/domain/model/audit';
 import type { CredentialRepository } from '@/domain/ports/CredentialRepository';
@@ -81,6 +82,12 @@ export function useCredentialOperationController(
   const clearSensitive = useCallback(() => {
     setReceipt((current) => (current?.delivery ? undefined : current));
   }, []);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState !== 'active') clearSensitive();
+    });
+    return () => subscription.remove();
+  }, [clearSensitive]);
   const reset = useCallback(() => {
     pending.current = undefined;
     setReceipt(undefined);

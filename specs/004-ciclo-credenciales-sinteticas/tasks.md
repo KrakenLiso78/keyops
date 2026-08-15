@@ -121,17 +121,17 @@
 
 ### Tests
 
-- [ ] T044 [P] [US-CRED-05] Escribir tests fallidos de digest, tiempo, consumo e invalidación en `worker/tests/unit/synthetic-delivery.test.ts`
-- [ ] T045 [P] [US-CRED-05] Escribir contrato fallido de creación/consumo en `worker/tests/contract/synthetic-delivery.contract.test.ts`
-- [ ] T046 [P] [US-CRED-05] Escribir test móvil fallido de memoria/limpieza de código en `mobile/tests/component/synthetic-delivery.test.tsx`
+- [x] T044 [P] [US-CRED-05] Escribir tests fallidos de digest, tiempo, consumo e invalidación en `worker/tests/unit/synthetic-delivery.test.ts`
+- [x] T045 [P] [US-CRED-05] Escribir contrato fallido de creación/consumo en `worker/tests/contract/synthetic-delivery.contract.test.ts`
+- [x] T046 [P] [US-CRED-05] Escribir test móvil fallido de memoria/limpieza de código en `mobile/tests/component/synthetic-delivery.test.tsx`
 
 ### Implementation
 
-- [ ] T047 [US-CRED-05] Implementar nueva entrega e invalidación anterior en `worker/src/credentials/createDelivery.ts`
-- [ ] T048 [US-CRED-05] Implementar consumo atómico lógico y artefacto etiquetado en `worker/src/credentials/consumeDelivery.ts`
-- [ ] T049 [US-CRED-05] Exponer rutas de entrega/artefacto en `worker/src/routes/v1/credentials.ts`
-- [ ] T050 [US-CRED-05] Implementar `deliver()` y descarga explícita en `mobile/src/data/repositories/RestCredentialRepository.ts`
-- [ ] T051 [US-CRED-05] Mantener OTP solo en memoria y limpiarlo al cerrar/background en `mobile/src/presentation/controllers/useCredentialOperationController.ts`
+- [x] T047 [US-CRED-05] Implementar nueva entrega e invalidación anterior en `worker/src/credentials/createDelivery.ts`
+- [x] T048 [US-CRED-05] Implementar consumo atómico lógico y artefacto etiquetado en `worker/src/credentials/consumeDelivery.ts`
+- [x] T049 [US-CRED-05] Exponer rutas de entrega/artefacto en `worker/src/routes/v1/credentials.ts`
+- [x] T050 [US-CRED-05] Implementar `deliver()` y descarga explícita en `mobile/src/data/repositories/RestCredentialRepository.ts`
+- [x] T051 [US-CRED-05] Mantener OTP solo en memoria y limpiarlo al cerrar/background en `mobile/src/presentation/controllers/useCredentialOperationController.ts`
 
 **Checkpoint**: Código nuevo utilizable una vez; el anterior, usado o caducado devuelve rechazo controlado.
 

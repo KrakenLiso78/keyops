@@ -11,31 +11,31 @@ paths:
     post:
       operationId: issueCredential
       parameters:
-        - $ref: '#/components/parameters/ApplicationId'
-        - $ref: '#/components/parameters/Environment'
-        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/Environment"
+        - $ref: "#/components/parameters/IdempotencyKey"
       responses:
-        '200': { $ref: '#/components/responses/Receipt' }
-        '409': { $ref: '#/components/responses/Error' }
+        "200": { $ref: "#/components/responses/Receipt" }
+        "409": { $ref: "#/components/responses/Error" }
   /applications/{applicationId}/credentials/{credentialId}/regenerations:
     post:
       operationId: regenerateCredential
       parameters:
-        - $ref: '#/components/parameters/ApplicationId'
-        - $ref: '#/components/parameters/CredentialId'
-        - $ref: '#/components/parameters/Environment'
-        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/CredentialId"
+        - $ref: "#/components/parameters/Environment"
+        - $ref: "#/components/parameters/IdempotencyKey"
       responses:
-        '200': { $ref: '#/components/responses/Receipt' }
-        '409': { $ref: '#/components/responses/Error' }
+        "200": { $ref: "#/components/responses/Receipt" }
+        "409": { $ref: "#/components/responses/Error" }
   /applications/{applicationId}/credentials/{credentialId}/transitions:
     post:
       operationId: transitionCredential
       parameters:
-        - $ref: '#/components/parameters/ApplicationId'
-        - $ref: '#/components/parameters/CredentialId'
-        - $ref: '#/components/parameters/Environment'
-        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/CredentialId"
+        - $ref: "#/components/parameters/Environment"
+        - $ref: "#/components/parameters/IdempotencyKey"
       requestBody:
         required: true
         content:
@@ -47,23 +47,24 @@ paths:
                 action: { type: string, enum: [suspend, reactivate, revoke] }
                 reason: { type: string, minLength: 1, maxLength: 500 }
       responses:
-        '200': { $ref: '#/components/responses/Receipt' }
-        '403': { $ref: '#/components/responses/Error' }
-        '409': { $ref: '#/components/responses/Error' }
+        "200": { $ref: "#/components/responses/Receipt" }
+        "403": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
   /applications/{applicationId}/credentials/{credentialId}/deliveries:
     post:
       operationId: createSyntheticDelivery
       parameters:
-        - $ref: '#/components/parameters/ApplicationId'
-        - $ref: '#/components/parameters/CredentialId'
-        - $ref: '#/components/parameters/Environment'
-        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/CredentialId"
+        - $ref: "#/components/parameters/Environment"
+        - $ref: "#/components/parameters/IdempotencyKey"
       responses:
-        '200': { $ref: '#/components/responses/Receipt' }
-        '409': { $ref: '#/components/responses/Error' }
+        "200": { $ref: "#/components/responses/Receipt" }
+        "409": { $ref: "#/components/responses/Error" }
   /deliveries/{deliveryId}/artifact:
     post:
       operationId: consumeSyntheticDelivery
+      security: []
       parameters:
         - name: deliveryId
           in: path
@@ -77,33 +78,52 @@ paths:
               type: object
               required: [code]
               properties:
-                code: { type: string }
+                code: { type: string, pattern: '^\d{6}$' }
       responses:
-        '200':
+        "200":
           description: Synthetic non-functional artifact
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/SyntheticArtifact' }
-        '410': { $ref: '#/components/responses/Error' }
+              schema: { $ref: "#/components/schemas/SyntheticArtifact" }
+        "410": { $ref: "#/components/responses/Error" }
 components:
   securitySchemes:
     bearerAuth: { type: http, scheme: bearer }
   parameters:
-    ApplicationId: { name: applicationId, in: path, required: true, schema: { type: string } }
-    CredentialId: { name: credentialId, in: path, required: true, schema: { type: string } }
-    Environment: { name: environment, in: query, required: true, schema: { type: string, enum: [test, production] } }
-    IdempotencyKey: { name: Idempotency-Key, in: header, required: true, schema: { type: string, minLength: 16 } }
+    ApplicationId:
+      {
+        name: applicationId,
+        in: path,
+        required: true,
+        schema: { type: string },
+      }
+    CredentialId:
+      { name: credentialId, in: path, required: true, schema: { type: string } }
+    Environment:
+      {
+        name: environment,
+        in: query,
+        required: true,
+        schema: { type: string, enum: [test, production] },
+      }
+    IdempotencyKey:
+      {
+        name: Idempotency-Key,
+        in: header,
+        required: true,
+        schema: { type: string, minLength: 16 },
+      }
   responses:
     Receipt:
       description: Confirmed operation receipt
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Receipt' }
+          schema: { $ref: "#/components/schemas/Receipt" }
     Error:
       description: Controlled error
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
   schemas:
     Receipt:
       type: object
@@ -117,7 +137,15 @@ components:
         delivery:
           type: object
           additionalProperties: false
-          required: [deliveryId, credentialVersionId, deliveryUrl, otp, otpExpiresAt, createdAt]
+          required:
+            [
+              deliveryId,
+              credentialVersionId,
+              deliveryUrl,
+              otp,
+              otpExpiresAt,
+              createdAt,
+            ]
           properties:
             deliveryId: { type: string }
             credentialVersionId: { type: string }
@@ -128,8 +156,16 @@ components:
     SyntheticArtifact:
       type: object
       additionalProperties: false
-      required: [classification, applicationId, credentialVersionId, generatedAt]
+      required:
+        [
+          contractVersion,
+          classification,
+          applicationId,
+          credentialVersionId,
+          generatedAt,
+        ]
       properties:
+        contractVersion: { type: string, const: "1" }
         classification: { type: string, const: SYNTHETIC-NON-FUNCTIONAL }
         applicationId: { type: string }
         credentialVersionId: { type: string }

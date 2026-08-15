@@ -55,6 +55,7 @@ export class DeliveryGrantRepository {
   async invalidateAvailable(
     credentialVersionId: string,
     now: string,
+    exceptDeliveryId?: string,
   ): Promise<void> {
     const available = (
       await this.client.list<DeliveryGrantFields>("DeliveryGrants")
@@ -63,6 +64,7 @@ export class DeliveryGrantRepository {
       .filter(
         ({ fields }) =>
           fields.credentialVersionId === credentialVersionId &&
+          fields.deliveryId !== exceptDeliveryId &&
           !fields.consumedAt &&
           !fields.invalidatedAt,
       );

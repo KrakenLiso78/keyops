@@ -98,4 +98,33 @@ describe('RestCredentialRepository', () => {
       ],
     ]);
   });
+
+  it('creates and explicitly consumes a synthetic delivery', async () => {
+    const artifact = {
+      contractVersion: '1',
+      classification: 'SYNTHETIC-NON-FUNCTIONAL',
+      applicationId: 'app-001',
+      credentialVersionId: 'version-1',
+      generatedAt: '2026-08-15T10:01:00.000Z',
+    };
+    const request = jest.fn().mockResolvedValueOnce(receipt).mockResolvedValueOnce(artifact);
+    const repository = new RestCredentialRepository({ request } as unknown as FetchHttpClient);
+    await repository.deliver('test', 'app-001', 'credential-1', 'delivery-key-000001');
+    await expect(repository.consumeDelivery('delivery/1', '482193')).resolves.toMatchObject({
+      classification: 'SYNTHETIC-NON-FUNCTIONAL',
+    });
+    expect(request.mock.calls).toEqual([
+      [
+        '/v1/applications/app-001/credentials/credential-1/deliveries?environment=test',
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'idempotency-key': 'delivery-key-000001' },
+        }),
+      ],
+      [
+        '/v1/deliveries/delivery%2F1/artifact',
+        { method: 'POST', body: JSON.stringify({ code: '482193' }) },
+      ],
+    ]);
+  });
 });

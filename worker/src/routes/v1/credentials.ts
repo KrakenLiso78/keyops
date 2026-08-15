@@ -5,6 +5,8 @@ import type { UserRepository } from "../../airtable/UserRepository";
 import { environmentSchema } from "../../airtable/applicationSchema";
 import type { AuditSink } from "../../audit/AuditSink";
 import { authenticate } from "../../auth/authenticate";
+import { consumeDelivery } from "../../credentials/consumeDelivery";
+import { createDelivery } from "../../credentials/createDelivery";
 import { issueCredential } from "../../credentials/issueCredential";
 import { regenerateCredential } from "../../credentials/regenerateCredential";
 import { transitionCredential } from "../../credentials/transitionCredential";
@@ -29,6 +31,10 @@ const transitionBodySchema = z
     action: z.enum(["suspend", "reactivate", "revoke"]),
     reason: z.string().trim().min(1).max(500),
   })
+  .strict();
+
+const artifactBodySchema = z
+  .object({ code: z.string().regex(/^\d{6}$/u) })
   .strict();
 
 function environmentFrom(url: URL): "test" | "production" {
@@ -56,12 +62,54 @@ export async function credentialsRoute(
   const transitionMatch = url.pathname.match(
     /^\/v1\/applications\/([^/]+)\/credentials\/([^/]+)\/transitions$/u,
   );
-  if (!issueMatch && !regenerationMatch && !transitionMatch) return undefined;
+  const deliveryMatch = url.pathname.match(
+    /^\/v1\/applications\/([^/]+)\/credentials\/([^/]+)\/deliveries$/u,
+  );
+  const artifactMatch = url.pathname.match(
+    /^\/v1\/deliveries\/([^/]+)\/artifact$/u,
+  );
+  if (
+    !issueMatch &&
+    !regenerationMatch &&
+    !transitionMatch &&
+    !deliveryMatch &&
+    !artifactMatch
+  ) {
+    return undefined;
+  }
   if (request.method !== "POST") {
     throw new ApiError(
       405,
       "method_not_allowed",
       "El método no está permitido.",
+    );
+  }
+  if (artifactMatch) {
+    const body = artifactBodySchema.safeParse(
+      await request.json().catch(() => undefined),
+    );
+    if (!body.success) {
+      throw new ApiError(
+        400,
+        "invalid_delivery_code",
+        "El código de entrega no es válido.",
+      );
+    }
+    const artifact = await consumeDelivery({
+      deliveryId: decodeURIComponent(artifactMatch[1]!),
+      code: body.data.code,
+      deliveryPepper: dependencies.deliveryPepper,
+      credentials: dependencies.credentials,
+      deliveries: dependencies.deliveries,
+    });
+    return Response.json(
+      { contractVersion: "1", ...artifact },
+      {
+        headers: {
+          "cache-control": "no-store",
+          "x-request-id": context.requestId,
+        },
+      },
     );
   }
   const user = await authenticate(
@@ -70,10 +118,11 @@ export async function credentialsRoute(
     dependencies.signingKey,
   );
   const environment = environmentFrom(url);
-  const matched = issueMatch ?? regenerationMatch ?? transitionMatch!;
+  const matched =
+    issueMatch ?? regenerationMatch ?? transitionMatch ?? deliveryMatch!;
   const applicationId = decodeURIComponent(matched[1]!);
   const credentialId =
-    regenerationMatch || transitionMatch
+    regenerationMatch || transitionMatch || deliveryMatch
       ? decodeURIComponent(matched[2]!)
       : undefined;
   const transitionBody = transitionMatch
@@ -92,7 +141,9 @@ export async function credentialsRoute(
     ? "issue"
     : regenerationMatch
       ? "regenerate"
-      : transitionBody!.data.action;
+      : deliveryMatch
+        ? "delivery"
+        : transitionBody!.data.action;
   const receipt = await runCredentialOperation({
     user,
     environment,
@@ -121,6 +172,9 @@ export async function credentialsRoute(
       if (issueMatch) return issueCredential(shared);
       if (regenerationMatch) {
         return regenerateCredential({ ...shared, credentialId: credentialId! });
+      }
+      if (deliveryMatch) {
+        return createDelivery({ ...shared, credentialId: credentialId! });
       }
       return transitionCredential({
         user,

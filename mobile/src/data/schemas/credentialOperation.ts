@@ -19,6 +19,7 @@ export const credentialOperationSchema = z.object({
 
 export const syntheticArtifactSchema = z
   .object({
+    contractVersion: contractVersionSchema,
     classification: z.literal('SYNTHETIC-NON-FUNCTIONAL'),
     applicationId: z.string().min(1),
     credentialVersionId: z.string().min(1),
