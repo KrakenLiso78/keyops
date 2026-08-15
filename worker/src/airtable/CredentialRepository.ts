@@ -76,6 +76,22 @@ export class CredentialRepository {
     environment: "test" | "production",
     applicationId: string,
   ): Promise<CredentialAggregate | undefined> {
+    const credential = await this.findCredential(environment, applicationId);
+    return credential ? this.loadAggregate(credential, true) : undefined;
+  }
+
+  async findByApplicationForReconciliation(
+    environment: "test" | "production",
+    applicationId: string,
+  ): Promise<CredentialAggregate | undefined> {
+    const credential = await this.findCredential(environment, applicationId);
+    return credential ? this.loadAggregate(credential, false) : undefined;
+  }
+
+  private async findCredential(
+    environment: "test" | "production",
+    applicationId: string,
+  ): Promise<PersistedCredential | undefined> {
     const records = await this.client.list<CredentialFields>("Credentials");
     const matches = records
       .map(mapCredential)
@@ -91,7 +107,7 @@ export class CredentialRepository {
         "La aplicación tiene más de una credencial sintética.",
       );
     }
-    return matches[0] ? this.loadAggregate(matches[0]) : undefined;
+    return matches[0];
   }
 
   async findById(
@@ -100,6 +116,20 @@ export class CredentialRepository {
     credentialId: string,
   ): Promise<CredentialAggregate | undefined> {
     const aggregate = await this.findByApplication(environment, applicationId);
+    return aggregate?.credential.fields.credentialId === credentialId
+      ? aggregate
+      : undefined;
+  }
+
+  async findByIdForReconciliation(
+    environment: "test" | "production",
+    applicationId: string,
+    credentialId: string,
+  ): Promise<CredentialAggregate | undefined> {
+    const aggregate = await this.findByApplicationForReconciliation(
+      environment,
+      applicationId,
+    );
     return aggregate?.credential.fields.credentialId === credentialId
       ? aggregate
       : undefined;
@@ -189,6 +219,7 @@ export class CredentialRepository {
 
   private async loadAggregate(
     credential: PersistedCredential,
+    enforceInvariant: boolean,
   ): Promise<CredentialAggregate> {
     const versions = (
       await this.client.list<CredentialVersionFields>("CredentialVersions")
@@ -210,6 +241,7 @@ export class CredentialRepository {
       ["active", "suspended"].includes(fields.state),
     );
     if (
+      enforceInvariant &&
       credential.fields.state !== "revoked" &&
       (currentStates.length !== 1 ||
         currentStates[0]?.fields.versionId !==

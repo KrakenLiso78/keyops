@@ -36,4 +36,17 @@ describe('RestCredentialRepository', () => {
       }),
     );
   });
+
+  it('addresses the confirmed credential when regenerating', async () => {
+    const request = jest.fn().mockResolvedValue(receipt);
+    const repository = new RestCredentialRepository({ request } as unknown as FetchHttpClient);
+    await repository.regenerate('production', 'app/001', 'cred/001', 'keyops-key-00000002');
+    expect(request).toHaveBeenCalledWith(
+      '/v1/applications/app%2F001/credentials/cred%2F001/regenerations?environment=production',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'idempotency-key': 'keyops-key-00000002' },
+      }),
+    );
+  });
 });

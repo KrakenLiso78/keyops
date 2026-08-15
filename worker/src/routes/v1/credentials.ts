@@ -6,6 +6,7 @@ import { environmentSchema } from "../../airtable/applicationSchema";
 import type { AuditSink } from "../../audit/AuditSink";
 import { authenticate } from "../../auth/authenticate";
 import { issueCredential } from "../../credentials/issueCredential";
+import { regenerateCredential } from "../../credentials/regenerateCredential";
 import { runCredentialOperation } from "../../credentials/operationService";
 import { ApiError } from "../../http/ApiError";
 import type { RequestContext } from "../../http/requestContext";
@@ -40,7 +41,10 @@ export async function credentialsRoute(
   const issueMatch = url.pathname.match(
     /^\/v1\/applications\/([^/]+)\/credentials$/u,
   );
-  if (!issueMatch) return undefined;
+  const regenerationMatch = url.pathname.match(
+    /^\/v1\/applications\/([^/]+)\/credentials\/([^/]+)\/regenerations$/u,
+  );
+  if (!issueMatch && !regenerationMatch) return undefined;
   if (request.method !== "POST") {
     throw new ApiError(
       405,
@@ -54,22 +58,28 @@ export async function credentialsRoute(
     dependencies.signingKey,
   );
   const environment = environmentFrom(url);
-  const applicationId = decodeURIComponent(issueMatch[1]!);
+  const applicationId = decodeURIComponent(
+    (issueMatch ?? regenerationMatch)![1]!,
+  );
+  const credentialId = regenerationMatch
+    ? decodeURIComponent(regenerationMatch[2]!)
+    : undefined;
+  const operation = issueMatch ? "issue" : "regenerate";
   const receipt = await runCredentialOperation({
     user,
     environment,
     idempotencyKey: request.headers.get("idempotency-key") ?? "",
-    operation: "issue",
-    resourceType: "application",
-    resourceId: applicationId,
+    operation,
+    resourceType: issueMatch ? "application" : "credential",
+    resourceId: credentialId ?? applicationId,
     context,
     dependencies: {
       idempotency: dependencies.idempotency,
       audit: dependencies.audit,
       deliveryPepper: dependencies.deliveryPepper,
     },
-    execute: (operationId) =>
-      issueCredential({
+    execute: (operationId) => {
+      const shared = {
         user,
         environment,
         applicationId,
@@ -78,7 +88,11 @@ export async function credentialsRoute(
         deliveryPepper: dependencies.deliveryPepper,
         credentials: dependencies.credentials,
         deliveries: dependencies.deliveries,
-      }),
+      };
+      return issueMatch
+        ? issueCredential(shared)
+        : regenerateCredential({ ...shared, credentialId: credentialId! });
+    },
   });
   dependencies.invalidateApplications(environment);
   return Response.json(

@@ -60,16 +60,16 @@
 
 ### Tests
 
-- [ ] T025 [P] [US-CRED-02] Escribir tests fallidos de rotación/reconciliación en `worker/tests/unit/credential-regeneration.test.ts`
-- [ ] T026 [P] [US-CRED-02] Escribir contrato fallido de regeneración y conflicto de huella en `worker/tests/contract/credential-regeneration.contract.test.ts`
-- [ ] T027 [P] [US-CRED-02] Escribir test móvil fallido de confirmación y reintento seguro en `mobile/tests/component/credential-regeneration.test.tsx`
+- [x] T025 [P] [US-CRED-02] Escribir tests fallidos de rotación/reconciliación en `worker/tests/unit/credential-regeneration.test.ts`
+- [x] T026 [P] [US-CRED-02] Escribir contrato fallido de regeneración y conflicto de huella en `worker/tests/contract/credential-regeneration.contract.test.ts`
+- [x] T027 [P] [US-CRED-02] Escribir test móvil fallido de confirmación y reintento seguro en `mobile/tests/component/credential-regeneration.test.tsx`
 
 ### Implementation
 
-- [ ] T028 [US-CRED-02] Implementar creación pending, cambio agrupado y reconciliación en `worker/src/credentials/regenerateCredential.ts`
-- [ ] T029 [US-CRED-02] Añadir ruta de regeneración al router en `worker/src/routes/v1/credentials.ts`
-- [ ] T030 [US-CRED-02] Implementar `regenerate()` preservando clave idempotente en `mobile/src/data/repositories/RestCredentialRepository.ts`
-- [ ] T031 [US-CRED-02] Añadir confirmación/reintento y último estado confirmado en `mobile/src/presentation/controllers/useCredentialOperationController.ts`
+- [x] T028 [US-CRED-02] Implementar creación pending, cambio agrupado y reconciliación en `worker/src/credentials/regenerateCredential.ts`
+- [x] T029 [US-CRED-02] Añadir ruta de regeneración al router en `worker/src/routes/v1/credentials.ts`
+- [x] T030 [US-CRED-02] Implementar `regenerate()` preservando clave idempotente en `mobile/src/data/repositories/RestCredentialRepository.ts`
+- [x] T031 [US-CRED-02] Añadir confirmación/reintento y último estado confirmado en `mobile/src/presentation/controllers/useCredentialOperationController.ts`
 
 **Checkpoint**: Los fallos simulados dejan cero o una versión activa, nunca dos; un reintento recupera el receipt.
 

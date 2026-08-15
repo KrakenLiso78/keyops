@@ -27,7 +27,7 @@ function businessId(prefix: string, operationId: string): string {
   return `${prefix}-${operationId.replace(/[^A-Za-z0-9_-]/gu, "-")}`;
 }
 
-async function ensureInitialDelivery(input: {
+export async function ensureSyntheticDelivery(input: {
   applicationId: string;
   environment: "test" | "production";
   credentialVersionId: string;
@@ -183,7 +183,7 @@ export async function issueCredential(
     updatedAt: now,
   });
   return {
-    delivery: await ensureInitialDelivery({
+    delivery: await ensureSyntheticDelivery({
       applicationId: input.applicationId,
       environment: input.environment,
       credentialVersionId: versionId,
