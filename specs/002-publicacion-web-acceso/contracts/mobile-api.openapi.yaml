@@ -13,30 +13,30 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignInCommand'
+              $ref: "#/components/schemas/SignInCommand"
       responses:
-        '200':
+        "200":
           description: Session created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Session'
-        '401':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/Session"
+        "401":
+          $ref: "#/components/responses/Error"
   /session:
     get:
       operationId: restoreSession
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Current enabled user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Error"
 components:
   securitySchemes:
     bearerAuth:
@@ -48,7 +48,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
   schemas:
     SignInCommand:
       type: object
@@ -71,11 +71,26 @@ components:
           type: string
           format: date-time
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
+    Permission:
+      type: string
+      enum:
+        - applications:read
+        - credentials:issue
+        - credentials:regenerate
+        - credentials:deliver
+        - credentials:suspend
+        - credentials:reactivate
+        - credentials:revoke
+        - management:write
+        - usage:read
+        - audit:read
+        - users:write
     User:
       type: object
       additionalProperties: false
-      required: [id, loginIdentifier, displayName, profile, enabled, permissions]
+      required:
+        [id, loginIdentifier, displayName, profile, enabled, permissions]
       properties:
         id: { type: string }
         loginIdentifier: { type: string }
@@ -86,7 +101,9 @@ components:
         enabled: { type: boolean }
         permissions:
           type: array
-          items: { type: string }
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Permission"
     Error:
       type: object
       additionalProperties: false

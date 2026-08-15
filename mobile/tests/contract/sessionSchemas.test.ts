@@ -22,4 +22,19 @@ describe('schemas de sesión', () => {
     ).toBe('analyst');
     expect(sessionViewSchema.parse({ contractVersion: '1', user }).user.id).toBe('u1');
   });
+
+  it('rechaza permisos agregados heredados y permisos duplicados', () => {
+    expect(() =>
+      sessionViewSchema.parse({
+        contractVersion: '1',
+        user: { ...user, permissions: ['credentials:transition'] },
+      }),
+    ).toThrow();
+    expect(() =>
+      sessionViewSchema.parse({
+        contractVersion: '1',
+        user: { ...user, permissions: ['audit:read', 'audit:read'] },
+      }),
+    ).toThrow();
+  });
 });

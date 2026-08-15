@@ -2,13 +2,20 @@ export type EntityId = string;
 export type Instant = string;
 export type Environment = 'test' | 'production';
 export type UserProfile = 'analyst' | 'senior_analyst' | 'administrator' | 'auditor';
-export type Permission =
-  | 'applications:read'
-  | 'credentials:issue'
-  | 'credentials:transition'
-  | 'credentials:revoke'
-  | 'audit:read'
-  | 'users:manage';
+export const permissionValues = [
+  'applications:read',
+  'credentials:issue',
+  'credentials:regenerate',
+  'credentials:deliver',
+  'credentials:suspend',
+  'credentials:reactivate',
+  'credentials:revoke',
+  'management:write',
+  'usage:read',
+  'audit:read',
+  'users:write',
+] as const;
+export type Permission = (typeof permissionValues)[number];
 
 export interface Institution {
   id: EntityId;

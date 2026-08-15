@@ -2,6 +2,7 @@ import {
   fakeApplications,
   fakeUsers,
 } from "../../../mobile/src/data/fake/seed.ts";
+import { permissionsForProfile } from "../../../mobile/src/domain/policies/profilePermissions.ts";
 
 export const TABLE_NAMES = [
   "Users",
@@ -26,26 +27,6 @@ export const DELETE_ORDER = [
   "Institutions",
   "Users",
 ];
-
-const permissionsByProfile = {
-  analyst: ["applications:read", "credentials:issue", "credentials:transition"],
-  senior_analyst: [
-    "applications:read",
-    "credentials:issue",
-    "credentials:transition",
-    "credentials:revoke",
-    "audit:read",
-  ],
-  administrator: [
-    "applications:read",
-    "credentials:issue",
-    "credentials:transition",
-    "credentials:revoke",
-    "audit:read",
-    "users:manage",
-  ],
-  auditor: ["audit:read"],
-};
 
 export function normalizeSearchValue(value) {
   return value
@@ -86,7 +67,7 @@ export function buildAirtableSeed() {
       displayName: user.displayName,
       profile: user.profile,
       enabled: user.enabled,
-      permissions: permissionsByProfile[user.profile],
+      permissions: permissionsForProfile(user.profile),
       updatedAt: "2026-08-11T09:15:00.000Z",
     })),
     Institutions: [...institutionIds].map(([name, institutionId]) => ({

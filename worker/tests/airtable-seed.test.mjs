@@ -79,3 +79,39 @@ test("no incluye secretos ni materiales de entrega", () => {
     /clientSecret|password|\botp\b|deliveryUrl|AIRTABLE_TOKEN/i,
   );
 });
+
+test("usa exclusivamente la matriz canónica de permisos granulares", () => {
+  const permissionsByProfile = Object.fromEntries(
+    airtableSeed.Users.map(({ profile, permissions }) => [
+      profile,
+      permissions,
+    ]),
+  );
+
+  assert.deepEqual(permissionsByProfile.analyst, [
+    "applications:read",
+    "credentials:issue",
+    "credentials:regenerate",
+    "credentials:deliver",
+    "credentials:suspend",
+    "credentials:reactivate",
+    "management:write",
+    "usage:read",
+  ]);
+  assert.deepEqual(permissionsByProfile.senior_analyst, [
+    ...permissionsByProfile.analyst,
+    "credentials:revoke",
+    "audit:read",
+  ]);
+  assert.deepEqual(permissionsByProfile.administrator, [
+    ...permissionsByProfile.analyst,
+    "credentials:revoke",
+    "audit:read",
+    "users:write",
+  ]);
+  assert.deepEqual(permissionsByProfile.auditor, ["audit:read"]);
+  assert.doesNotMatch(
+    JSON.stringify(permissionsByProfile),
+    /credentials:transition|users:manage/,
+  );
+});

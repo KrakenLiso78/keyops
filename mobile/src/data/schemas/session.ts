@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { permissionValues } from '@/domain/model/common';
 import { contractVersionSchema } from './common';
 const profileSchema = z.enum(['analyst', 'senior_analyst', 'administrator', 'auditor']);
+export const permissionSchema = z.enum(permissionValues);
 export const createSessionRequestSchema = z.object({
   loginIdentifier: z.string().min(1),
   password: z.string().min(1),
@@ -11,7 +13,11 @@ export const sessionUserSchema = z.object({
   displayName: z.string().min(1),
   profile: profileSchema,
   enabled: z.boolean(),
-  permissions: z.array(z.string()),
+  permissions: z
+    .array(permissionSchema)
+    .refine((permissions) => new Set(permissions).size === permissions.length, {
+      message: 'Los permisos no pueden estar duplicados.',
+    }),
 });
 export const sessionResponseSchema = z.object({
   contractVersion: contractVersionSchema,
