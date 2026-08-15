@@ -6,7 +6,7 @@ import { applicationRecords } from "../fixtures/applications";
 import { activeCredential, activeVersion } from "../fixtures/credentials";
 import { InMemoryCredentialStore } from "../support/InMemoryCredentialStore";
 import { createAirtableFetch } from "../support/createAirtableFetch";
-import { applicationEnv } from "./applications-list.contract.test";
+import { applicationEnv } from "../support/contractEnv";
 
 let store: InMemoryCredentialStore;
 

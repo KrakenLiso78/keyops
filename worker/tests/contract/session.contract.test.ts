@@ -14,29 +14,59 @@ const env: WorkerEnv = {
   DELIVERY_PEPPER: "test-delivery-pepper-with-at-least-32-characters",
 };
 
-const airtableFetch = vi.fn(async (input: RequestInfo | URL) => {
-  const url = new URL(
-    typeof input === "string"
-      ? input
-      : input instanceof URL
+const auditRecords: Array<{
+  id: string;
+  createdTime: string;
+  fields: Record<string, unknown>;
+}> = [];
+
+const airtableFetch = vi.fn(
+  async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = new URL(
+      typeof input === "string"
         ? input
-        : input.url,
-  );
-  const formula = url.searchParams.get("filterByFormula") ?? "";
-  const login = formula.match(/LOWER\(\{loginIdentifier\}\)='([^']+)'/u)?.[1];
-  const id = formula.match(/\{userId\}='([^']+)'/u)?.[1];
-  const users = userFixtures.filter(
-    (user) =>
-      (!login || user.loginIdentifier === login) && (!id || user.userId === id),
-  );
-  return Response.json({
-    records: users.map((fields, index) => ({
-      id: `rec-${index}`,
-      createdTime: "2026-08-15T09:00:00.000Z",
-      fields,
-    })),
-  });
-});
+        : input instanceof URL
+          ? input
+          : input.url,
+    );
+    const formula = url.searchParams.get("filterByFormula") ?? "";
+    const table = decodeURIComponent(url.pathname.split("/").at(-1) ?? "");
+    if (table === "AuditEvents") {
+      if (init?.method === "POST") {
+        const body = JSON.parse(String(init.body)) as {
+          records: Array<{ fields: Record<string, unknown> }>;
+        };
+        const created = body.records.map(({ fields }) => ({
+          id: `rec-audit-${auditRecords.length + 1}`,
+          createdTime: "2026-08-15T09:00:00.000Z",
+          fields,
+        }));
+        auditRecords.push(...created);
+        return Response.json({ records: created });
+      }
+      const eventId = formula.match(/\{eventId\}='([^']+)'/u)?.[1];
+      return Response.json({
+        records: eventId
+          ? auditRecords.filter(({ fields }) => fields.eventId === eventId)
+          : auditRecords,
+      });
+    }
+    const login = formula.match(/LOWER\(\{loginIdentifier\}\)='([^']+)'/u)?.[1];
+    const id = formula.match(/\{userId\}='([^']+)'/u)?.[1];
+    const users = userFixtures.filter(
+      (user) =>
+        (!login || user.loginIdentifier === login) &&
+        (!id || user.userId === id),
+    );
+    return Response.json({
+      records: users.map((fields, index) => ({
+        id: `rec-${index}`,
+        createdTime: "2026-08-15T09:00:00.000Z",
+        fields,
+      })),
+    });
+  },
+);
 
 describe("session contract", () => {
   it("creates and restores a session without exposing the password", async () => {

@@ -101,6 +101,7 @@ export function createApplicationAirtableFetch(
     Institutions: structuredClone(institutionRecords),
     ApiRoles: structuredClone(roleRecords),
     Applications: applications,
+    AuditEvents: [],
   };
 
   return async (
@@ -118,8 +119,24 @@ export function createApplicationAirtableFetch(
     let records = tables[table] ?? [];
     const formula = url.searchParams.get("filterByFormula") ?? "";
     const userId = formula.match(/\{userId\}='([^']+)'/u)?.[1];
+    const eventId = formula.match(/\{eventId\}='([^']+)'/u)?.[1];
     if (userId)
       records = records.filter(({ fields }) => fields.userId === userId);
+    if (eventId)
+      records = records.filter(({ fields }) => fields.eventId === eventId);
+
+    if ((init?.method ?? "GET") === "POST") {
+      const body = JSON.parse(String(init?.body)) as {
+        records: Array<{ fields: Record<string, unknown> }>;
+      };
+      const created = body.records.map(({ fields }, index) => ({
+        id: `rec-${table.toLowerCase()}-${(tables[table]?.length ?? 0) + index + 1}`,
+        createdTime,
+        fields,
+      }));
+      (tables[table] ??= []).push(...created);
+      return Response.json({ records: created });
+    }
 
     if ((init?.method ?? "GET") === "PATCH") {
       const body = JSON.parse(String(init?.body)) as {

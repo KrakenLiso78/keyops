@@ -77,6 +77,9 @@ export async function runCredentialOperation(input: {
   operation: string;
   resourceType: string;
   resourceId: string;
+  institutionId?: string;
+  applicationId?: string;
+  credentialId?: string;
   body?: unknown;
   context: RequestContext;
   dependencies: CredentialOperationDependencies;
@@ -84,12 +87,29 @@ export async function runCredentialOperation(input: {
     delivery?: FullDeliveryReceipt;
   }>;
 }): Promise<FullOperationReceipt> {
+  const auditBase = {
+    actor: input.user,
+    operation: input.operation,
+    resourceType: input.resourceType,
+    resourceId: input.resourceId,
+    environment: input.environment,
+    institutionId: input.institutionId,
+    applicationId: input.applicationId,
+    credentialId: input.credentialId,
+    context: input.context,
+  };
   if (!/^[A-Za-z0-9._:-]{16,200}$/u.test(input.idempotencyKey)) {
-    throw new ApiError(
+    const error = new ApiError(
       400,
       "invalid_idempotency_key",
       "La clave idempotente no es válida.",
     );
+    await input.dependencies.audit.append({
+      ...auditBase,
+      result: "rejected",
+      failureCode: error.code,
+    });
+    throw error;
   }
   const now = new Date().toISOString();
   const scopeKey = await idempotencyScopeKey({
@@ -102,50 +122,14 @@ export async function runCredentialOperation(input: {
     resourceId: input.resourceId,
     body: input.body,
   });
-  const reservation = await input.dependencies.idempotency.reserve({
-    scopeKey,
-    requestFingerprint: fingerprint,
-    operationId: crypto.randomUUID(),
-    now,
-  });
-  if (reservation.record.fields.status === "committed") {
-    return restoreReceipt(
-      input.dependencies.idempotency.receipt(reservation.record),
-      input.dependencies.deliveryPepper,
-    );
-  }
-  if (reservation.record.fields.status === "failed") {
-    throw new ApiError(
-      409,
-      reservation.record.fields.failureCode ?? "idempotent_operation_failed",
-      "La solicitud ya fue rechazada y no se repetirá.",
-    );
-  }
-
+  let reservation: Awaited<ReturnType<IdempotencyRepository["reserve"]>>;
   try {
-    const result = await input.execute(reservation.record.fields.operationId);
-    const audit = await input.dependencies.audit.append({
-      actor: input.user,
-      operation: input.operation,
-      resourceType: input.resourceType,
-      resourceId: input.resourceId,
-      environment: input.environment,
-      result: "succeeded",
-      context: input.context,
+    reservation = await input.dependencies.idempotency.reserve({
+      scopeKey,
+      requestFingerprint: fingerprint,
+      operationId: crypto.randomUUID(),
+      now,
     });
-    const receipt: FullOperationReceipt = {
-      operationId: reservation.record.fields.operationId,
-      requestId: input.context.requestId,
-      auditEventId: audit.auditEventId,
-      result: "succeeded",
-      delivery: result.delivery,
-    };
-    await input.dependencies.idempotency.commit(
-      reservation.record,
-      safeReceipt(receipt),
-      new Date().toISOString(),
-    );
-    return receipt;
   } catch (error) {
     const controlled =
       error instanceof ApiError
@@ -157,14 +141,51 @@ export async function runCredentialOperation(input: {
             true,
           );
     await input.dependencies.audit.append({
-      actor: input.user,
-      operation: input.operation,
-      resourceType: input.resourceType,
-      resourceId: input.resourceId,
-      environment: input.environment,
+      ...auditBase,
       result: controlled.status < 500 ? "rejected" : "failed",
       failureCode: controlled.code,
-      context: input.context,
+    });
+    throw controlled;
+  }
+  if (reservation.record.fields.status === "committed") {
+    return restoreReceipt(
+      input.dependencies.idempotency.receipt(reservation.record),
+      input.dependencies.deliveryPepper,
+    );
+  }
+  if (reservation.record.fields.status === "failed") {
+    const error = new ApiError(
+      409,
+      reservation.record.fields.failureCode ?? "idempotent_operation_failed",
+      "La solicitud ya fue rechazada y no se repetirá.",
+    );
+    await input.dependencies.audit.append({
+      ...auditBase,
+      operationId: reservation.record.fields.operationId,
+      result: "rejected",
+      failureCode: error.code,
+    });
+    throw error;
+  }
+
+  let result: Awaited<ReturnType<typeof input.execute>>;
+  try {
+    result = await input.execute(reservation.record.fields.operationId);
+  } catch (error) {
+    const controlled =
+      error instanceof ApiError
+        ? error
+        : new ApiError(
+            500,
+            "unexpected_error",
+            "No se pudo completar la operación.",
+            true,
+          );
+    await input.dependencies.audit.append({
+      ...auditBase,
+      operationId: reservation.record.fields.operationId,
+      result: controlled.status < 500 ? "rejected" : "failed",
+      failureCode: controlled.code,
     });
     if (controlled.status < 500) {
       await input.dependencies.idempotency.markFailed(
@@ -175,4 +196,22 @@ export async function runCredentialOperation(input: {
     }
     throw controlled;
   }
+  const audit = await input.dependencies.audit.append({
+    ...auditBase,
+    operationId: reservation.record.fields.operationId,
+    result: "succeeded",
+  });
+  const receipt: FullOperationReceipt = {
+    operationId: reservation.record.fields.operationId,
+    requestId: input.context.requestId,
+    auditEventId: audit.auditEventId,
+    result: "succeeded",
+    delivery: result.delivery,
+  };
+  await input.dependencies.idempotency.commit(
+    reservation.record,
+    safeReceipt(receipt),
+    new Date().toISOString(),
+  );
+  return receipt;
 }

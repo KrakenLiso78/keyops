@@ -9,7 +9,7 @@
 - [x] T001 Añadir `AuditEvents` y su presupuesto a `worker/scripts/airtable/schema.md`
 - [x] T002 Crear fixtures de éxito/fallo/rechazo y filtros en `worker/scripts/airtable/fixtures/audit-events.json`
 - [x] T003 Extender seed/limpieza por `testRunId` en `worker/scripts/airtable/seed-audit.ts` sin borrar eventos ajenos
-- [ ] T004 [P] Añadir comando selectivo `test:integration:airtable -- audit` en `worker/package.json`
+- [x] T004 [P] Añadir comando selectivo `test:integration:airtable -- audit` en `worker/package.json`
 
 **Checkpoint**: Tabla y fixtures disponibles con margen dentro de 1.000 registros.
 
@@ -37,15 +37,15 @@
 - [x] T013 [P] [US-AUD-01] Escribir tests fallidos de fábrica/redacción/empates en `worker/tests/unit/audit-event.test.ts`
 - [x] T014 [P] [US-AUD-01] Escribir tests fallidos de finalización y fallo de append en `worker/tests/unit/complete-operation.test.ts`
 - [x] T015 [P] [US-AUD-01] Escribir test de seguridad fallido con password/token/OTP/URL en `worker/tests/security/audit-redaction.test.ts`
-- [ ] T016 [US-AUD-01] Escribir integración Airtable fallida para tres resultados y proceso nuevo en `worker/tests/integration/airtable-audit-write.test.ts`
+- [x] T016 [US-AUD-01] Escribir integración Airtable fallida para tres resultados y proceso nuevo en `worker/tests/integration/airtable-audit-write.test.ts`
 
 ### Implementation
 
-- [ ] T017 [US-AUD-01] Integrar `completeOperation` en creación/restauración de sesión desde `worker/src/routes/v1/sessions.ts`
-- [ ] T018 [US-AUD-01] Integrar resultados de lista/detalle/gestión desde `worker/src/routes/v1/applications.ts`
-- [ ] T019 [US-AUD-01] Integrar emisión/regeneración/transiciones/entrega desde `worker/src/routes/v1/credentials.ts`
-- [ ] T020 [US-AUD-01] Asegurar que los rechazos de middleware también finalizan evento en `worker/src/index.ts` y `worker/src/auth/authorize.ts`
-- [ ] T021 [US-AUD-01] Reconciliar receipt/auditEventId al reintentar operación idempotente en `worker/src/credentials/operationService.ts`
+- [x] T017 [US-AUD-01] Integrar `completeOperation` en creación/restauración de sesión desde `worker/src/routes/v1/sessions.ts`
+- [x] T018 [US-AUD-01] Integrar resultados de lista/detalle/gestión desde `worker/src/routes/v1/applications.ts`
+- [x] T019 [US-AUD-01] Integrar emisión/regeneración/transiciones/entrega desde `worker/src/routes/v1/credentials.ts`
+- [x] T020 [US-AUD-01] Asegurar que los rechazos de middleware también finalizan evento en `worker/src/index.ts` y `worker/src/auth/authorize.ts`
+- [x] T021 [US-AUD-01] Reconciliar receipt/auditEventId al reintentar operación idempotente en `worker/src/credentials/operationService.ts`
 
 **Checkpoint**: Se pueden cerrar FR-WEB de trazabilidad, FR-CRED-012 y los intentos de datos para el Sprint.
 

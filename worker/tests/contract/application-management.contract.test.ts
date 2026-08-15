@@ -2,10 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleRequest } from "../../src/index";
 import { createApplicationAirtableFetch } from "../fixtures/applications";
 import { userFixtures } from "../fixtures/users";
-import {
-  applicationEnv,
-  authorizationHeader,
-} from "./applications-list.contract.test";
+import { applicationEnv, authorizationHeader } from "../support/contractEnv";
 
 describe("PATCH /v1/applications/{applicationId}/management", () => {
   beforeEach(() => {

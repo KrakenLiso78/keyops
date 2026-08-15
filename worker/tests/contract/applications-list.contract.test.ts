@@ -1,25 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { issueSessionToken } from "../../src/auth/sessionToken";
-import type { WorkerEnv } from "../../src/config/env";
 import { handleRequest } from "../../src/index";
 import { createApplicationAirtableFetch } from "../fixtures/applications";
 import { userFixtures } from "../fixtures/users";
-
-export const applicationEnv: WorkerEnv = {
-  AIRTABLE_BASE_ID: "app00000000000000",
-  AIRTABLE_PAT: "test-token-value",
-  DEMO_CREDENTIALS_JSON: "{}",
-  SESSION_SIGNING_KEY: "test-signing-key-with-at-least-32-characters",
-  DELIVERY_PEPPER: "test-delivery-pepper-with-at-least-32-characters",
-};
-
-export async function authorizationHeader() {
-  const { token } = await issueSessionToken(
-    "user-analyst",
-    applicationEnv.SESSION_SIGNING_KEY,
-  );
-  return { authorization: `Bearer ${token}` };
-}
+import { applicationEnv, authorizationHeader } from "../support/contractEnv";
 
 describe("GET /v1/applications", () => {
   beforeEach(() => {

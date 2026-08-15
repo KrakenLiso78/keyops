@@ -37,12 +37,15 @@ export function createAirtableFetch(
     const formula = url.searchParams.get("filterByFormula") ?? "";
     const userId = formula.match(/\{userId\}='([^']+)'/u)?.[1];
     const login = formula.match(/LOWER\(\{loginIdentifier\}\)='([^']+)'/u)?.[1];
+    const eventId = formula.match(/\{eventId\}='([^']+)'/u)?.[1];
     if (userId)
       records = records.filter(({ fields }) => fields.userId === userId);
     if (login)
       records = records.filter(
         ({ fields }) => fields.loginIdentifier === login,
       );
+    if (eventId)
+      records = records.filter(({ fields }) => fields.eventId === eventId);
     return Response.json({ records });
   };
 }

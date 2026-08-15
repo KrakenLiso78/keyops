@@ -42,5 +42,6 @@ export async function createAuditEvent(
     failureCode: attempt.failureCode,
     requestId: attempt.context.requestId,
     operationId: attempt.operationId,
+    testRunId: attempt.testRunId,
   });
 }

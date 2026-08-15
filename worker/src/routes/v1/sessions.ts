@@ -5,7 +5,11 @@ import type { AuditSink } from "../../audit/AuditSink";
 import { authenticate } from "../../auth/authenticate";
 import { issueSessionToken } from "../../auth/sessionToken";
 import { ApiError } from "../../http/ApiError";
-import type { RequestContext } from "../../http/requestContext";
+import { completeOperation } from "../../http/completeOperation";
+import {
+  type RequestContext,
+  withRequestActor,
+} from "../../http/requestContext";
 
 const signInSchema = z
   .object({
@@ -58,50 +62,62 @@ export async function createSession(
     await request.json().catch(() => undefined),
   );
   if (!body.success) {
-    throw new ApiError(
+    const error = new ApiError(
       400,
       "invalid_request",
       "Los datos de acceso no son válidos.",
     );
+    await dependencies.audit.append({
+      operation: "session.create.v1",
+      resourceType: "session",
+      result: "rejected",
+      failureCode: error.code,
+      context,
+    });
+    throw error;
   }
   const identifier = body.data.loginIdentifier.trim().toLowerCase();
   const user = await dependencies.users.findByLoginIdentifier(identifier);
   const expected =
     dependencies.demoCredentials[identifier] ?? "invalid-placeholder-secret";
   const validSecret = await equalSecret(body.data.password, expected);
-  if (
-    !user?.enabled ||
-    !validSecret ||
-    !(identifier in dependencies.demoCredentials)
-  ) {
-    await dependencies.audit.append({
+  if (user) withRequestActor(context, user);
+  const completed = await completeOperation({
+    audit: dependencies.audit,
+    attempt: {
       actor: user,
-      operation: "sign_in",
-      result: "rejected",
-      failureCode: "invalid_credentials",
+      operation: "session.create.v1",
+      resourceType: "session",
+      resourceId: user?.id,
       context,
-    });
-    throw new ApiError(
-      401,
-      "invalid_credentials",
-      "Los datos de acceso no son válidos.",
-    );
-  }
-  const session = await issueSessionToken(user.id, dependencies.signingKey);
-  const audit = await dependencies.audit.append({
-    actor: user,
-    operation: "sign_in",
-    result: "succeeded",
-    context,
+    },
+    execute: async () => {
+      if (
+        !user?.enabled ||
+        !validSecret ||
+        !(identifier in dependencies.demoCredentials)
+      ) {
+        throw new ApiError(
+          401,
+          "invalid_credentials",
+          "Los datos de acceso no son válidos.",
+        );
+      }
+      return {
+        user,
+        session: await issueSessionToken(user.id, dependencies.signingKey),
+      };
+    },
   });
+  const { session, user: confirmedUser } = completed.value;
   return Response.json(
     {
       contractVersion: "1",
       accessToken: session.token,
       expiresAt: session.expiresAt,
-      user: publicUser(user),
+      user: publicUser(confirmedUser),
       requestId: context.requestId,
-      auditEventId: audit.auditEventId,
+      auditEventId: completed.auditEventId,
     },
     {
       headers: {
@@ -122,8 +138,25 @@ export async function restoreSession(
     dependencies.users,
     dependencies.signingKey,
   );
+  withRequestActor(context, user);
+  const completed = await completeOperation({
+    audit: dependencies.audit,
+    attempt: {
+      actor: user,
+      operation: "session.restore.v1",
+      resourceType: "session",
+      resourceId: user.id,
+      context,
+    },
+    execute: async () => publicUser(user),
+  });
   return Response.json(
-    { contractVersion: "1", user: publicUser(user) },
+    {
+      contractVersion: "1",
+      user: completed.value,
+      requestId: context.requestId,
+      auditEventId: completed.auditEventId,
+    },
     {
       headers: {
         "cache-control": "no-store",

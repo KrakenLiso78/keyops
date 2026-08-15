@@ -5,6 +5,7 @@ export interface RequestContext {
   originIp: string;
   startedAt: string;
   actor?: AuthorizedUser;
+  auditRecorded?: boolean;
 }
 
 function normalizeIp(value: string | null): string {
@@ -44,5 +45,10 @@ export function withRequestActor(
   context: RequestContext,
   actor: AuthorizedUser,
 ): RequestContext {
-  return { ...context, actor };
+  context.actor = actor;
+  return context;
+}
+
+export function markAuditRecorded(context: RequestContext): void {
+  context.auditRecorded = true;
 }

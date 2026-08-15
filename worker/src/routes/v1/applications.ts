@@ -5,6 +5,7 @@ import {
   environmentSchema,
 } from "../../airtable/applicationSchema";
 import type { UserRepository } from "../../airtable/UserRepository";
+import type { AuditSink } from "../../audit/AuditSink";
 import { listApplications } from "../../applications/listApplications";
 import { updateManagement } from "../../applications/updateManagement";
 import { authenticate } from "../../auth/authenticate";
@@ -14,7 +15,11 @@ import {
   applicationCacheKey,
 } from "../../cache/applicationCache";
 import { ApiError } from "../../http/ApiError";
-import type { RequestContext } from "../../http/requestContext";
+import { completeOperation } from "../../http/completeOperation";
+import {
+  type RequestContext,
+  withRequestActor,
+} from "../../http/requestContext";
 
 const listQuerySchema = z.object({
   environment: environmentSchema,
@@ -29,6 +34,7 @@ export interface ApplicationRouteDependencies {
   applications: ApplicationRepository;
   signingKey: string;
   cache: ApplicationCache;
+  audit: AuditSink;
 }
 
 const responseHeaders = (context: RequestContext) => ({
@@ -63,26 +69,50 @@ export async function applicationsRoute(
     dependencies.users,
     dependencies.signingKey,
   );
+  withRequestActor(context, user);
   if (isCollection && request.method === "GET") {
-    const parsed = listQuerySchema.safeParse(
-      Object.fromEntries(url.searchParams),
+    const environment = environmentSchema.safeParse(
+      url.searchParams.get("environment"),
     );
-    if (!parsed.success)
-      throw new ApiError(400, "invalid_query", "La consulta no es válida.");
-    const key = applicationCacheKey({
-      userId: user.id,
-      permissionScope: user.permissions.join(","),
-      environment: parsed.data.environment,
-      query: JSON.stringify(parsed.data),
+    const completed = await completeOperation({
+      audit: dependencies.audit,
+      attempt: {
+        actor: user,
+        operation: "application.list.v1",
+        resourceType: "application_collection",
+        environment: environment.success ? environment.data : undefined,
+        context,
+      },
+      execute: async () => {
+        const parsed = listQuerySchema.safeParse(
+          Object.fromEntries(url.searchParams),
+        );
+        if (!parsed.success) {
+          throw new ApiError(400, "invalid_query", "La consulta no es válida.");
+        }
+        const key = applicationCacheKey({
+          userId: user.id,
+          permissionScope: user.permissions.join(","),
+          environment: parsed.data.environment,
+          query: JSON.stringify(parsed.data),
+        });
+        const cached =
+          dependencies.cache.get<Awaited<ReturnType<typeof listApplications>>>(
+            key,
+          );
+        const page =
+          cached ??
+          (await listApplications(
+            user,
+            dependencies.applications,
+            parsed.data,
+          ));
+        if (!cached) dependencies.cache.set(key, page);
+        return page;
+      },
     });
-    const cached =
-      dependencies.cache.get<Awaited<ReturnType<typeof listApplications>>>(key);
-    const page =
-      cached ??
-      (await listApplications(user, dependencies.applications, parsed.data));
-    if (!cached) dependencies.cache.set(key, page);
     return Response.json(
-      { contractVersion: "1", ...page },
+      { contractVersion: "1", ...completed.value },
       { headers: responseHeaders(context) },
     );
   }
@@ -90,52 +120,78 @@ export async function applicationsRoute(
   const applicationId = decodeURIComponent(match![1]!);
   const environment = environmentFrom(url);
   if (!match![2] && request.method === "GET") {
-    authorize(user, "applications:read");
-    const key = applicationCacheKey({
-      userId: user.id,
-      permissionScope: user.permissions.join(","),
-      environment,
-      query: `detail:${applicationId}`,
+    const completed = await completeOperation({
+      audit: dependencies.audit,
+      attempt: {
+        actor: user,
+        operation: "application.view.v1",
+        resourceType: "application",
+        resourceId: applicationId,
+        environment,
+        applicationId,
+        context,
+      },
+      execute: async () => {
+        authorize(user, "applications:read");
+        const key = applicationCacheKey({
+          userId: user.id,
+          permissionScope: user.permissions.join(","),
+          environment,
+          query: `detail:${applicationId}`,
+        });
+        const cached =
+          dependencies.cache.get<
+            Awaited<ReturnType<ApplicationRepository["get"]>>
+          >(key);
+        const application =
+          cached ??
+          (await dependencies.applications.get(environment, applicationId));
+        if (!cached) dependencies.cache.set(key, application);
+        return application;
+      },
     });
-    const cached =
-      dependencies.cache.get<Awaited<ReturnType<ApplicationRepository["get"]>>>(
-        key,
-      );
-    const application =
-      cached ??
-      (await dependencies.applications.get(environment, applicationId));
-    if (!cached) dependencies.cache.set(key, application);
     return Response.json(
-      { contractVersion: "1", application },
+      { contractVersion: "1", application: completed.value },
       { headers: responseHeaders(context) },
     );
   }
 
   if (match![2] === "management" && request.method === "PATCH") {
-    const rawVersion = request.headers.get("if-match");
-    if (!rawVersion)
-      throw new ApiError(
-        428,
-        "if_match_required",
-        "Falta la versión de la aplicación.",
-      );
-    const application = await updateManagement(
-      user,
-      dependencies.applications,
-      {
+    const completed = await completeOperation({
+      audit: dependencies.audit,
+      attempt: {
+        actor: user,
+        operation: "application.update.v1",
+        resourceType: "application",
+        resourceId: applicationId,
         environment,
         applicationId,
-        expectedUpdatedAt: rawVersion.replace(/^"|"$/gu, ""),
-        command: await request.json().catch(() => undefined),
+        context,
       },
-    );
+      execute: async () => {
+        const rawVersion = request.headers.get("if-match");
+        if (!rawVersion) {
+          throw new ApiError(
+            428,
+            "if_match_required",
+            "Falta la versión de la aplicación.",
+          );
+        }
+        return updateManagement(user, dependencies.applications, {
+          environment,
+          applicationId,
+          expectedUpdatedAt: rawVersion.replace(/^"|"$/gu, ""),
+          command: await request.json().catch(() => undefined),
+        });
+      },
+    });
     dependencies.cache.invalidateEnvironment(environment);
     return Response.json(
-      { contractVersion: "1", application },
+      { contractVersion: "1", application: completed.value },
       {
         headers: {
           ...responseHeaders(context),
-          etag: `"${application.updatedAt}"`,
+          etag: `"${completed.value.updatedAt}"`,
         },
       },
     );

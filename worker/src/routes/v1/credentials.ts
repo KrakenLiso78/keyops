@@ -12,7 +12,11 @@ import { regenerateCredential } from "../../credentials/regenerateCredential";
 import { transitionCredential } from "../../credentials/transitionCredential";
 import { runCredentialOperation } from "../../credentials/operationService";
 import { ApiError } from "../../http/ApiError";
-import type { RequestContext } from "../../http/requestContext";
+import { completeOperation } from "../../http/completeOperation";
+import {
+  type RequestContext,
+  withRequestActor,
+} from "../../http/requestContext";
 import { z } from "zod";
 
 export interface CredentialRouteDependencies {
@@ -85,25 +89,37 @@ export async function credentialsRoute(
     );
   }
   if (artifactMatch) {
-    const body = artifactBodySchema.safeParse(
-      await request.json().catch(() => undefined),
-    );
-    if (!body.success) {
-      throw new ApiError(
-        400,
-        "invalid_delivery_code",
-        "El código de entrega no es válido.",
-      );
-    }
-    const artifact = await consumeDelivery({
-      deliveryId: decodeURIComponent(artifactMatch[1]!),
-      code: body.data.code,
-      deliveryPepper: dependencies.deliveryPepper,
-      credentials: dependencies.credentials,
-      deliveries: dependencies.deliveries,
+    const deliveryId = decodeURIComponent(artifactMatch[1]!);
+    const completed = await completeOperation({
+      audit: dependencies.audit,
+      attempt: {
+        operation: "delivery.consume.v1",
+        resourceType: "delivery",
+        resourceId: deliveryId,
+        context,
+      },
+      execute: async () => {
+        const body = artifactBodySchema.safeParse(
+          await request.json().catch(() => undefined),
+        );
+        if (!body.success) {
+          throw new ApiError(
+            400,
+            "invalid_delivery_code",
+            "El código de entrega no es válido.",
+          );
+        }
+        return consumeDelivery({
+          deliveryId,
+          code: body.data.code,
+          deliveryPepper: dependencies.deliveryPepper,
+          credentials: dependencies.credentials,
+          deliveries: dependencies.deliveries,
+        });
+      },
     });
     return Response.json(
-      { contractVersion: "1", ...artifact },
+      { contractVersion: "1", ...completed.value },
       {
         headers: {
           "cache-control": "no-store",
@@ -117,6 +133,7 @@ export async function credentialsRoute(
     dependencies.users,
     dependencies.signingKey,
   );
+  withRequestActor(context, user);
   const environment = environmentFrom(url);
   const matched =
     issueMatch ?? regenerationMatch ?? transitionMatch ?? deliveryMatch!;
@@ -138,12 +155,12 @@ export async function credentialsRoute(
     );
   }
   const operation = issueMatch
-    ? "issue"
+    ? "credential.issue.v1"
     : regenerationMatch
-      ? "regenerate"
+      ? "credential.regenerate.v1"
       : deliveryMatch
-        ? "delivery"
-        : transitionBody!.data.action;
+        ? "credential.delivery.v1"
+        : `credential.${transitionBody!.data.action}.v1`;
   const receipt = await runCredentialOperation({
     user,
     environment,
@@ -151,6 +168,8 @@ export async function credentialsRoute(
     operation,
     resourceType: issueMatch ? "application" : "credential",
     resourceId: credentialId ?? applicationId,
+    applicationId,
+    credentialId,
     body: transitionBody?.data,
     context,
     dependencies: {

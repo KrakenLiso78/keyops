@@ -16,6 +16,7 @@ export interface AuditAttempt {
   result: AuditResult;
   failureCode?: string;
   operationId?: string;
+  testRunId?: string;
   context: RequestContext;
 }
 
