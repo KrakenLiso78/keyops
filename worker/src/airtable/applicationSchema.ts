@@ -81,6 +81,8 @@ export const integratedApplicationSchema = z
       })
       .strict(),
     credentialState: credentialStateSchema,
+    credentialId: z.string().min(1).optional(),
+    clientId: z.string().startsWith("synthetic_").optional(),
     stateHistory: z.array(z.record(z.string(), z.unknown())),
     lastChangedAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),

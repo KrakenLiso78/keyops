@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
-import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
+import { createFakeCredentialRepository } from '@/data/fake/FakeCredentialRepository';
 import { actionNeedsReason } from '@/domain/policies/credentialTransitions';
-import type { Delivery, Receipt } from '@/domain/model/types';
+import type { Delivery, User } from '@/domain/model/types';
+import type { CredentialAction } from '@/domain/policies/permittedActions';
+import { useDependencies } from '@/composition/DependenciesProvider';
 import { Body, Button, Card, Field, Heading, Screen } from '@/presentation/components/base';
 import { CopyableValue } from '@/presentation/components/CopyableValue';
 import {
@@ -16,6 +18,14 @@ import {
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
 import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
+import { useCredentialOperationController } from '@/presentation/controllers/useCredentialOperationController';
+import { useApplicationDetailController } from '@/presentation/controllers/useApplicationDetailController';
+import { LoadingState, PersistentError } from '@/presentation/components/feedback';
+import { fakeUsers } from '@/data/fake/seed';
+import {
+  CredentialOperationFeedback,
+  SyntheticCredentialNotice,
+} from '@/presentation/components/credentials';
 
 const titles: Record<string, string> = {
   issue: 'Generar credenciales',
@@ -61,40 +71,59 @@ export default function OperationScreen() {
     action: string;
   }>();
   const { environment, user } = useApp();
-  const application = useMemo(
-    () => fakeRepository.getApplication(applicationId, environment),
-    [applicationId, environment],
+  const dependencies = useDependencies();
+  const applicationController = useApplicationDetailController(environment, applicationId);
+  const application = applicationController.application;
+  const credentialRepository = useMemo(
+    () =>
+      dependencies.credentials ?? createFakeCredentialRepository((user ?? fakeUsers[0]!) as User),
+    [dependencies.credentials, user],
   );
   const [reason, setReason] = useState('');
-  const [result, setResult] = useState<Receipt>();
-  const [error, setError] = useState('');
+  const retryApplication = applicationController.retry;
+  const refreshApplication = useCallback(() => retryApplication(), [retryApplication]);
+  const operation = useCredentialOperationController(
+    credentialRepository,
+    environment,
+    applicationId,
+    application?.credentialId,
+    refreshApplication,
+  );
+  const result = operation.receipt;
+  const error = operation.error;
+  const resetOperation = operation.reset;
   const { registerReset } = useEnvironment();
   useEffect(
     () =>
       registerReset(() => {
         setReason('');
-        setResult(undefined);
-        setError('');
+        resetOperation();
       }),
-    [registerReset],
+    [registerReset, resetOperation],
   );
   const title = titles[action] ?? 'Operación sobre credencial';
 
   const submit = () => {
     if (!user) return;
-    try {
-      setResult(fakeRepository.operate(user, applicationId, environment, action, reason));
-      setError('');
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'La operación no se completó.');
-    }
+    void operation.execute(action as CredentialAction, reason);
   };
 
+  if (!application && ['idle', 'loading'].includes(applicationController.status)) {
+    return (
+      <Screen>
+        <BackHeader onBack={() => router.back()} />
+        <LoadingState label="Cargando aplicación…" />
+      </Screen>
+    );
+  }
   if (!application) {
     return (
       <Screen>
         <BackHeader onBack={() => router.back()} />
-        <Heading>Aplicación no encontrada</Heading>
+        <PersistentError
+          message={applicationController.error ?? 'Aplicación no encontrada.'}
+          onRetry={applicationController.retry}
+        />
       </Screen>
     );
   }
@@ -116,6 +145,7 @@ export default function OperationScreen() {
         {result?.delivery ? (
           <>
             <Heading level={1}>Entrega al cliente</Heading>
+            <SyntheticCredentialNotice />
             <Card tone="sky" style={styles.deliveryCard}>
               <Text style={styles.institution}>
                 {application.institution} /{`\n`}
@@ -157,6 +187,7 @@ export default function OperationScreen() {
               <Text style={styles.warningText}>Envía el OTP por separado.</Text>
             </View>
             <View style={styles.resultFooter}>
+              <CredentialOperationFeedback submitting={operation.submitting} receipt={result} />
               <Card tone="mint">
                 <Text style={styles.confirmed}>Operación completada y auditada</Text>
                 <Body>Solicitud {result.requestId}</Body>
@@ -167,6 +198,8 @@ export default function OperationScreen() {
         ) : result ? (
           <>
             <Heading level={1}>Operación completada</Heading>
+            <SyntheticCredentialNotice />
+            <CredentialOperationFeedback submitting={operation.submitting} receipt={result} />
             <Card tone="mint">
               <Text style={styles.confirmed}>{title}</Text>
               <Body>Solicitud {result.requestId}</Body>
@@ -186,6 +219,7 @@ export default function OperationScreen() {
               <Body>{application.name}</Body>
               <CredentialStateBadge state={application.credentialState} />
             </Card>
+            <SyntheticCredentialNotice />
             {actionNeedsReason(action) ? (
               <Field
                 label="Motivo"
@@ -201,13 +235,14 @@ export default function OperationScreen() {
                 <Text style={styles.warningText}>Esta acción es irreversible.</Text>
               </View>
             ) : null}
-            <Button title={title} danger={action === 'revoke'} onPress={submit} />
+            <Button
+              title={operation.submitting ? 'Procesando…' : title}
+              danger={action === 'revoke'}
+              disabled={operation.submitting}
+              onPress={submit}
+            />
             <Button title="Cancelar" variant="ghost" onPress={() => router.back()} />
-            {error ? (
-              <Text accessibilityRole="alert" style={styles.error}>
-                {error}
-              </Text>
-            ) : null}
+            <CredentialOperationFeedback submitting={operation.submitting} error={error} />
           </>
         )}
       </ScrollView>

@@ -36,19 +36,19 @@
 
 ### Tests
 
-- [ ] T015 [P] [US-CRED-01] Escribir tests fallidos de transición inicial/permisos en `worker/tests/unit/credential-issue.test.ts`
-- [ ] T016 [P] [US-CRED-01] Escribir contrato fallido de emisión e `Idempotency-Key` en `worker/tests/contract/credential-issue.contract.test.ts`
-- [ ] T017 [P] [US-CRED-01] Escribir test móvil fallido de confirmación/errores/no optimismo en `mobile/tests/component/credential-issue.test.tsx`
-- [ ] T018 [P] [US-CRED-01] Escribir test de seguridad fallido para artefacto/receipt/logs en `worker/tests/security/synthetic-material.test.ts`
+- [x] T015 [P] [US-CRED-01] Escribir tests fallidos de transición inicial/permisos en `worker/tests/unit/credential-issue.test.ts`
+- [x] T016 [P] [US-CRED-01] Escribir contrato fallido de emisión e `Idempotency-Key` en `worker/tests/contract/credential-issue.contract.test.ts`
+- [x] T017 [P] [US-CRED-01] Escribir test móvil fallido de confirmación/errores/no optimismo en `mobile/tests/component/credential-issue.test.tsx`
+- [x] T018 [P] [US-CRED-01] Escribir test de seguridad fallido para artefacto/receipt/logs en `worker/tests/security/synthetic-material.test.ts`
 
 ### Implementation
 
-- [ ] T019 [US-CRED-01] Implementar emisión inicial e invariantes en `worker/src/credentials/issueCredential.ts`
-- [ ] T020 [US-CRED-01] Exponer `POST /v1/applications/{id}/credentials` en `worker/src/routes/v1/credentials.ts`
-- [ ] T021 [P] [US-CRED-01] Implementar mapper de receipt/entrega en `mobile/src/data/mappers/credentialOperationMapper.ts`
-- [ ] T022 [US-CRED-01] Sustituir alias por `RestCredentialRepository.issue()` real en `mobile/src/data/repositories/RestCredentialRepository.ts`
-- [ ] T023 [US-CRED-01] Conectar emisión, clave retenida y relectura confirmada en `mobile/src/presentation/controllers/useCredentialOperationController.ts`
-- [ ] T024 [US-CRED-01] Mostrar etiqueta sintética y estados pending/error/confirmed en `mobile/src/presentation/components/credentials/index.tsx`
+- [x] T019 [US-CRED-01] Implementar emisión inicial e invariantes en `worker/src/credentials/issueCredential.ts`
+- [x] T020 [US-CRED-01] Exponer `POST /v1/applications/{id}/credentials` en `worker/src/routes/v1/credentials.ts`
+- [x] T021 [P] [US-CRED-01] Implementar mapper de receipt/entrega en `mobile/src/data/mappers/credentialOperationMapper.ts`
+- [x] T022 [US-CRED-01] Sustituir alias por `RestCredentialRepository.issue()` real en `mobile/src/data/repositories/RestCredentialRepository.ts`
+- [x] T023 [US-CRED-01] Conectar emisión, clave retenida y relectura confirmada en `mobile/src/presentation/controllers/useCredentialOperationController.ts`
+- [x] T024 [US-CRED-01] Mostrar etiqueta sintética y estados pending/error/confirmed en `mobile/src/presentation/components/credentials/index.tsx`
 
 **Checkpoint**: Emisión testeable independientemente y persistente; auditoría completa se conecta en feature 005.
 

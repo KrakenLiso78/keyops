@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { useDependencies } from '@/composition/DependenciesProvider';
 import type { Application, Environment } from '@/domain/model/types';
 import { queryReducer } from '@/presentation/state/queryReducer';
@@ -28,10 +28,11 @@ export function useApplicationDetailController(environment: Environment, applica
         }
       });
   }, [applicationId, applications, beginRequest, environment, isCurrentRequest, refreshToken]);
+  const retry = useCallback(() => setRefreshToken((value) => value + 1), []);
 
   return {
     ...result,
     application: result.data,
-    retry: () => setRefreshToken((value) => value + 1),
+    retry,
   };
 }

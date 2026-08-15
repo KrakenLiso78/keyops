@@ -37,6 +37,7 @@ export interface Application {
   managementReason?: string;
   requestOrTicketId?: string;
   credentialState: CredentialState;
+  credentialId?: string;
   clientId?: string;
   lastChangedAt: string;
   updatedAt?: string;

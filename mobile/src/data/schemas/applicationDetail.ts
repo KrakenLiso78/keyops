@@ -39,6 +39,7 @@ export const apiApplicationSchema = z
       })
       .strict(),
     credentialState: credentialStateSchema,
+    credentialId: z.string().min(1).optional(),
     stateHistory: z.array(z.record(z.string(), z.unknown())),
     clientId: z.string().optional(),
     lastChangedAt: z.string().datetime({ offset: true }),

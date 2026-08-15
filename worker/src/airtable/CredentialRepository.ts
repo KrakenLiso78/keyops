@@ -105,6 +105,24 @@ export class CredentialRepository {
       : undefined;
   }
 
+  async findVersionByOperation(
+    operationId: string,
+  ): Promise<PersistedCredentialVersion | undefined> {
+    const matches = (
+      await this.client.list<CredentialVersionFields>("CredentialVersions")
+    )
+      .map(mapVersion)
+      .filter(({ fields }) => fields.operationId === operationId);
+    if (matches.length > 1) {
+      throw new ApiError(
+        409,
+        "duplicate_operation_version",
+        "La operación referencia más de una versión.",
+      );
+    }
+    return matches[0];
+  }
+
   async createCredential(
     fields: CredentialFields,
   ): Promise<PersistedCredential> {

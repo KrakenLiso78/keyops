@@ -43,6 +43,7 @@ export function mapApiApplication(input: ApiApplication): Application {
     managementReason: input.management.reason,
     requestOrTicketId: input.management.requestOrTicketId,
     credentialState: input.credentialState,
+    credentialId: input.credentialId,
     clientId: input.clientId,
     lastChangedAt: input.lastChangedAt,
     updatedAt: input.updatedAt,

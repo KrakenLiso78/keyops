@@ -13,6 +13,10 @@ import type {
   IntegratedApplication,
   ManagementCommand,
 } from "./applicationSchema";
+import type {
+  CredentialFields,
+  CredentialVersionFields,
+} from "./credentialSchema";
 
 export interface ApplicationListQuery {
   environment: "test" | "production";
@@ -132,11 +136,20 @@ export class ApplicationRepository {
   }
 
   private async readAll(): Promise<IntegratedApplication[]> {
-    const [applications, institutions, roles] = await Promise.all([
-      this.client.list<ApplicationFields>("Applications"),
-      this.client.list<InstitutionFields>("Institutions"),
-      this.client.list<ApiRoleFields>("ApiRoles"),
-    ]);
-    return mapApplications(applications, institutions, roles);
+    const [applications, institutions, roles, credentials, versions] =
+      await Promise.all([
+        this.client.list<ApplicationFields>("Applications"),
+        this.client.list<InstitutionFields>("Institutions"),
+        this.client.list<ApiRoleFields>("ApiRoles"),
+        this.client.list<CredentialFields>("Credentials"),
+        this.client.list<CredentialVersionFields>("CredentialVersions"),
+      ]);
+    return mapApplications(
+      applications,
+      institutions,
+      roles,
+      credentials,
+      versions,
+    );
   }
 }

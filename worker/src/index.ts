@@ -1,6 +1,9 @@
 import { AirtableClient } from "./airtable/AirtableClient";
 import { UserRepository } from "./airtable/UserRepository";
 import { ApplicationRepository } from "./airtable/ApplicationRepository";
+import { CredentialRepository } from "./airtable/CredentialRepository";
+import { DeliveryGrantRepository } from "./airtable/DeliveryGrantRepository";
+import { IdempotencyRepository } from "./airtable/IdempotencyRepository";
 import { noOpAuditSink } from "./audit/AuditSink";
 import { validateEnv, type WorkerEnv } from "./config/env";
 import { ApiError, errorResponse } from "./http/ApiError";
@@ -8,6 +11,7 @@ import { createRequestContext } from "./http/requestContext";
 import { ApplicationCache } from "./cache/applicationCache";
 import { applicationsRoute } from "./routes/v1/applications";
 import { healthResponse } from "./routes/v1/health";
+import { credentialsRoute } from "./routes/v1/credentials";
 import { createSession, restoreSession } from "./routes/v1/sessions";
 
 export async function handleRequest(
@@ -40,6 +44,18 @@ export async function handleRequest(
       if (url.pathname === "/v1/session" && request.method === "GET") {
         return await restoreSession(request, context, sessionDependencies);
       }
+      const credentialResponse = await credentialsRoute(request, context, {
+        users,
+        credentials: new CredentialRepository(airtable),
+        deliveries: new DeliveryGrantRepository(airtable),
+        idempotency: new IdempotencyRepository(airtable),
+        signingKey: config.sessionSigningKey,
+        deliveryPepper: config.deliveryPepper,
+        audit: noOpAuditSink,
+        invalidateApplications: (environment) =>
+          applicationCache.invalidateEnvironment(environment),
+      });
+      if (credentialResponse) return credentialResponse;
       const applicationResponse = await applicationsRoute(request, context, {
         users,
         applications: new ApplicationRepository(airtable),

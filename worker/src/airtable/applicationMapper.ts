@@ -11,6 +11,12 @@ import {
   type InstitutionFields,
   type IntegratedApplication,
 } from "./applicationSchema";
+import {
+  credentialFieldsSchema,
+  credentialVersionFieldsSchema,
+  type CredentialFields,
+  type CredentialVersionFields,
+} from "./credentialSchema";
 
 function parseJson(value: string, label: string): unknown {
   try {
@@ -46,6 +52,8 @@ export function mapApplications(
   applicationRecords: AirtableRecord<ApplicationFields>[],
   institutionRecords: AirtableRecord<InstitutionFields>[],
   roleRecords: AirtableRecord<ApiRoleFields>[],
+  credentialRecords: AirtableRecord<CredentialFields>[] = [],
+  versionRecords: AirtableRecord<CredentialVersionFields>[] = [],
 ): IntegratedApplication[] {
   const institutions = duplicateSafeMap(
     institutionRecords.map((record) => {
@@ -66,6 +74,12 @@ export function mapApplications(
     "ApiRoles",
   );
   const seen = new Set<string>();
+  const credentials = credentialRecords.map((record) =>
+    credentialFieldsSchema.parse(record.fields),
+  );
+  const versions = versionRecords.map((record) =>
+    credentialVersionFieldsSchema.parse(record.fields),
+  );
 
   return applicationRecords.map((record) => {
     const fields = applicationFieldsSchema.parse(record.fields);
@@ -105,6 +119,31 @@ export function mapApplications(
           phone: legacyContact.phone,
         })
       : undefined;
+    const matchingCredentials = credentials.filter(
+      (credential) =>
+        credential.applicationId === fields.applicationId &&
+        credential.environment === fields.environment,
+    );
+    if (matchingCredentials.length > 1) {
+      throw new ApiError(
+        409,
+        "duplicate_credential",
+        "La aplicación tiene más de una credencial sintética.",
+      );
+    }
+    const credential = matchingCredentials[0];
+    const stateHistory = credential
+      ? versions
+          .filter((version) => version.credentialId === credential.credentialId)
+          .filter((version) => version.state !== "pending")
+          .toSorted((left, right) =>
+            right.stateChangedAt.localeCompare(left.stateChangedAt),
+          )
+          .map((version) => ({
+            state: version.state,
+            changedAt: version.stateChangedAt,
+          }))
+      : [];
     return integratedApplicationSchema.parse({
       id: fields.applicationId,
       name: fields.name,
@@ -119,7 +158,9 @@ export function mapApplications(
         updatedAt: fields.updatedAt,
       },
       credentialState: fields.credentialState,
-      stateHistory: [],
+      credentialId: credential?.credentialId ?? fields.currentCredentialId,
+      clientId: credential?.syntheticClientId,
+      stateHistory,
       lastChangedAt: fields.lastChangedAt,
       updatedAt: fields.updatedAt,
     });
