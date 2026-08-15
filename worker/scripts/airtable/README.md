@@ -54,3 +54,24 @@ La confirmación literal evita una ejecución accidental. El proceso:
 
 Airtable no ofrece una transacción global entre tablas. Si hay un fallo intermedio, vuelve a
 ejecutar el mismo comando: primero vaciará el estado parcial y después reconstruirá el seed.
+
+## Delta `ApplicationOperationalContexts`
+
+Esta integración añade una tabla que conserva únicamente metadatos operativos
+de KeyOps; no copia nombres corporativos, instituciones o roles.
+
+| Campo                   | Tipo         | Regla                                                  |
+| ----------------------- | ------------ | ------------------------------------------------------ |
+| `contextId`             | texto        | Identificador KeyOps único                             |
+| `catalogApplicationId`  | texto        | ID corporativo estable                                 |
+| `environment`           | selección    | `test` o `production`; forma la clave lógica con el ID |
+| `technicalContact`      | texto largo  | JSON allowlist opcional                                |
+| `managementReason`      | texto largo  | Opcional, máximo 500 caracteres                        |
+| `requestOrTicketId`     | texto        | Opcional, máximo 100 caracteres                        |
+| `credentialReferenceId` | texto        | Referencia opcional no secreta                         |
+| `declaredIps`           | texto largo  | Array JSON de IPs operativas                           |
+| `updatedAt`             | fecha y hora | Token de concurrencia generado por el Worker           |
+
+El Worker puede listar, crear y actualizar esta tabla. Nunca escribe en el
+catálogo corporativo y rechaza claves `(catalogApplicationId, environment)`
+duplicadas.

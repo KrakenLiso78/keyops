@@ -6,20 +6,20 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear estructura de catálogo en `worker/src/catalog/` y fixtures en `worker/tests/fixtures/catalog/`
-- [ ] T002 [P] Añadir configuración sin secretos y validación de bindings del catálogo en `worker/src/config/env.ts` y `worker/.dev.vars.example`
-- [ ] T003 [P] Documentar checklist de contrato/propietario/scopes/límites en `worker/docs/corporate-catalog-checkpoint.md`
+- [x] T001 Crear estructura de catálogo en `worker/src/catalog/` y fixtures en `worker/tests/fixtures/catalog/`
+- [x] T002 [P] Añadir configuración sin secretos y validación de bindings del catálogo en `worker/src/config/env.ts` y `worker/.dev.vars.example`
+- [x] T003 [P] Documentar checklist de contrato/propietario/scopes/límites en `worker/docs/corporate-catalog-checkpoint.md`
 
 ## Phase 2: Foundational
 
-- [ ] T004 [P] Definir `CorporateCatalogPort` y tipos internos en `worker/src/catalog/CorporateCatalogPort.ts`
-- [ ] T005 [P] Implementar schemas Zod del contrato neutral en `worker/src/catalog/catalogSchemas.ts`
-- [ ] T006 [P] Crear stub HTTP con páginas, errores y duplicados en `worker/tests/support/CorporateCatalogStub.ts`
-- [ ] T007 Implementar adapter HTTP neutral y traducción de errores en `worker/src/catalog/CorporateCatalogHttpAdapter.ts`
-- [ ] T008 [P] Implementar caché segmentada con TTL máximo 60 s en `worker/src/cache/catalogCache.ts`
-- [ ] T009 Definir el delta de esquema `ApplicationOperationalContexts` en `worker/scripts/airtable/README.md` e implementar su repositorio en `worker/src/airtable/ApplicationOperationalContextRepository.ts`
-- [ ] T010 Implementar unión por ID externo/ambiente y detección de huérfanos en `worker/src/applications/joinOperationalContext.ts`
-- [ ] T011 Conectar el puerto por inyección explícita en `worker/src/composition/createWorkerDependencies.ts`
+- [x] T004 [P] Definir `CorporateCatalogPort` y tipos internos en `worker/src/catalog/CorporateCatalogPort.ts`
+- [x] T005 [P] Implementar schemas Zod del contrato neutral en `worker/src/catalog/catalogSchemas.ts`
+- [x] T006 [P] Crear stub HTTP con páginas, errores y duplicados en `worker/tests/support/CorporateCatalogStub.ts`
+- [x] T007 Implementar adapter HTTP neutral y traducción de errores en `worker/src/catalog/CorporateCatalogHttpAdapter.ts`
+- [x] T008 [P] Implementar caché segmentada con TTL máximo 60 s en `worker/src/cache/catalogCache.ts`
+- [x] T009 Definir el delta de esquema `ApplicationOperationalContexts` en `worker/scripts/airtable/README.md` e implementar su repositorio en `worker/src/airtable/ApplicationOperationalContextRepository.ts`
+- [x] T010 Implementar unión por ID externo/ambiente y detección de huérfanos en `worker/src/applications/joinOperationalContext.ts`
+- [x] T011 Conectar el puerto por inyección explícita en `worker/src/composition/createWorkerDependencies.ts`
 
 **Checkpoint**: El adapter neutral y la unión pueden probarse sin proveedor real y sin fallback demo.
 
@@ -31,10 +31,10 @@
 
 ### Tests
 
-- [ ] T012 [P] [US-CAT-01] Escribir tests fallidos de schemas, duplicados e incompletos en `worker/tests/unit/catalogSchemas.test.ts`
+- [x] T012 [P] [US-CAT-01] Escribir tests fallidos de schemas, duplicados e incompletos en `worker/tests/unit/catalogSchemas.test.ts`
 - [ ] T013 [P] [US-CAT-01] Escribir tests fallidos de alcance, ambiente, cambio y caché en `worker/tests/unit/catalogQuery.test.ts`
-- [ ] T014 [P] [US-CAT-01] Escribir contrato fallido del provider neutral en `worker/tests/contract/catalog-provider.contract.test.ts`
-- [ ] T015 [P] [US-CAT-01] Escribir tests fallidos de unión/contexto huérfano en `worker/tests/unit/catalogJoin.test.ts`
+- [x] T014 [P] [US-CAT-01] Escribir contrato fallido del provider neutral en `worker/tests/contract/catalog-provider.contract.test.ts`
+- [x] T015 [P] [US-CAT-01] Escribir tests fallidos de unión/contexto huérfano en `worker/tests/unit/catalogJoin.test.ts`
 - [ ] T016 [P] [US-CAT-01] Escribir test de seguridad fallido de scopes/campos/logs en `worker/tests/security/catalog-redaction.test.ts`
 - [ ] T017 [P] [US-CAT-01] Escribir test móvil fallido de loading/error sin fallback en `mobile/tests/component/applications/corporateCatalogList.test.tsx`
 

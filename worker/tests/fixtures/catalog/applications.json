@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "externalApplicationId": "app-test",
+      "name": "Pago en Línea",
+      "externalInstitutionId": "inst-salud",
+      "institutionName": "Ministerio de Salud",
+      "externalRoleId": "role-mensajes",
+      "roleName": "Envío de mensajes",
+      "environment": "test",
+      "active": true,
+      "recordVersion": "catalog-v1",
+      "updatedAt": "2026-08-15T09:00:00.000Z"
+    },
+    {
+      "externalApplicationId": "app-production",
+      "name": "Portal Tributario",
+      "externalInstitutionId": "inst-hacienda",
+      "institutionName": "Ministerio de Hacienda",
+      "externalRoleId": "role-mensajes",
+      "roleName": "Envío de mensajes",
+      "environment": "production",
+      "active": true,
+      "recordVersion": "catalog-v1",
+      "updatedAt": "2026-08-14T09:00:00.000Z"
+    }
+  ]
+}
