@@ -6,9 +6,9 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Añadir `AuditEvents` y su presupuesto a `worker/scripts/airtable/schema.md`
-- [ ] T002 Crear fixtures de éxito/fallo/rechazo y filtros en `worker/scripts/airtable/fixtures/audit-events.json`
-- [ ] T003 Extender seed/limpieza por `testRunId` en `worker/scripts/airtable/seed-audit.ts` sin borrar eventos ajenos
+- [x] T001 Añadir `AuditEvents` y su presupuesto a `worker/scripts/airtable/schema.md`
+- [x] T002 Crear fixtures de éxito/fallo/rechazo y filtros en `worker/scripts/airtable/fixtures/audit-events.json`
+- [x] T003 Extender seed/limpieza por `testRunId` en `worker/scripts/airtable/seed-audit.ts` sin borrar eventos ajenos
 - [ ] T004 [P] Añadir comando selectivo `test:integration:airtable -- audit` en `worker/package.json`
 
 **Checkpoint**: Tabla y fixtures disponibles con margen dentro de 1.000 registros.

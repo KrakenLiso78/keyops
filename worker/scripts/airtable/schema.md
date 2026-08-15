@@ -97,4 +97,29 @@ Las identidades funcionales son los campos terminados en `Id`; los IDs `rec...` 
 | `updatedAt`          | Date/time        | Último cambio de estado                         |
 | `schemaVersion`      | Single line text | Versión de registro; valor inicial `1`          |
 
+## AuditEvents
+
+| Campo              | Tipo Airtable    | Regla                                                      |
+| ------------------ | ---------------- | ---------------------------------------------------------- |
+| `eventId`          | Single line text | Único, estable y ordenable                                 |
+| `schemaVersion`    | Number           | Entero; valor inicial `1`                                  |
+| `occurredAt`       | Date/time        | Instante UTC generado por el Worker                        |
+| `actorUserId`      | Single line text | `anonymous` si no se estableció identidad                  |
+| `actorDisplayName` | Single line text | Valor seguro para presentación                             |
+| `operation`        | Single line text | Nombre versionado de la operación                          |
+| `resourceType`     | Single line text | Tipo seguro del recurso                                    |
+| `resourceId`       | Single line text | Referencia funcional opcional                              |
+| `environment`      | Single select    | Opcional; `test` o `production`                            |
+| `institutionId`    | Single line text | Referencia funcional opcional                              |
+| `applicationId`    | Single line text | Referencia funcional opcional                              |
+| `credentialId`     | Single line text | Referencia funcional opcional                              |
+| `result`           | Single select    | `succeeded`, `failed` o `rejected`                         |
+| `originIp`         | Single line text | IP normalizada desde metadatos confiables del Worker       |
+| `failureCode`      | Single line text | Código controlado opcional; nunca excepción o cuerpo crudo |
+| `requestId`        | Single line text | Correlación obligatoria                                    |
+| `operationId`      | Single line text | Correlación idempotente opcional                           |
+| `testRunId`        | Single line text | Opcional; permite limpiar exclusivamente fixtures propios  |
+
+La feature de auditoría reserva como máximo 650 de los 1.000 registros del plan gratuito. El seed canónico ocupa 6 y su limpieza filtra por `testRunId`; la aplicación no expone actualización ni borrado de eventos.
+
 No se crean campos para Client Secret, OTP en claro, contraseñas ni enlaces de entrega. La base completa conserva menos de 1.000 registros según el presupuesto del plan.
