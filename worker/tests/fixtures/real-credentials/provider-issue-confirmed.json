@@ -1,0 +1,11 @@
+{
+  "providerOperationId": "provider-operation-001",
+  "status": "confirmed",
+  "credential": {
+    "externalCredentialId": "external-credential-001",
+    "externalVersionId": "external-version-001",
+    "effectiveState": "active",
+    "sealedDeliveryHandle": "sealed-handle-001",
+    "confirmedAt": "2026-08-15T12:00:00.000Z"
+  }
+}

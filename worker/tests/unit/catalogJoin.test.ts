@@ -52,4 +52,32 @@ describe("corporate catalog operational join", () => {
       }),
     ).toThrow("sin aplicación corporativa");
   });
+
+  it("projects the last confirmed real credential instead of a synthetic value", () => {
+    const [application] = joinOperationalContext({
+      catalog: [catalog[0]!],
+      contexts: [context],
+      realReferences: [
+        {
+          referenceId: "real-reference-1",
+          externalCredentialId: "external-credential-1",
+          catalogApplicationId: "app-test",
+          environment: "test",
+          externalVersionId: "external-version-1",
+          effectiveState: "active",
+          lastOperationId: "provider-operation-1",
+          lastConfirmedAt: "2026-08-15T12:00:00.000Z",
+          updatedAt: "2026-08-15T12:00:00.000Z",
+          schemaVersion: "2",
+        },
+      ],
+    });
+
+    expect(application).toMatchObject({
+      credentialState: "active",
+      credentialId: "real-reference-1",
+      lastChangedAt: "2026-08-15T12:00:00.000Z",
+    });
+    expect(application?.clientId).toBeUndefined();
+  });
 });

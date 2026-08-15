@@ -11,6 +11,7 @@ import { authorize } from "../auth/authorize";
 import { applicationSearchText, normalizeSearch } from "./normalizeSearch";
 import { joinOperationalContext } from "./joinOperationalContext";
 import { ApiError } from "../http/ApiError";
+import type { RealCredentialReferenceRepository } from "../airtable/RealCredentialReferenceRepository";
 
 export interface CorporateApplicationDependencies {
   catalog?: CorporateCatalogPort;
@@ -20,6 +21,7 @@ export interface CorporateApplicationDependencies {
     "list" | "get" | "saveManagement"
   >;
   credentials: Pick<CredentialRepository, "listCredentials" | "listVersions">;
+  realReferences?: Pick<RealCredentialReferenceRepository, "listReferences">;
 }
 
 function requireCatalog(catalog?: CorporateCatalogPort): CorporateCatalogPort {
@@ -98,10 +100,11 @@ export async function listCorporateApplications(
         `${application.environment}:${application.externalApplicationId}`,
     ),
   );
-  const [contexts, credentials, versions] = await Promise.all([
+  const [contexts, credentials, versions, realReferences] = await Promise.all([
     dependencies.contexts.list(),
     dependencies.credentials.listCredentials(),
     dependencies.credentials.listVersions(),
+    dependencies.realReferences?.listReferences() ?? [],
   ]);
   const joined = joinOperationalContext({
     catalog: current,
@@ -110,6 +113,7 @@ export async function listCorporateApplications(
     ),
     credentials,
     versions,
+    realReferences,
   });
   const search = normalizeSearch(query.query ?? "");
   const filtered = joined

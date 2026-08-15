@@ -9,6 +9,7 @@ import {
   technicalContactSchema,
 } from "../airtable/applicationSchema";
 import type { CorporateCatalogApplication } from "../catalog/CorporateCatalogPort";
+import type { RealCredentialReferenceFields } from "../credentials/real/realCredentialSchemas";
 import { ApiError } from "../http/ApiError";
 
 function parseJson(value: string, label: string): unknown {
@@ -28,6 +29,7 @@ export function joinOperationalContext(input: {
   contexts: PersistedOperationalContext[];
   credentials?: CredentialFields[];
   versions?: CredentialVersionFields[];
+  realReferences?: RealCredentialReferenceFields[];
 }): IntegratedApplication[] {
   const catalogKeys = new Set(
     input.catalog.map(
@@ -70,6 +72,19 @@ export function joinOperationalContext(input: {
       );
     }
     const credential = credentials[0];
+    const realReferences = (input.realReferences ?? []).filter(
+      (reference) =>
+        reference.catalogApplicationId === catalog.externalApplicationId &&
+        reference.environment === catalog.environment,
+    );
+    if (realReferences.length > 1) {
+      throw new ApiError(
+        409,
+        "duplicate_real_credential_reference",
+        "La aplicación tiene más de una referencia de credencial real.",
+      );
+    }
+    const realReference = realReferences[0];
     const history = credential
       ? (input.versions ?? [])
           .filter((version) => version.credentialId === credential.credentialId)
@@ -120,13 +135,25 @@ export function joinOperationalContext(input: {
         requestOrTicketId: context?.requestOrTicketId,
         updatedAt: context?.updatedAt,
       },
-      credentialState: credential?.state ?? "no_credentials",
-      credentialId: credential?.credentialId ?? context?.credentialReferenceId,
-      clientId: credential?.syntheticClientId,
+      credentialState:
+        realReference?.effectiveState === "reconciliation_required"
+          ? (credential?.state ?? "no_credentials")
+          : (realReference?.effectiveState ??
+            credential?.state ??
+            "no_credentials"),
+      credentialId:
+        realReference?.referenceId ??
+        credential?.credentialId ??
+        context?.credentialReferenceId,
+      clientId: realReference ? undefined : credential?.syntheticClientId,
       stateHistory: history,
       lastChangedAt:
-        credential?.lastChangedAt ?? context?.updatedAt ?? catalog.updatedAt,
-      updatedAt: context?.updatedAt ?? catalog.updatedAt,
+        realReference?.updatedAt ??
+        credential?.lastChangedAt ??
+        context?.updatedAt ??
+        catalog.updatedAt,
+      updatedAt:
+        realReference?.updatedAt ?? context?.updatedAt ?? catalog.updatedAt,
     });
   });
 }

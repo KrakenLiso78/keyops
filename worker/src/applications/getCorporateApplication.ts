@@ -67,15 +67,17 @@ export async function getCorporateApplication(
       "La aplicación corporativa no está vigente.",
     );
   }
-  const [context, credentials, versions] = await Promise.all([
+  const [context, credentials, versions, realReferences] = await Promise.all([
     dependencies.contexts.get(environment, applicationId),
     dependencies.credentials.listCredentials(),
     dependencies.credentials.listVersions(),
+    dependencies.realReferences?.listReferences() ?? [],
   ]);
   return joinOperationalContext({
     catalog: [application],
     contexts: context ? [context] : [],
     credentials,
     versions,
+    realReferences,
   })[0]!;
 }

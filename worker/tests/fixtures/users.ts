@@ -1,4 +1,4 @@
-import type { UserFields } from "../../src/airtable/userSchema";
+import type { AuthorizedUser, UserFields } from "../../src/airtable/userSchema";
 
 export const userFixtures: UserFields[] = [
   {
@@ -24,3 +24,13 @@ export const userFixtures: UserFields[] = [
     corporateSubject: "corporate-subject-disabled",
   },
 ];
+
+export const authorizedUserFixture: AuthorizedUser = {
+  id: userFixtures[0]!.userId,
+  loginIdentifier: userFixtures[0]!.loginIdentifier,
+  displayName: userFixtures[0]!.displayName,
+  profile: userFixtures[0]!.profile,
+  enabled: userFixtures[0]!.enabled,
+  permissions: userFixtures[0]!.permissions,
+  institutionIds: userFixtures[0]!.institutionIds,
+};

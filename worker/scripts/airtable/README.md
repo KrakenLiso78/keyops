@@ -89,3 +89,42 @@ La tabla `Users` conserva autorización KeyOps, no credenciales ni claims OIDC.
 
 `loginIdentifier` y `displayName` son atributos visibles, no claves de identidad.
 La aplicación rechaza duplicados de `(corporateIssuer, corporateSubject)`.
+
+## Delta de credenciales reales `/v2`
+
+Las tablas siguientes guardan exclusivamente proyecciones y correlaciones no
+secretas. No contienen Client Secret, ZIP, contraseña, OTP ni URL de descarga.
+
+### `RealCredentialReferences`
+
+| Campo                           | Tipo         | Regla                                                        |
+| ------------------------------- | ------------ | ------------------------------------------------------------ |
+| `referenceId`                   | texto        | ID estable mostrado por KeyOps                               |
+| `externalCredentialId`          | texto        | Referencia opaca del proveedor                               |
+| `catalogApplicationId`          | texto        | Aplicación corporativa de la feature 006                     |
+| `environment`                   | selección    | `test` o `production`                                        |
+| `externalVersionId`             | texto        | Última versión confirmada                                    |
+| `effectiveState`                | selección    | `active`, `suspended`, `revoked` o `reconciliation_required` |
+| `lastOperationId`               | texto        | Correlación opaca del proveedor                              |
+| `lastConfirmedAt` / `updatedAt` | fecha y hora | Confirmación y token de concurrencia                         |
+| `sealedDeliveryHandle`          | texto        | Handle opaco; nunca material de entrega                      |
+| `schemaVersion`                 | texto        | Siempre `2`                                                  |
+
+La clave lógica es `(catalogApplicationId, environment)` y solo puede existir una
+referencia por aplicación y ambiente.
+
+### `RealOperationReceipts`
+
+| Campo                                                  | Tipo            | Regla                                                  |
+| ------------------------------------------------------ | --------------- | ------------------------------------------------------ |
+| `operationId` / `providerOperationId`                  | texto           | Correlaciones KeyOps y proveedor                       |
+| `idempotencyScopeHash` / `requestFingerprint`          | texto           | SHA-256; nunca cuerpo o clave en claro                 |
+| `requestId` / `actorUserId`                            | texto           | Correlación HTTP inicial y propietario de la operación |
+| `catalogApplicationId` / `environment` / `referenceId` | texto/selección | Contexto no secreto                                    |
+| `action`                                               | selección       | `issue`, `rotate`, `suspend`, `reactivate` o `revoke`  |
+| `status`                                               | selección       | `pending`, `confirmed` o `reconciliation_required`     |
+| `result`                                               | selección       | `pending`, `succeeded`, `failed` o `rejected`          |
+| `deliveryReferenceId` / `deliveryExpiresAt`            | texto/fecha     | Referencia segura opcional                             |
+| `auditEventId` / `failureCode`                         | texto           | Evidencia y causa controlada                           |
+| `createdAt` / `confirmedAt` / `updatedAt`              | fecha y hora    | Ciclo de vida                                          |
+| `schemaVersion`                                        | texto           | Siempre `2`                                            |

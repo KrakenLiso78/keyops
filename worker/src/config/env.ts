@@ -12,6 +12,11 @@ export interface WorkerEnv {
   OIDC_CLIENT_ID?: string;
   OIDC_CLIENT_SECRET?: string;
   OIDC_REDIRECT_URI?: string;
+  REAL_CREDENTIAL_PROVIDER_BASE_URL?: string;
+  REAL_CREDENTIAL_PROVIDER_TOKEN?: string;
+  SECURE_DELIVERY_BASE_URL?: string;
+  SECURE_DELIVERY_TOKEN?: string;
+  REAL_CREDENTIAL_ENVIRONMENTS?: string;
   ASSETS?: Fetcher;
 }
 
@@ -28,6 +33,11 @@ const workerEnvSchema = z
     OIDC_CLIENT_ID: z.string().min(3).optional(),
     OIDC_CLIENT_SECRET: z.string().min(12).optional(),
     OIDC_REDIRECT_URI: z.string().url().optional(),
+    REAL_CREDENTIAL_PROVIDER_BASE_URL: z.string().url().optional(),
+    REAL_CREDENTIAL_PROVIDER_TOKEN: z.string().min(12).optional(),
+    SECURE_DELIVERY_BASE_URL: z.string().url().optional(),
+    SECURE_DELIVERY_TOKEN: z.string().min(12).optional(),
+    REAL_CREDENTIAL_ENVIRONMENTS: z.string().min(1).optional(),
   })
   .superRefine((value, context) => {
     if (Boolean(value.CATALOG_BASE_URL) !== Boolean(value.CATALOG_READ_TOKEN)) {
@@ -50,6 +60,20 @@ const workerEnvSchema = z
         message: "All OIDC bindings must be configured together.",
       });
     }
+    const realCredentials = [
+      value.REAL_CREDENTIAL_PROVIDER_BASE_URL,
+      value.REAL_CREDENTIAL_PROVIDER_TOKEN,
+      value.SECURE_DELIVERY_BASE_URL,
+      value.SECURE_DELIVERY_TOKEN,
+      value.REAL_CREDENTIAL_ENVIRONMENTS,
+    ];
+    if (realCredentials.some(Boolean) && !realCredentials.every(Boolean)) {
+      context.addIssue({
+        code: "custom",
+        path: ["REAL_CREDENTIAL_PROVIDER_BASE_URL"],
+        message: "All real credential bindings must be configured together.",
+      });
+    }
   });
 
 export interface ValidatedEnv {
@@ -65,6 +89,11 @@ export interface ValidatedEnv {
     clientSecret: string;
     redirectUri: string;
   };
+  realCredentials?: {
+    provider: { baseUrl: string; token: string };
+    delivery: { baseUrl: string; token: string };
+    allowedEnvironments: ReadonlySet<"test" | "production">;
+  };
 }
 
 export function validateEnv(env: WorkerEnv): ValidatedEnv {
@@ -72,6 +101,16 @@ export function validateEnv(env: WorkerEnv): ValidatedEnv {
   const credentials = z
     .record(z.string().min(1), z.string().min(1))
     .parse(JSON.parse(parsed.DEMO_CREDENTIALS_JSON));
+  const realEnvironments = parsed.REAL_CREDENTIAL_ENVIRONMENTS
+    ? z
+        .array(z.enum(["test", "production"]))
+        .min(1)
+        .parse(
+          parsed.REAL_CREDENTIAL_ENVIRONMENTS.split(",").map((value) =>
+            value.trim(),
+          ),
+        )
+    : undefined;
   return {
     airtableBaseId: parsed.AIRTABLE_BASE_ID,
     airtablePat: parsed.AIRTABLE_PAT,
@@ -95,6 +134,27 @@ export function validateEnv(env: WorkerEnv): ValidatedEnv {
             clientId: parsed.OIDC_CLIENT_ID,
             clientSecret: parsed.OIDC_CLIENT_SECRET,
             redirectUri: parsed.OIDC_REDIRECT_URI,
+          }
+        : undefined,
+    realCredentials:
+      parsed.REAL_CREDENTIAL_PROVIDER_BASE_URL &&
+      parsed.REAL_CREDENTIAL_PROVIDER_TOKEN &&
+      parsed.SECURE_DELIVERY_BASE_URL &&
+      parsed.SECURE_DELIVERY_TOKEN &&
+      realEnvironments
+        ? {
+            provider: {
+              baseUrl: parsed.REAL_CREDENTIAL_PROVIDER_BASE_URL.replace(
+                /\/$/u,
+                "",
+              ),
+              token: parsed.REAL_CREDENTIAL_PROVIDER_TOKEN,
+            },
+            delivery: {
+              baseUrl: parsed.SECURE_DELIVERY_BASE_URL.replace(/\/$/u, ""),
+              token: parsed.SECURE_DELIVERY_TOKEN,
+            },
+            allowedEnvironments: new Set(realEnvironments),
           }
         : undefined,
   };

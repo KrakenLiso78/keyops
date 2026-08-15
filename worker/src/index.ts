@@ -18,6 +18,7 @@ import { createWorkerDependencies } from "./composition/createWorkerDependencies
 import { corporateAuthRoute } from "./routes/v1/auth";
 import { InMemoryAuthorizationReplayStore } from "./auth/authorizationTransaction";
 import { usersRoute } from "./routes/v1/users";
+import { v2Route } from "./routes/v2";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
   const value = url.searchParams.get("environment");
@@ -34,6 +35,33 @@ function safeDecodePathPart(value: string): string | undefined {
 
 function fallbackAuditDescriptor(request: Request, url: URL) {
   const method = request.method;
+  const realApplication = url.pathname.match(
+    /^\/v2\/applications\/([^/]+)\/credentials(?:\/([^/]+)\/(regenerations|transitions))?$/u,
+  );
+  if (realApplication) {
+    const applicationId = safeDecodePathPart(realApplication[1]!);
+    const credentialId = realApplication[2]
+      ? safeDecodePathPart(realApplication[2])
+      : undefined;
+    return {
+      operation:
+        realApplication[3] === "regenerations"
+          ? "credential.rotate.v2"
+          : realApplication[3] === "transitions"
+            ? "credential.transition.v2"
+            : "credential.issue.v2",
+      resourceType: "real_credential",
+      resourceId: credentialId ?? applicationId,
+      applicationId,
+      credentialId,
+    };
+  }
+  if (/^\/v2\/operations\/[^/]+$/u.test(url.pathname) && method === "GET") {
+    return {
+      operation: "credential.status.v2",
+      resourceType: "real_operation",
+    };
+  }
   if (url.pathname === "/v1/sessions" && method === "POST") {
     return { operation: "session.create.v1", resourceType: "session" };
   }
@@ -122,7 +150,7 @@ export async function handleRequest(
       return healthResponse(context.requestId);
     }
 
-    if (url.pathname.startsWith("/v1/")) {
+    if (/^\/v[12]\//u.test(url.pathname)) {
       const config = validateEnv(env);
       const core = createWorkerDependencies(config);
       const { airtable } = core;
@@ -135,6 +163,20 @@ export async function handleRequest(
         signingKey: config.sessionSigningKey,
         audit,
       };
+      if (url.pathname.startsWith("/v2/")) {
+        const response = await v2Route(request, context, {
+          users,
+          audit,
+          signingKey: config.sessionSigningKey,
+          real: core.realCredentials,
+        });
+        if (response) return response;
+        throw new ApiError(
+          404,
+          "not_found",
+          "No se encontró el recurso solicitado.",
+        );
+      }
       const corporateResponse = await corporateAuthRoute(request, context, {
         users,
         audit,
@@ -191,6 +233,7 @@ export async function handleRequest(
           catalogCache,
           contexts: core.operationalContexts,
           credentials,
+          realReferences: core.realReferences,
         },
       });
       if (applicationResponse) return applicationResponse;
@@ -210,7 +253,7 @@ export async function handleRequest(
   } catch (error) {
     let responseError = error;
     const url = new URL(request.url);
-    if (audit && url.pathname.startsWith("/v1/") && !context.auditRecorded) {
+    if (audit && /^\/v[12]\//u.test(url.pathname) && !context.auditRecorded) {
       const controlled =
         error instanceof ApiError
           ? error
@@ -241,7 +284,11 @@ export async function handleRequest(
               );
       }
     }
-    return errorResponse(responseError, context.requestId);
+    return errorResponse(
+      responseError,
+      context.requestId,
+      url.pathname.startsWith("/v2/") ? "2" : "1",
+    );
   }
 }
 

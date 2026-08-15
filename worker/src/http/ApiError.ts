@@ -10,7 +10,11 @@ export class ApiError extends Error {
   }
 }
 
-export function errorResponse(error: unknown, requestId: string): Response {
+export function errorResponse(
+  error: unknown,
+  requestId: string,
+  contractVersion = "1",
+): Response {
   const controlled =
     error instanceof ApiError
       ? error
@@ -22,7 +26,7 @@ export function errorResponse(error: unknown, requestId: string): Response {
         );
   return Response.json(
     {
-      contractVersion: "1",
+      contractVersion,
       code: controlled.code,
       message: controlled.message,
       requestId,
