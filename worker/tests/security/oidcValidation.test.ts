@@ -38,6 +38,7 @@ describe("OIDC ID token validation", () => {
 
   it.each([
     ["issuer", { iss: "https://other.example" }],
+    ["issuer spelling", { iss: "https://identity.example.test/" }],
     ["audience", { aud: "other-client" }],
     ["nonce", { nonce: "different-nonce-value" }],
     ["expiry", { exp: Math.floor(now / 1_000) - 1 }],

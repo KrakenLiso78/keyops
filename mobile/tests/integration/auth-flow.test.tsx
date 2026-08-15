@@ -29,9 +29,11 @@ class MemorySessionStore {
 }
 
 const repository: AuthRepository = {
+  mode: 'credentials',
   signIn: jest.fn(async () => ({ user: analyst, tokens: { accessToken: 'signed-token' } })),
   restore: jest.fn(async () => analyst),
   signOut: jest.fn(async () => undefined),
+  beginCorporateSignIn: jest.fn(async () => undefined),
 };
 
 describe('flujo móvil de sesión remota', () => {

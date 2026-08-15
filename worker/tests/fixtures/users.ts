@@ -9,6 +9,8 @@ export const userFixtures: UserFields[] = [
     enabled: true,
     permissions: ["applications:read", "credentials:issue", "management:write"],
     updatedAt: "2026-08-15T09:00:00.000Z",
+    corporateIssuer: "https://identity.example.test",
+    corporateSubject: "corporate-subject-001",
   },
   {
     userId: "user-disabled",
@@ -18,5 +20,7 @@ export const userFixtures: UserFields[] = [
     enabled: false,
     permissions: ["applications:read"],
     updatedAt: "2026-08-15T09:00:00.000Z",
+    corporateIssuer: "https://identity.example.test",
+    corporateSubject: "corporate-subject-disabled",
   },
 ];

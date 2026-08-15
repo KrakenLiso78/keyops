@@ -91,7 +91,7 @@ export function validateEnv(env: WorkerEnv): ValidatedEnv {
       parsed.OIDC_CLIENT_SECRET &&
       parsed.OIDC_REDIRECT_URI
         ? {
-            issuer: parsed.OIDC_ISSUER.replace(/\/$/u, ""),
+            issuer: parsed.OIDC_ISSUER,
             clientId: parsed.OIDC_CLIENT_ID,
             clientSecret: parsed.OIDC_CLIENT_SECRET,
             redirectUri: parsed.OIDC_REDIRECT_URI,

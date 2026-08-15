@@ -1,7 +1,7 @@
 import { RestAuthRepository } from '@/data/repositories/RestAuthRepository';
 
 describe('RestAuthRepository', () => {
-  it('envía credenciales solo al endpoint de sesión y valida la respuesta', async () => {
+  it('inicia el redirect corporativo sin enviar credenciales', async () => {
     const request = jest.fn(async () => ({
       contractVersion: '1',
       accessToken: 'signed-token',
@@ -15,17 +15,16 @@ describe('RestAuthRepository', () => {
         permissions: ['applications:read'],
       },
     }));
-    const repository = new RestAuthRepository({ request } as never);
-    await expect(repository.signIn('analyst@example.invalid', 'secret')).resolves.toMatchObject({
-      user: { id: 'user-analyst' },
-      tokens: { accessToken: 'signed-token' },
-    });
-    expect(request).toHaveBeenCalledWith('/v1/sessions', {
-      method: 'POST',
-      body: JSON.stringify({
-        loginIdentifier: 'analyst@example.invalid',
-        password: 'secret',
-      }),
-    });
+    const resolve = jest.fn((path: string) => `https://keyops.example${path}`);
+    const navigate = jest.fn();
+    const repository = new RestAuthRepository({ request, resolve } as never, navigate);
+    await repository.beginCorporateSignIn('/audit');
+    expect(navigate).toHaveBeenCalledWith(
+      'https://keyops.example/v1/auth/login?returnPath=%2Faudit',
+    );
+    expect(request).not.toHaveBeenCalled();
+    await expect(repository.signIn('analyst@example.invalid', 'secret')).rejects.toThrow(
+      'identidad corporativa',
+    );
   });
 });

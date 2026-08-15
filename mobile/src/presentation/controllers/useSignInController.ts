@@ -4,6 +4,7 @@ import type { AuthenticatedUser } from '@/domain/model/user';
 export function useSignInController(
   authenticate: (login: string, password: string) => Promise<AuthenticatedUser>,
   onSuccess: (user: AuthenticatedUser) => void,
+  beginCorporate?: () => Promise<void>,
 ) {
   const [error, setError] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
@@ -19,5 +20,16 @@ export function useSignInController(
       setSubmitting(false);
     }
   };
-  return { error, setError, submitting, submit };
+  const startCorporate = async () => {
+    if (!beginCorporate) return;
+    setSubmitting(true);
+    try {
+      setError(undefined);
+      await beginCorporate();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo iniciar sesión.');
+      setSubmitting(false);
+    }
+  };
+  return { error, setError, submitting, submit, startCorporate };
 }

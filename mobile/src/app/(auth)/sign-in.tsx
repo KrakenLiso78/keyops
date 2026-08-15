@@ -10,11 +10,15 @@ import { useApp } from '@/presentation/state/AppProvider';
 export default function SignInScreen() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const { signIn } = useApp();
-  const { error, setError, submitting, submit } = useSignInController(signIn, (user) => {
-    const path = firstAllowedPath(user);
-    if (path) router.replace(path);
-  });
+  const { signIn, authMode, beginCorporateSignIn } = useApp();
+  const { error, setError, submitting, submit, startCorporate } = useSignInController(
+    signIn,
+    (user) => {
+      const path = firstAllowedPath(user);
+      if (path) router.replace(path);
+    },
+    beginCorporateSignIn,
+  );
 
   return (
     <Screen style={styles.screen}>
@@ -28,42 +32,63 @@ export default function SignInScreen() {
         <View style={styles.formPanel}>
           <View style={styles.headingBlock}>
             <Heading>Iniciar sesión</Heading>
-            <Text style={styles.description}>Acceso restringido a analistas autorizados.</Text>
+            <Text style={styles.description}>
+              {authMode === 'corporate'
+                ? 'Acceso restringido mediante identidad corporativa.'
+                : 'Acceso restringido a analistas autorizados.'}
+            </Text>
           </View>
           <View style={styles.form}>
-            <Field
-              label="Usuario"
-              value={login}
-              onChangeText={setLogin}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <Field label="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-            <Button
-              disabled={submitting}
-              title="Ingresar"
-              onPress={() => void submit(login, password)}
-            />
+            {authMode === 'corporate' ? (
+              <Button
+                disabled={submitting}
+                title="Acceder con identidad corporativa"
+                onPress={() => void startCorporate()}
+              />
+            ) : (
+              <>
+                <Field
+                  label="Usuario"
+                  value={login}
+                  onChangeText={setLogin}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <Field
+                  label="Contraseña"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <Button
+                  disabled={submitting}
+                  title="Ingresar"
+                  onPress={() => void submit(login, password)}
+                />
+              </>
+            )}
             {error ? (
               <Text accessibilityRole="alert" style={styles.error}>
                 {error}
               </Text>
             ) : null}
           </View>
-          <View style={styles.links}>
-            <Pressable
-              accessibilityRole="link"
-              onPress={() => setError('Contacta con soporte para restablecer tu contraseña.')}
-            >
-              <Text style={styles.link}>Olvidé mi contraseña</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="link"
-              onPress={() => setError('Soporte técnico: canal interno de KeyOps.')}
-            >
-              <Text style={styles.link}>Soporte técnico</Text>
-            </Pressable>
-          </View>
+          {authMode === 'credentials' ? (
+            <View style={styles.links}>
+              <Pressable
+                accessibilityRole="link"
+                onPress={() => setError('Contacta con soporte para restablecer tu contraseña.')}
+              >
+                <Text style={styles.link}>Olvidé mi contraseña</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="link"
+                onPress={() => setError('Soporte técnico: canal interno de KeyOps.')}
+              >
+                <Text style={styles.link}>Soporte técnico</Text>
+              </Pressable>
+            </View>
+          ) : null}
           <View style={styles.cornerDecoration} />
         </View>
       </ScrollView>

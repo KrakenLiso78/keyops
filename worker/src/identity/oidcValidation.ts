@@ -54,8 +54,7 @@ export async function validateIdToken(input: {
   const nowSeconds = Math.floor((input.now ?? Date.now()) / 1_000);
   const audience = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
   if (
-    claims.iss.replace(/\/$/u, "") !==
-      input.expectedIssuer.replace(/\/$/u, "") ||
+    claims.iss !== input.expectedIssuer ||
     !audience.includes(input.expectedAudience) ||
     claims.nonce !== input.expectedNonce ||
     claims.exp <= nowSeconds ||

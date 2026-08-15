@@ -11,14 +11,17 @@ import type { AuthenticatedUser } from '@/domain/model/user';
 import { restoreSession } from '@/domain/use-cases/auth/restoreSession';
 import { signIn as signInUseCase } from '@/domain/use-cases/auth/signIn';
 import { signOut as signOutUseCase } from '@/domain/use-cases/auth/signOut';
+import { beginCorporateSignIn as beginCorporateSignInUseCase } from '@/domain/use-cases/auth/beginCorporateSignIn';
 import { useEnvironment } from './EnvironmentProvider';
 
 type AppContextValue = {
   user?: AuthenticatedUser;
   restoring: boolean;
+  authMode: 'credentials' | 'corporate';
   environment: ReturnType<typeof useEnvironment>['environment'];
   signIn: (login: string, password: string) => Promise<AuthenticatedUser>;
   signOut: () => Promise<void>;
+  beginCorporateSignIn: () => Promise<void>;
   setEnvironment: ReturnType<typeof useEnvironment>['changeEnvironment'];
 };
 const AppContext = createContext<AppContextValue | undefined>(undefined);
@@ -50,6 +53,7 @@ export function AppProvider({ children }: PropsWithChildren) {
     () => ({
       user,
       restoring,
+      authMode: auth.mode,
       environment,
       signIn: async (login: string, password: string) => {
         const authenticated = await signInUseCase(auth, sessionStore, login, password);
@@ -61,6 +65,7 @@ export function AppProvider({ children }: PropsWithChildren) {
         setUser(undefined);
         resetToTest();
       },
+      beginCorporateSignIn: () => beginCorporateSignInUseCase(auth),
       setEnvironment: changeEnvironment,
     }),
     [auth, changeEnvironment, environment, resetToTest, restoring, sessionStore, user],

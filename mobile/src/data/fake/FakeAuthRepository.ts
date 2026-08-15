@@ -4,6 +4,8 @@ import type { AuthenticatedUser } from '@/domain/model/user';
 import { permissionsForProfile } from '@/domain/policies/profilePermissions';
 let activeFakeUser: AuthenticatedUser | undefined;
 export class FakeAuthRepository implements AuthRepository {
+  readonly mode = 'credentials' as const;
+
   async signIn(
     loginIdentifier: string,
     _password: string,
@@ -18,5 +20,9 @@ export class FakeAuthRepository implements AuthRepository {
   }
   async signOut(): Promise<void> {
     activeFakeUser = undefined;
+  }
+
+  async beginCorporateSignIn(): Promise<void> {
+    throw new Error('La identidad corporativa no está activa en el modo local.');
   }
 }

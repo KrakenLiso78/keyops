@@ -6,6 +6,10 @@ export class FetchHttpClient {
     private readonly getToken: () => Promise<string | undefined>,
     private readonly timeoutMs = 10_000,
   ) {}
+
+  resolve(path: string): string {
+    return `${this.baseUrl}${path}`;
+  }
   async request<T>(path: string, init: RequestInit = {}, signal?: AbortSignal): Promise<T> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);

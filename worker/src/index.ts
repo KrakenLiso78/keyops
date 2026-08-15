@@ -15,6 +15,8 @@ import { credentialsRoute } from "./routes/v1/credentials";
 import { createSession, restoreSession } from "./routes/v1/sessions";
 import { auditRoute } from "./routes/v1/audit";
 import { createWorkerDependencies } from "./composition/createWorkerDependencies";
+import { corporateAuthRoute } from "./routes/v1/auth";
+import { InMemoryAuthorizationReplayStore } from "./auth/authorizationTransaction";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
   const value = url.searchParams.get("environment");
@@ -36,6 +38,15 @@ function fallbackAuditDescriptor(request: Request, url: URL) {
   }
   if (url.pathname === "/v1/session" && method === "GET") {
     return { operation: "session.restore.v1", resourceType: "session" };
+  }
+  if (url.pathname === "/v1/auth/login" && method === "GET") {
+    return { operation: "identity.login.v1", resourceType: "session" };
+  }
+  if (url.pathname === "/v1/auth/callback" && method === "GET") {
+    return { operation: "identity.callback.v1", resourceType: "session" };
+  }
+  if (url.pathname === "/v1/auth/logout" && method === "POST") {
+    return { operation: "identity.logout.v1", resourceType: "session" };
   }
   if (url.pathname === "/v1/applications" && method === "GET") {
     return {
@@ -109,7 +120,23 @@ export async function handleRequest(
         signingKey: config.sessionSigningKey,
         audit,
       };
+      const corporateResponse = await corporateAuthRoute(request, context, {
+        users,
+        audit,
+        signingKey: config.sessionSigningKey,
+        oidc: core.oidc,
+        configuration: config.oidc,
+        replayStore: authorizationReplayStore,
+      });
+      if (corporateResponse) return corporateResponse;
       if (url.pathname === "/v1/sessions" && request.method === "POST") {
+        if (config.oidc) {
+          throw new ApiError(
+            409,
+            "corporate_identity_required",
+            "El acceso requiere identidad corporativa.",
+          );
+        }
         return await createSession(request, context, sessionDependencies);
       }
       if (url.pathname === "/v1/session" && request.method === "GET") {
@@ -198,5 +225,6 @@ export async function handleRequest(
 }
 
 const catalogCache = new CatalogCache();
+const authorizationReplayStore = new InMemoryAuthorizationReplayStore();
 
 export default { fetch: handleRequest } satisfies ExportedHandler<WorkerEnv>;

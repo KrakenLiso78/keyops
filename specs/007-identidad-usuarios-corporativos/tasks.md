@@ -34,20 +34,20 @@
 
 - [X] T013 [P] [US-ID-01] Escribir tests fallidos de PKCE/state/nonce/expiración/un uso en `worker/tests/unit/authorizationTransaction.test.ts`
 - [X] T014 [P] [US-ID-01] Escribir tests fallidos de issuer/audience/firma/redirect en `worker/tests/security/oidcValidation.test.ts`
-- [ ] T015 [P] [US-ID-01] Escribir contrato fallido de login/callback/session en `worker/tests/contract/corporate-auth.contract.test.ts`
-- [ ] T016 [P] [US-ID-01] Escribir tests fallidos de usuario desconocido/deshabilitado y deny-by-default en `worker/tests/unit/corporateAuthorization.test.ts`
-- [ ] T017 [P] [US-ID-01] Escribir test móvil fallido de redirect/restauración/cierre en `mobile/tests/integration/corporate-auth-flow.test.tsx`
-- [ ] T018 [P] [US-ID-01] Escribir test de redacción de tokens/claims/cookies en `worker/tests/security/oidc-redaction.test.ts`
+- [X] T015 [P] [US-ID-01] Escribir contrato fallido de login/callback/session en `worker/tests/contract/corporate-auth.contract.test.ts`
+- [X] T016 [P] [US-ID-01] Escribir tests fallidos de usuario desconocido/deshabilitado y deny-by-default en `worker/tests/unit/corporateAuthorization.test.ts`
+- [X] T017 [P] [US-ID-01] Escribir test móvil fallido de redirect/restauración/cierre en `mobile/tests/integration/corporate-auth-flow.test.tsx`
+- [X] T018 [P] [US-ID-01] Escribir test de redacción de tokens/claims/cookies en `worker/tests/security/oidc-redaction.test.ts`
 
 ### Implementation
 
-- [ ] T019 [US-ID-01] Implementar inicio OIDC y allowlist de retorno en `worker/src/routes/v1/auth.ts`
-- [ ] T020 [US-ID-01] Implementar callback, exchange y emisión de sesión KeyOps en `worker/src/routes/v1/auth.ts`
-- [ ] T021 [US-ID-01] Resolver autorización Airtable por issuer/subject en `worker/src/auth/authorize.ts`
-- [ ] T022 [US-ID-01] Implementar revalidación externa máxima de cinco minutos en `worker/src/auth/corporateSession.ts`
-- [ ] T023 [US-ID-01] Registrar acceso/rechazo/error sin tokens en `worker/src/routes/v1/auth.ts`
-- [ ] T024 [US-ID-01] Adaptar `RestAuthRepository` al redirect/cookie en `mobile/src/data/repositories/RestAuthRepository.ts`
-- [ ] T025 [US-ID-01] Conectar estados y cierre corporativo en `mobile/src/presentation/controllers/useSignInController.ts`
+- [X] T019 [US-ID-01] Implementar inicio OIDC y allowlist de retorno en `worker/src/routes/v1/auth.ts`
+- [X] T020 [US-ID-01] Implementar callback, exchange y emisión de sesión KeyOps en `worker/src/routes/v1/auth.ts`
+- [X] T021 [US-ID-01] Resolver autorización Airtable por issuer/subject en `worker/src/auth/authorize.ts`
+- [X] T022 [US-ID-01] Implementar revalidación externa máxima de cinco minutos en `worker/src/auth/corporateSession.ts`
+- [X] T023 [US-ID-01] Registrar acceso/rechazo/error sin tokens en `worker/src/routes/v1/auth.ts`
+- [X] T024 [US-ID-01] Adaptar `RestAuthRepository` al redirect/cookie en `mobile/src/data/repositories/RestAuthRepository.ts`
+- [X] T025 [US-ID-01] Conectar estados y cierre corporativo en `mobile/src/presentation/controllers/useSignInController.ts`
 
 **Checkpoint**: Acceso completo con stub; validación corporativa requiere T041–T043.
 
