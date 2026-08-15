@@ -1,5 +1,32 @@
 import { describe, expect, it, vi } from "vitest";
 import { CatalogCache, catalogCacheKey } from "../../src/cache/catalogCache";
+import { listCorporateApplications } from "../../src/applications/listCorporateApplications";
+import type { CorporateCatalogPort } from "../../src/catalog/CorporateCatalogPort";
+import type { AuthorizedUser } from "../../src/airtable/userSchema";
+import fixture from "../fixtures/catalog/applications.json";
+import { catalogPageSchema } from "../../src/catalog/catalogSchemas";
+
+const user: AuthorizedUser = {
+  id: "user-scoped",
+  loginIdentifier: "scoped@example.invalid",
+  displayName: "Scoped User",
+  profile: "analyst",
+  enabled: true,
+  permissions: ["applications:read"],
+  institutionIds: ["inst-salud"],
+};
+
+const emptyOperational = {
+  contexts: {
+    list: async () => [],
+    get: async () => undefined,
+    saveManagement: vi.fn(),
+  },
+  credentials: {
+    listCredentials: async () => [],
+    listVersions: async () => [],
+  },
+};
 
 describe("corporate catalog cache", () => {
   it("segments actor, scope, environment and query", () => {
@@ -32,5 +59,70 @@ describe("corporate catalog cache", () => {
     await expect(
       cache.getOrLoad("environment=test", unavailable),
     ).rejects.toThrow("unavailable");
+  });
+
+  it("applies environment and institution scope before returning catalog data", async () => {
+    const base = catalogPageSchema.parse(fixture).items[0]!;
+    const catalog: CorporateCatalogPort = {
+      list: vi.fn(async () => ({
+        items: [
+          base,
+          {
+            ...base,
+            externalApplicationId: "app-outside-scope",
+            externalInstitutionId: "inst-other",
+          },
+          {
+            ...base,
+            externalApplicationId: "app-wrong-env",
+            environment: "production" as const,
+          },
+        ],
+      })),
+      get: vi.fn(),
+    };
+    await expect(
+      listCorporateApplications(
+        user,
+        {
+          catalog,
+          catalogCache: new CatalogCache(),
+          ...emptyOperational,
+        },
+        { environment: "test", page: 1 },
+      ),
+    ).resolves.toMatchObject({
+      total: 1,
+      items: [{ id: "app-test", institution: { id: "inst-salud" } }],
+    });
+  });
+
+  it("reflects a provider change only after the bounded cache expires", async () => {
+    let now = 0;
+    let name = "Pago en Línea";
+    const base = catalogPageSchema.parse(fixture).items[0]!;
+    const catalog: CorporateCatalogPort = {
+      list: vi.fn(async () => ({ items: [{ ...base, name }] })),
+      get: vi.fn(),
+    };
+    const dependencies = {
+      catalog,
+      catalogCache: new CatalogCache(60_000, () => now),
+      ...emptyOperational,
+    };
+    const first = await listCorporateApplications(user, dependencies, {
+      environment: "test",
+    });
+    name = "Pago Corporativo";
+    const cached = await listCorporateApplications(user, dependencies, {
+      environment: "test",
+    });
+    now = 60_000;
+    const refreshed = await listCorporateApplications(user, dependencies, {
+      environment: "test",
+    });
+    expect(first.items[0]!.name).toBe("Pago en Línea");
+    expect(cached.items[0]!.name).toBe("Pago en Línea");
+    expect(refreshed.items[0]!.name).toBe("Pago Corporativo");
   });
 });

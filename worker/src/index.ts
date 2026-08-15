@@ -1,6 +1,4 @@
-import { AirtableClient } from "./airtable/AirtableClient";
 import { UserRepository } from "./airtable/UserRepository";
-import { ApplicationRepository } from "./airtable/ApplicationRepository";
 import { CredentialRepository } from "./airtable/CredentialRepository";
 import { DeliveryGrantRepository } from "./airtable/DeliveryGrantRepository";
 import { IdempotencyRepository } from "./airtable/IdempotencyRepository";
@@ -10,12 +8,13 @@ import type { AuditSink } from "./audit/AuditSink";
 import { validateEnv, type WorkerEnv } from "./config/env";
 import { ApiError, errorResponse } from "./http/ApiError";
 import { createRequestContext } from "./http/requestContext";
-import { ApplicationCache } from "./cache/applicationCache";
+import { CatalogCache } from "./cache/catalogCache";
 import { applicationsRoute } from "./routes/v1/applications";
 import { healthResponse } from "./routes/v1/health";
 import { credentialsRoute } from "./routes/v1/credentials";
 import { createSession, restoreSession } from "./routes/v1/sessions";
 import { auditRoute } from "./routes/v1/audit";
+import { createWorkerDependencies } from "./composition/createWorkerDependencies";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
   const value = url.searchParams.get("environment");
@@ -99,10 +98,8 @@ export async function handleRequest(
 
     if (url.pathname.startsWith("/v1/")) {
       const config = validateEnv(env);
-      const airtable = new AirtableClient({
-        baseId: config.airtableBaseId,
-        token: config.airtablePat,
-      });
+      const core = createWorkerDependencies(config);
+      const { airtable } = core;
       const users = new UserRepository(airtable);
       const auditEvents = new AuditEventRepository(airtable);
       audit = new AuditRecorder(auditEvents);
@@ -125,24 +122,28 @@ export async function handleRequest(
         audit,
       });
       if (auditResponse) return auditResponse;
+      const credentials = new CredentialRepository(airtable);
       const credentialResponse = await credentialsRoute(request, context, {
         users,
-        credentials: new CredentialRepository(airtable),
+        credentials,
         deliveries: new DeliveryGrantRepository(airtable),
         idempotency: new IdempotencyRepository(airtable),
         signingKey: config.sessionSigningKey,
         deliveryPepper: config.deliveryPepper,
         audit,
-        invalidateApplications: (environment) =>
-          applicationCache.invalidateEnvironment(environment),
+        invalidateApplications: () => undefined,
       });
       if (credentialResponse) return credentialResponse;
       const applicationResponse = await applicationsRoute(request, context, {
         users,
-        applications: new ApplicationRepository(airtable),
         signingKey: config.sessionSigningKey,
-        cache: applicationCache,
         audit,
+        corporate: {
+          catalog: core.catalog,
+          catalogCache,
+          contexts: core.operationalContexts,
+          credentials,
+        },
       });
       if (applicationResponse) return applicationResponse;
       throw new ApiError(
@@ -196,6 +197,6 @@ export async function handleRequest(
   }
 }
 
-const applicationCache = new ApplicationCache();
+const catalogCache = new CatalogCache();
 
 export default { fetch: handleRequest } satisfies ExportedHandler<WorkerEnv>;

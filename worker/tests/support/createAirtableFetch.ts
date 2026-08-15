@@ -1,4 +1,5 @@
 import type { InMemoryCredentialStore } from "./InMemoryCredentialStore";
+import catalogFixture from "../fixtures/catalog/applications.json";
 
 export function createAirtableFetch(
   store: InMemoryCredentialStore,
@@ -12,6 +13,25 @@ export function createAirtableFetch(
           : input.url,
     );
     const table = decodeURIComponent(url.pathname.split("/").at(-1) ?? "");
+    if (url.hostname === "catalog.test") {
+      const environment = url.searchParams.get("environment");
+      const match = url.pathname.match(/^\/applications\/([^/]+)$/u);
+      if (match) {
+        const item = catalogFixture.items.find(
+          (candidate) =>
+            candidate.externalApplicationId === decodeURIComponent(match[1]!) &&
+            candidate.environment === environment,
+        );
+        return item
+          ? Response.json(item)
+          : Response.json({ code: "not_found" }, { status: 404 });
+      }
+      return Response.json({
+        items: catalogFixture.items.filter(
+          (candidate) => candidate.environment === environment,
+        ),
+      });
+    }
     const method = init.method ?? "GET";
     if (method === "POST") {
       const body = JSON.parse(String(init.body)) as {

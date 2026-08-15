@@ -1,19 +1,17 @@
 import { z } from "zod";
-import type { ApplicationRepository } from "../../airtable/ApplicationRepository";
 import {
   credentialStateSchema,
   environmentSchema,
 } from "../../airtable/applicationSchema";
 import type { UserRepository } from "../../airtable/UserRepository";
 import type { AuditSink } from "../../audit/AuditSink";
-import { listApplications } from "../../applications/listApplications";
-import { updateManagement } from "../../applications/updateManagement";
-import { authenticate } from "../../auth/authenticate";
-import { authorize } from "../../auth/authorize";
 import {
-  ApplicationCache,
-  applicationCacheKey,
-} from "../../cache/applicationCache";
+  listCorporateApplications,
+  type CorporateApplicationDependencies,
+} from "../../applications/listCorporateApplications";
+import { getCorporateApplication } from "../../applications/getCorporateApplication";
+import { updateCorporateManagement } from "../../applications/updateCorporateManagement";
+import { authenticate } from "../../auth/authenticate";
 import { ApiError } from "../../http/ApiError";
 import { completeOperation } from "../../http/completeOperation";
 import {
@@ -31,10 +29,9 @@ const listQuerySchema = z.object({
 
 export interface ApplicationRouteDependencies {
   users: UserRepository;
-  applications: ApplicationRepository;
   signingKey: string;
-  cache: ApplicationCache;
   audit: AuditSink;
+  corporate: CorporateApplicationDependencies;
 }
 
 const responseHeaders = (context: RequestContext) => ({
@@ -90,25 +87,11 @@ export async function applicationsRoute(
         if (!parsed.success) {
           throw new ApiError(400, "invalid_query", "La consulta no es válida.");
         }
-        const key = applicationCacheKey({
-          userId: user.id,
-          permissionScope: user.permissions.join(","),
-          environment: parsed.data.environment,
-          query: JSON.stringify(parsed.data),
-        });
-        const cached =
-          dependencies.cache.get<Awaited<ReturnType<typeof listApplications>>>(
-            key,
-          );
-        const page =
-          cached ??
-          (await listApplications(
-            user,
-            dependencies.applications,
-            parsed.data,
-          ));
-        if (!cached) dependencies.cache.set(key, page);
-        return page;
+        return listCorporateApplications(
+          user,
+          dependencies.corporate,
+          parsed.data,
+        );
       },
     });
     return Response.json(
@@ -132,22 +115,12 @@ export async function applicationsRoute(
         context,
       },
       execute: async () => {
-        authorize(user, "applications:read");
-        const key = applicationCacheKey({
-          userId: user.id,
-          permissionScope: user.permissions.join(","),
+        return getCorporateApplication(
+          user,
+          dependencies.corporate,
           environment,
-          query: `detail:${applicationId}`,
-        });
-        const cached =
-          dependencies.cache.get<
-            Awaited<ReturnType<ApplicationRepository["get"]>>
-          >(key);
-        const application =
-          cached ??
-          (await dependencies.applications.get(environment, applicationId));
-        if (!cached) dependencies.cache.set(key, application);
-        return application;
+          applicationId,
+        );
       },
     });
     return Response.json(
@@ -177,7 +150,7 @@ export async function applicationsRoute(
             "Falta la versión de la aplicación.",
           );
         }
-        return updateManagement(user, dependencies.applications, {
+        return updateCorporateManagement(user, dependencies.corporate, {
           environment,
           applicationId,
           expectedUpdatedAt: rawVersion.replace(/^"|"$/gu, ""),
@@ -185,7 +158,6 @@ export async function applicationsRoute(
         });
       },
     });
-    dependencies.cache.invalidateEnvironment(environment);
     return Response.json(
       { contractVersion: "1", application: completed.value },
       {

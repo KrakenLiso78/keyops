@@ -14,6 +14,9 @@ export function mapUser(record: AirtableRecord<UserFields>): AuthorizedUser {
     profile: fields.profile,
     enabled: fields.enabled,
     permissions: [...new Set(fields.permissions)],
+    institutionIds: fields.institutionIds
+      ? [...new Set(fields.institutionIds)]
+      : undefined,
     updatedAt: fields.updatedAt,
     corporateIssuer: fields.corporateIssuer,
     corporateSubject: fields.corporateSubject,

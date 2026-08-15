@@ -32,30 +32,30 @@
 ### Tests
 
 - [x] T012 [P] [US-CAT-01] Escribir tests fallidos de schemas, duplicados e incompletos en `worker/tests/unit/catalogSchemas.test.ts`
-- [ ] T013 [P] [US-CAT-01] Escribir tests fallidos de alcance, ambiente, cambio y caché en `worker/tests/unit/catalogQuery.test.ts`
+- [x] T013 [P] [US-CAT-01] Escribir tests fallidos de alcance, ambiente, cambio y caché en `worker/tests/unit/catalogQuery.test.ts`
 - [x] T014 [P] [US-CAT-01] Escribir contrato fallido del provider neutral en `worker/tests/contract/catalog-provider.contract.test.ts`
 - [x] T015 [P] [US-CAT-01] Escribir tests fallidos de unión/contexto huérfano en `worker/tests/unit/catalogJoin.test.ts`
-- [ ] T016 [P] [US-CAT-01] Escribir test de seguridad fallido de scopes/campos/logs en `worker/tests/security/catalog-redaction.test.ts`
-- [ ] T017 [P] [US-CAT-01] Escribir test móvil fallido de loading/error sin fallback en `mobile/tests/component/applications/corporateCatalogList.test.tsx`
+- [x] T016 [P] [US-CAT-01] Escribir test de seguridad fallido de scopes/campos/logs en `worker/tests/security/catalog-redaction.test.ts`
+- [x] T017 [P] [US-CAT-01] Escribir test móvil fallido de loading/error sin fallback en `mobile/tests/component/applications/corporateCatalogList.test.tsx`
 
 ### Implementation
 
-- [ ] T018 [US-CAT-01] Implementar consulta autorizada de catálogo en `worker/src/applications/listCorporateApplications.ts`
-- [ ] T019 [US-CAT-01] Implementar detalle autorizado y vigencia en `worker/src/applications/getCorporateApplication.ts`
-- [ ] T020 [US-CAT-01] Sustituir lectura de inventario por catálogo+contexto en `worker/src/routes/v1/applications.ts`
-- [ ] T021 [US-CAT-01] Bloquear mutaciones de campos corporativos y conservar solo gestión en `worker/src/routes/v1/applications.ts`
-- [ ] T022 [US-CAT-01] Invalidar consultas del ambiente anterior sin polling en `mobile/src/presentation/controllers/useApplicationListController.ts`
-- [ ] T023 [US-CAT-01] Mostrar indisponibilidad y datos externos inválidos sin demo en las pantallas bajo `mobile/src/presentation/components/applications/`
-- [ ] T024 [US-CAT-01] Emitir resultados auditables seguros para lectura/rechazo/error en `worker/src/routes/v1/applications.ts`
+- [x] T018 [US-CAT-01] Implementar consulta autorizada de catálogo en `worker/src/applications/listCorporateApplications.ts`
+- [x] T019 [US-CAT-01] Implementar detalle autorizado y vigencia en `worker/src/applications/getCorporateApplication.ts`
+- [x] T020 [US-CAT-01] Sustituir lectura de inventario por catálogo+contexto en `worker/src/routes/v1/applications.ts`
+- [x] T021 [US-CAT-01] Bloquear mutaciones de campos corporativos y conservar solo gestión en `worker/src/routes/v1/applications.ts`
+- [x] T022 [US-CAT-01] Invalidar consultas del ambiente anterior sin polling en `mobile/src/presentation/controllers/useApplicationListController.ts`
+- [x] T023 [US-CAT-01] Mostrar indisponibilidad y datos externos inválidos sin demo en las pantallas bajo `mobile/src/presentation/components/applications/`
+- [x] T024 [US-CAT-01] Emitir resultados auditables seguros para lectura/rechazo/error en `worker/src/routes/v1/applications.ts`
 
 **Checkpoint**: La historia funciona contra stub y Airtable de test; no está validada para piloto sin T029–T031.
 
 ## Phase 4: Persistence and corporate validation
 
-- [ ] T025 [P] Crear integración Airtable de contexto entre procesos en `worker/tests/integration/airtable-operational-context.test.ts`
-- [ ] T026 [P] Crear prueba de cero métodos de escritura al provider en `worker/tests/contract/catalog-read-only.contract.test.ts`
-- [ ] T027 Ejecutar suites y documentar evidencia local en `specs/006-integracion-catalogo-corporativo/quickstart.md`
-- [ ] T028 Registrar la excepción constitucional, responsable y caducidad en la evidencia de release `worker/docs/corporate-catalog-checkpoint.md`
+- [x] T025 [P] Crear integración Airtable de contexto entre procesos en `worker/tests/integration/airtable-operational-context.test.ts`
+- [x] T026 [P] Crear prueba de cero métodos de escritura al provider en `worker/tests/contract/catalog-read-only.contract.test.ts`
+- [x] T027 Ejecutar suites y documentar evidencia local en `specs/006-integracion-catalogo-corporativo/quickstart.md`
+- [x] T028 Registrar la excepción constitucional, responsable y caducidad en la evidencia de release `worker/docs/corporate-catalog-checkpoint.md`
 - [ ] T029 Obtener y registrar contrato, owner, límites, IDs y entorno real en `worker/docs/corporate-catalog-checkpoint.md`
 - [ ] T030 Implementar el adapter concreto tras T029 en `worker/src/catalog/CorporateCatalogProviderAdapter.ts`
 - [ ] T031 Ejecutar reconciliación de muestra/indisponibilidad contra entorno autorizado en `worker/tests/integration/corporate-catalog.pilot.test.ts`

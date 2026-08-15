@@ -4,6 +4,8 @@ import type {
   ApplicationFields,
   InstitutionFields,
 } from "../../src/airtable/applicationSchema";
+import type { OperationalContextFields } from "../../src/airtable/ApplicationOperationalContextRepository";
+import catalogFixture from "./catalog/applications.json";
 
 const createdTime = "2026-08-15T09:00:00.000Z";
 
@@ -79,6 +81,38 @@ export const applicationRecords: AirtableRecord<ApplicationFields>[] = [
   },
 ];
 
+export const operationalContextRecords: AirtableRecord<OperationalContextFields>[] =
+  [
+    {
+      id: "rec-context-1",
+      createdTime,
+      fields: {
+        contextId: "ctx-test-app-test",
+        catalogApplicationId: "app-test",
+        environment: "test",
+        technicalContact: JSON.stringify({
+          name: "Ángela Ruiz",
+          email: "angela@example.invalid",
+        }),
+        managementReason: "Alta inicial",
+        requestOrTicketId: "SOL-101",
+        declaredIps: '["10.1.2.3"]',
+        updatedAt: "2026-08-15T09:00:00.000Z",
+      },
+    },
+    {
+      id: "rec-context-2",
+      createdTime,
+      fields: {
+        contextId: "ctx-production-app-production",
+        catalogApplicationId: "app-production",
+        environment: "production",
+        declaredIps: "[]",
+        updatedAt: "2026-08-14T09:00:00.000Z",
+      },
+    },
+  ];
+
 export const providerErrors = {
   rateLimited: { status: 429, code: "provider_rate_limited" },
   unavailable: { status: 503, code: "provider_unavailable" },
@@ -101,6 +135,7 @@ export function createApplicationAirtableFetch(
     Institutions: structuredClone(institutionRecords),
     ApiRoles: structuredClone(roleRecords),
     Applications: applications,
+    ApplicationOperationalContexts: structuredClone(operationalContextRecords),
     AuditEvents: [],
   };
 
@@ -116,6 +151,25 @@ export function createApplicationAirtableFetch(
           : input.url,
     );
     const table = decodeURIComponent(url.pathname.split("/").at(-1) ?? "");
+    if (url.hostname === "catalog.test") {
+      const environment = url.searchParams.get("environment");
+      const match = url.pathname.match(/^\/applications\/([^/]+)$/u);
+      if (match) {
+        const item = catalogFixture.items.find(
+          (candidate) =>
+            candidate.externalApplicationId === decodeURIComponent(match[1]!) &&
+            candidate.environment === environment,
+        );
+        return item
+          ? Response.json(item)
+          : Response.json({ code: "not_found" }, { status: 404 });
+      }
+      return Response.json({
+        items: catalogFixture.items.filter(
+          (candidate) => candidate.environment === environment,
+        ),
+      });
+    }
     let records = tables[table] ?? [];
     const formula = url.searchParams.get("filterByFormula") ?? "";
     const userId = formula.match(/\{userId\}='([^']+)'/u)?.[1];

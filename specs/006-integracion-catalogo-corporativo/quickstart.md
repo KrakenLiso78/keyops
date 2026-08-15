@@ -18,3 +18,19 @@ Use the dedicated Airtable test base with `ApplicationOperationalContexts`. Upda
 
 Before enabling the real adapter, record the provider owner, base URL, authentication method, scopes, rate limits, stable-ID rules and test environment. Run the sample reconciliation from the spec and retain evidence. Without this checkpoint, the feature remains adapter-ready but not pilot-validated.
 
+## Local evidence — 2026-08-15
+
+- Worker: 34 passing local test files with 3 remote integrations skipped, 88
+  passing tests and 13 contract files with 31 passing tests.
+- Mobile: Expo Doctor, lint, format, typecheck, 94 test suites, local contract
+  check and web export pass.
+- The neutral stub proves strict DTO validation, environment and institution
+  scope, a maximum 60-second cache, visible outages, no representative-data
+  fallback, safe audit outcomes and GET-only provider access.
+- `airtable-operational-context.test.ts` is available for the cross-process
+  persistence check but was not executed because no authorized Airtable
+  credentials were available.
+
+This is local adapter evidence only. The real provider owner, contract, limits,
+stable-ID rules and authorized environment are still unknown, so no pilot
+reconciliation or claim of zero out-of-scope corporate records has been made.

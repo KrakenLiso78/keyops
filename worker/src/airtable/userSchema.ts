@@ -24,6 +24,7 @@ export const userFieldsSchema = z.object({
   profile: z.enum(["analyst", "senior_analyst", "administrator", "auditor"]),
   enabled: z.boolean(),
   permissions: z.array(permissionSchema).default([]),
+  institutionIds: z.array(z.string().min(1)).optional(),
   updatedAt: z.string().optional(),
   corporateIssuer: z.string().url().optional(),
   corporateSubject: z.string().min(1).optional(),
@@ -39,6 +40,7 @@ export interface AuthorizedUser {
   profile: UserFields["profile"];
   enabled: boolean;
   permissions: Permission[];
+  institutionIds?: string[];
   updatedAt?: string;
   corporateIssuer?: string;
   corporateSubject?: string;

@@ -17,7 +17,10 @@ export function useApplicationListController(environment: Environment) {
   const [sort, setSort] = useState<'name' | 'institution' | 'lastChangedAt'>('name');
   const [page, setPage] = useState(1);
   const [refreshToken, setRefreshToken] = useState(0);
-  const [result, dispatch] = useReducer(queryReducer<Page<Application>>, { status: 'idle' });
+  const [result, dispatch] = useReducer(
+    queryReducer<{ environment: Environment; page: Page<Application> }>,
+    { status: 'idle' },
+  );
   const updateQuery = useCallback((value: string) => {
     setPage(1);
     setQuery(value);
@@ -42,7 +45,9 @@ export function useApplicationListController(environment: Environment) {
       signal: request.signal,
     })
       .then((data) => {
-        if (isCurrentRequest(request.sequence)) dispatch({ type: 'success', data });
+        if (isCurrentRequest(request.sequence)) {
+          dispatch({ type: 'success', data: { environment, page: data } });
+        }
       })
       .catch((error: unknown) => {
         if (request.signal.aborted) return;
@@ -64,8 +69,11 @@ export function useApplicationListController(environment: Environment) {
 
   return {
     ...result,
-    items: result.data?.items ?? [],
-    total: result.data?.total ?? 0,
+    items:
+      result.status === 'error' || result.data?.environment !== environment
+        ? []
+        : result.data.page.items,
+    total: result.data?.environment === environment ? result.data.page.total : 0,
     query,
     setQuery: updateQuery,
     state,
@@ -73,7 +81,7 @@ export function useApplicationListController(environment: Environment) {
     sort,
     setSort: updateSort,
     page,
-    pageSize: result.data?.pageSize ?? 20,
+    pageSize: result.data?.page.pageSize ?? 20,
     setPage,
     retry: () => setRefreshToken((value) => value + 1),
   };

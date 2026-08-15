@@ -153,6 +153,18 @@ export class CredentialRepository {
     return matches[0];
   }
 
+  async listCredentials(): Promise<CredentialFields[]> {
+    return (await this.client.list<CredentialFields>("Credentials")).map(
+      (record) => mapCredential(record).fields,
+    );
+  }
+
+  async listVersions(): Promise<CredentialVersionFields[]> {
+    return (
+      await this.client.list<CredentialVersionFields>("CredentialVersions")
+    ).map((record) => mapVersion(record).fields);
+  }
+
   async createCredential(
     fields: CredentialFields,
   ): Promise<PersistedCredential> {

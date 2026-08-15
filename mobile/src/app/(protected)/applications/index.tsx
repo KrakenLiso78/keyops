@@ -8,7 +8,8 @@ import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
 import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
 import { useApplicationListController } from '@/presentation/controllers/useApplicationListController';
-import { LoadingState, PersistentError } from '@/presentation/components/feedback';
+import { LoadingState } from '@/presentation/components/feedback';
+import { CorporateCatalogError } from '@/presentation/components/applications/CorporateCatalogStatus';
 import type { CredentialState } from '@/domain/model/types';
 
 const stateFilters: { value?: CredentialState; label: string }[] = [
@@ -165,7 +166,7 @@ export default function ApplicationsScreen() {
           <LoadingState label="Cargando aplicaciones…" />
         ) : null}
         {controller.status === 'error' ? (
-          <PersistentError
+          <CorporateCatalogError
             message={controller.error ?? 'No se pudo cargar el inventario.'}
             onRetry={controller.retry}
           />
