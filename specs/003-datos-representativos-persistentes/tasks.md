@@ -6,10 +6,10 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear esquema documentado de `Institutions`, `ApiRoles` y `Applications` en `worker/scripts/airtable/schema.md` conforme a `data-model.md`
-- [ ] T002 Crear fixtures representativos de 24 aplicaciones y dos ambientes en `worker/scripts/airtable/fixtures/applications.json`
-- [ ] T003 Implementar seed idempotente y batching de diez en `worker/scripts/airtable/seed-applications.ts`
-- [ ] T004 [P] Añadir scripts `seed:test` y `test:integration:airtable` en `worker/package.json` sin incluir secretos
+- [X] T001 Crear esquema documentado de `Institutions`, `ApiRoles` y `Applications` en `worker/scripts/airtable/schema.md` conforme a `data-model.md`
+- [X] T002 Crear fixtures representativos de 24 aplicaciones y dos ambientes en `worker/scripts/airtable/fixtures/applications.json`
+- [X] T003 Implementar seed idempotente y batching de diez en `worker/scripts/airtable/seed-applications.ts`
+- [X] T004 [P] Añadir scripts `seed:test` y `test:integration:airtable` en `worker/package.json` sin incluir secretos
 
 **Checkpoint**: La base de test se puede sembrar repetidamente sin duplicados y respeta el presupuesto.
 

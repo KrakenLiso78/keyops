@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -51,6 +52,23 @@ test("mantiene los dos entornos y los cinco estados representativos", () => {
       "revoked",
     ]),
   );
+});
+
+test("mantiene el fixture declarativo alineado con el seed", async () => {
+  const fixture = JSON.parse(
+    await readFile(
+      new URL(
+        "../scripts/airtable/fixtures/applications.json",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  const expected = airtableSeed.Applications.map(
+    ({ applicationId, environment }) => ({ applicationId, environment }),
+  );
+
+  assert.deepEqual(fixture, expected);
 });
 
 test("genera referencias deterministas y formatos Airtable válidos", () => {
