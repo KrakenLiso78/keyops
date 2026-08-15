@@ -20,3 +20,23 @@ Against Airtable test, register the same issuer/subject twice, change profile, d
 
 Record discovery URL, client ID/secret location, exact redirect URIs, claims allowlist, logout/revocation behavior and the mechanism that guarantees disable propagation within five minutes. Run the three identity scenarios from the spec and retain audit evidence.
 
+## Local evidence — 2026-08-15
+
+- `cd worker && npm run validate`: TypeScript passed; 44 Vitest files and 117
+  tests passed, with four provider-backed integration files skipped; 15
+  contract files and 35 contract tests passed.
+- The local OIDC contract covers S256 PKCE, encrypted state/nonce, one-use
+  callback, exact issuer/audience/redirect, RS256 signature, authorized,
+  unknown and disabled identities, five-minute cookie expiry, logout and audit
+  redaction.
+- `cd mobile && npm run lint && npm run format:check && npm run typecheck && npm
+test -- --runInBand`: 97 suites and 170 tests passed.
+- `npm run doctor`, `npm run test:contract:local` and `npm run export:web`:
+  Expo Doctor passed 21/21 checks, the local contract passed and 20 static web
+  routes were exported.
+
+This proves the provider-neutral flow and administration behavior with local
+stubs. `airtable-authorized-users.test.ts` remains skipped without
+`RUN_AIRTABLE_INTEGRATION=1`; no real discovery document, corporate tenant,
+external disable propagation or provider-backed audit evidence has been
+validated. Tasks T041–T044 therefore remain open.

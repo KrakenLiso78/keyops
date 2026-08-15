@@ -1,7 +1,14 @@
-import type { AuthenticatedUser } from '@/domain/model/user';
-import type { Page } from '@/domain/model/page';
+import type {
+  AuthorizedUser,
+  RegisterAuthorizedUserCommand,
+  UpdateAuthorizedUserCommand,
+} from '@/domain/model/user';
 export interface UserRepository {
-  list(): Promise<Page<AuthenticatedUser>>;
-  create(user: Omit<AuthenticatedUser, 'id'>): Promise<AuthenticatedUser>;
-  update(id: string, patch: Partial<AuthenticatedUser>): Promise<AuthenticatedUser>;
+  list(): Promise<AuthorizedUser[]>;
+  create(command: RegisterAuthorizedUserCommand): Promise<AuthorizedUser>;
+  update(
+    id: string,
+    expectedUpdatedAt: string,
+    command: UpdateAuthorizedUserCommand,
+  ): Promise<AuthorizedUser>;
 }

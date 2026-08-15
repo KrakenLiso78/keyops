@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { listAuthorizedUsers, updateAuthorizedUser } from '@/domain/use-cases/users/manageUsers';
-import type { UserProfile } from '@/domain/model/types';
-import { Body, Card, Heading, Screen } from '@/presentation/components/base';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { AuthenticatedUser, AuthorizedUser } from '@/domain/model/user';
+import type { UserProfile } from '@/domain/model/common';
+import { Body, Button, Card, Field, Heading, Screen } from '@/presentation/components/base';
 import { BackHeader, EnvironmentBadge, SectionLabel } from '@/presentation/components/chrome';
+import { EmptyState, LoadingState, PersistentError } from '@/presentation/components/feedback';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
+import { useDependencies } from '@/composition/DependenciesProvider';
+import { useUsersController } from '@/presentation/controllers/useUsersController';
+import { UserCard } from '@/presentation/components/users';
 
 const profiles: { value: UserProfile; label: string }[] = [
   { value: 'analyst', label: 'Analista' },
@@ -26,18 +30,39 @@ function Unauthorized() {
 
 export default function UsersScreen() {
   const { environment, user } = useApp();
-  const [, refresh] = useState(0);
-  if (!user) return <Unauthorized />;
-  const update = (id: string, profile: UserProfile, enabled: boolean) => {
-    updateAuthorizedUser(user, id, profile, enabled);
-    refresh((value) => value + 1);
+  if (!user?.permissions.includes('users:write')) return <Unauthorized />;
+  return <AuthorizedUsersScreen actor={user} environment={environment} />;
+}
+
+function AuthorizedUsersScreen({
+  actor,
+  environment,
+}: {
+  actor: AuthenticatedUser;
+  environment: 'test' | 'production';
+}) {
+  const { users: repository } = useDependencies();
+  const controller = useUsersController(actor, repository);
+  const [issuer, setIssuer] = useState('');
+  const [subject, setSubject] = useState('');
+  const [newProfile, setNewProfile] = useState<UserProfile>('analyst');
+  const [pending, setPending] = useState<{
+    user: AuthorizedUser;
+    profile: UserProfile;
+    enabled: boolean;
+  }>();
+
+  const register = async () => {
+    await controller.register({
+      corporateIssuer: issuer,
+      corporateSubject: subject,
+      profile: newProfile,
+      enabled: true,
+    });
+    setIssuer('');
+    setSubject('');
   };
-  let users;
-  try {
-    users = listAuthorizedUsers(user);
-  } catch {
-    return <Unauthorized />;
-  }
+
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
@@ -49,53 +74,83 @@ export default function UsersScreen() {
           <Heading level={1}>Usuarios autorizados</Heading>
           <Body>Asigna perfiles y controla el acceso a KeyOps.</Body>
         </View>
-        {users.map((item) => (
-          <Card key={item.id} style={styles.userCard}>
-            <View style={styles.userHeader}>
-              <View style={styles.userIdentity}>
-                <Text style={styles.userName}>{item.displayName}</Text>
-                <Text style={styles.login}>{item.loginIdentifier}</Text>
-              </View>
-              <View style={[styles.accessBadge, !item.enabled && styles.disabledBadge]}>
-                <Text style={[styles.accessText, !item.enabled && styles.disabledText]}>
-                  {item.enabled ? 'Habilitado' : 'Deshabilitado'}
-                </Text>
-              </View>
-            </View>
-            <SectionLabel>Perfil</SectionLabel>
-            <View accessibilityRole="radiogroup" style={styles.profiles}>
-              {profiles.map((profile) => {
-                const selected = item.profile === profile.value;
-                return (
-                  <Pressable
-                    key={profile.value}
-                    accessibilityRole="radio"
-                    accessibilityState={{ checked: selected }}
-                    onPress={() => update(item.id, profile.value, item.enabled)}
-                    style={[styles.profileChoice, selected && styles.profileSelected]}
-                  >
-                    <Text style={[styles.profileText, selected && styles.profileSelectedText]}>
-                      {profile.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            <View style={styles.switchRow}>
-              <View style={styles.switchCopy}>
-                <Text style={styles.switchTitle}>Acceso habilitado</Text>
-                <Text style={styles.switchHelp}>
-                  Permite iniciar sesión y operar según el perfil.
-                </Text>
-              </View>
-              <Switch
-                value={item.enabled}
-                onValueChange={(enabled) => update(item.id, item.profile, enabled)}
-                trackColor={{ false: colors.hairline, true: '#bcb3f5' }}
-                thumbColor={item.enabled ? colors.primary : colors.slate}
+        <Card tone="lavender" style={styles.userCard}>
+          <SectionLabel>Registrar identidad corporativa</SectionLabel>
+          <Field
+            label="Issuer corporativo"
+            value={issuer}
+            onChangeText={setIssuer}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Field
+            label="Subject corporativo"
+            value={subject}
+            onChangeText={setSubject}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <View accessibilityRole="radiogroup" style={styles.profiles}>
+            {profiles.map((profile) => {
+              const selected = newProfile === profile.value;
+              return (
+                <Pressable
+                  key={profile.value}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: selected }}
+                  onPress={() => setNewProfile(profile.value)}
+                  style={[styles.profileChoice, selected && styles.profileSelected]}
+                >
+                  <Text style={[styles.profileText, selected && styles.profileSelectedText]}>
+                    {profile.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Button
+            title="Registrar autorización"
+            disabled={controller.submitting || !issuer.trim() || !subject.trim()}
+            onPress={() => void register()}
+          />
+        </Card>
+        {controller.error ? (
+          <PersistentError message={controller.error} onRetry={() => void controller.load()} />
+        ) : null}
+        {controller.loading ? <LoadingState label="Cargando usuarios…" /> : null}
+        {!controller.loading && controller.users.length === 0 ? (
+          <EmptyState message="No hay usuarios corporativos autorizados." />
+        ) : null}
+        {pending ? (
+          <Card tone="yellow" style={styles.userCard}>
+            <Text style={styles.switchTitle}>Confirma el cambio de autorización</Text>
+            <Body>
+              {pending.user.displayName}: perfil {pending.profile} y acceso{' '}
+              {pending.enabled ? 'habilitado' : 'deshabilitado'}.
+            </Body>
+            <View style={styles.confirmActions}>
+              <Button title="Cancelar" onPress={() => setPending(undefined)} />
+              <Button
+                title="Confirmar cambio"
+                disabled={controller.submitting}
+                onPress={() => {
+                  void controller.update(pending.user, {
+                    profile: pending.profile,
+                    enabled: pending.enabled,
+                  });
+                  setPending(undefined);
+                }}
               />
             </View>
           </Card>
+        ) : null}
+        {controller.users.map((item) => (
+          <UserCard
+            key={item.id}
+            user={item}
+            disabled={controller.submitting || item.id === actor.id}
+            onUpdate={(profile, enabled) => setPending({ user: item, profile, enabled })}
+          />
         ))}
       </ScrollView>
     </Screen>
@@ -111,6 +166,7 @@ const styles = StyleSheet.create({
   userIdentity: { flex: 1, gap: 2 },
   userName: { color: colors.navy, fontSize: 17, fontWeight: '800' },
   login: { color: colors.slate, fontSize: 14 },
+  issuer: { color: colors.slate, fontSize: 11 },
   accessBadge: {
     borderRadius: 14,
     backgroundColor: colors.mint,
@@ -145,4 +201,5 @@ const styles = StyleSheet.create({
   switchCopy: { flex: 1, gap: 2 },
   switchTitle: { color: colors.ink, fontWeight: '700' },
   switchHelp: { color: colors.slate, fontSize: 12, lineHeight: 17 },
+  confirmActions: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
 });

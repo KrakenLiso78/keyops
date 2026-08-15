@@ -17,6 +17,7 @@ import { auditRoute } from "./routes/v1/audit";
 import { createWorkerDependencies } from "./composition/createWorkerDependencies";
 import { corporateAuthRoute } from "./routes/v1/auth";
 import { InMemoryAuthorizationReplayStore } from "./auth/authorizationTransaction";
+import { usersRoute } from "./routes/v1/users";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
   const value = url.searchParams.get("environment");
@@ -92,6 +93,20 @@ function fallbackAuditDescriptor(request: Request, url: URL) {
   if (url.pathname === "/v1/audit-events") {
     return { operation: "audit.list.v1", resourceType: "audit" };
   }
+  if (url.pathname === "/v1/users" && method === "GET") {
+    return { operation: "user.list.v1", resourceType: "user_collection" };
+  }
+  if (url.pathname === "/v1/users" && method === "POST") {
+    return { operation: "user.register.v1", resourceType: "user" };
+  }
+  const user = url.pathname.match(/^\/v1\/users\/([^/]+)$/u);
+  if (user && method === "PATCH") {
+    return {
+      operation: "user.update.v1",
+      resourceType: "user",
+      resourceId: safeDecodePathPart(user[1]!),
+    };
+  }
   return { operation: "request.handle.v1", resourceType: "route" };
 }
 
@@ -149,6 +164,12 @@ export async function handleRequest(
         audit,
       });
       if (auditResponse) return auditResponse;
+      const userResponse = await usersRoute(request, context, {
+        users,
+        signingKey: config.sessionSigningKey,
+        audit,
+      });
+      if (userResponse) return userResponse;
       const credentials = new CredentialRepository(airtable);
       const credentialResponse = await credentialsRoute(request, context, {
         users,

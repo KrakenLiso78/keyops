@@ -142,6 +142,34 @@ export class AirtableClient {
     return updated;
   }
 
+  async upsert<TFields>(
+    table: string,
+    fields: TFields,
+    fieldsToMergeOn: string[],
+  ): Promise<AirtableRecord<TFields>> {
+    const response = await this.request<{ records: AirtableRecord<TFields>[] }>(
+      this.tableUrl(table),
+      {
+        method: "PATCH",
+        body: JSON.stringify({
+          performUpsert: { fieldsToMergeOn },
+          records: [{ fields }],
+          typecast: true,
+        }),
+      },
+    );
+    const record = response.records[0];
+    if (!record) {
+      throw new ApiError(
+        503,
+        "provider_invalid_response",
+        "El proveedor devolvió una respuesta inválida.",
+        true,
+      );
+    }
+    return record;
+  }
+
   private tableUrl(table: string): string {
     return `https://api.airtable.com/v0/${this.options.baseId}/${encodeURIComponent(table)}`;
   }

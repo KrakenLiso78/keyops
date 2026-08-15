@@ -12,6 +12,9 @@ import type { CredentialRepository } from '@/domain/ports/CredentialRepository';
 import { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
 import type { AuthRepository } from '@/domain/ports/AuthRepository';
 import type { AuditRepository } from '@/domain/ports/AuditRepository';
+import type { UserRepository } from '@/domain/ports/UserRepository';
+import { RestUserRepository } from '@/data/repositories/RestUserRepository';
+import { FakeUserRepository } from '@/data/fake/FakeUserRepository';
 import { runtimeConfig } from './runtimeConfig';
 
 export interface AppDependencies {
@@ -21,6 +24,7 @@ export interface AppDependencies {
   applications: ApplicationRepository;
   credentials?: CredentialRepository;
   audit: AuditRepository;
+  users: UserRepository;
   keyOps: typeof fakeRepository;
 }
 export function createAppDependencies(
@@ -39,6 +43,7 @@ export function createAppDependencies(
       dataSource === 'remote' ? new RestApplicationRepository(http) : fakeApplicationRepository,
     credentials: dataSource === 'remote' ? new RestCredentialRepository(http) : undefined,
     audit: dataSource === 'remote' ? new RestAuditRepository(http) : fakeAuditRepository,
+    users: dataSource === 'remote' ? new RestUserRepository(http) : new FakeUserRepository(),
     keyOps: fakeRepository,
   };
 }

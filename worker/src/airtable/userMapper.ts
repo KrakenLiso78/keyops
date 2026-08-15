@@ -17,7 +17,7 @@ export function mapUser(record: AirtableRecord<UserFields>): AuthorizedUser {
     institutionIds: fields.institutionIds
       ? [...new Set(fields.institutionIds)]
       : undefined,
-    updatedAt: fields.updatedAt,
+    updatedAt: fields.updatedAt ?? record.createdTime,
     corporateIssuer: fields.corporateIssuer,
     corporateSubject: fields.corporateSubject,
     identityValidatedAt: fields.identityValidatedAt,
