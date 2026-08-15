@@ -4,11 +4,14 @@ import { FetchHttpClient } from '@/data/http/FetchHttpClient';
 import { RestAuthRepository } from '@/data/repositories/RestAuthRepository';
 import { RestApplicationRepository } from '@/data/repositories/RestApplicationRepository';
 import { RestCredentialRepository } from '@/data/repositories/RestCredentialRepository';
+import { RestAuditRepository } from '@/data/repositories/RestAuditRepository';
 import { fakeApplicationRepository } from '@/data/fake/FakeApplicationRepository';
+import { fakeAuditRepository } from '@/data/fake/FakeAuditRepository';
 import type { ApplicationRepository } from '@/domain/ports/ApplicationRepository';
 import type { CredentialRepository } from '@/domain/ports/CredentialRepository';
 import { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
 import type { AuthRepository } from '@/domain/ports/AuthRepository';
+import type { AuditRepository } from '@/domain/ports/AuditRepository';
 import { runtimeConfig } from './runtimeConfig';
 
 export interface AppDependencies {
@@ -17,6 +20,7 @@ export interface AppDependencies {
   auth: AuthRepository;
   applications: ApplicationRepository;
   credentials?: CredentialRepository;
+  audit: AuditRepository;
   keyOps: typeof fakeRepository;
 }
 export function createAppDependencies(
@@ -34,6 +38,7 @@ export function createAppDependencies(
     applications:
       dataSource === 'remote' ? new RestApplicationRepository(http) : fakeApplicationRepository,
     credentials: dataSource === 'remote' ? new RestCredentialRepository(http) : undefined,
+    audit: dataSource === 'remote' ? new RestAuditRepository(http) : fakeAuditRepository,
     keyOps: fakeRepository,
   };
 }

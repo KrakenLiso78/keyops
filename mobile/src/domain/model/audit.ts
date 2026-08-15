@@ -7,6 +7,8 @@ export interface AuditEvent {
   actorUserId: EntityId;
   actorDisplayName: string;
   operation: string;
+  resourceType: string;
+  resourceId?: EntityId;
   environment?: Environment;
   institutionId?: EntityId;
   applicationId?: EntityId;
@@ -15,6 +17,16 @@ export interface AuditEvent {
   originIp: string;
   failureCause?: string;
   requestId: string;
+}
+
+export interface AuditFilters {
+  from?: Instant;
+  to?: Instant;
+  institutionId?: EntityId;
+  applicationId?: EntityId;
+  actorUserId?: EntityId;
+  result?: OperationResult;
+  page?: number;
 }
 export interface OperationReceipt {
   operationId: EntityId;

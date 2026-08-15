@@ -15,6 +15,7 @@ import { applicationsRoute } from "./routes/v1/applications";
 import { healthResponse } from "./routes/v1/health";
 import { credentialsRoute } from "./routes/v1/credentials";
 import { createSession, restoreSession } from "./routes/v1/sessions";
+import { auditRoute } from "./routes/v1/audit";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
   const value = url.searchParams.get("environment");
@@ -103,7 +104,8 @@ export async function handleRequest(
         token: config.airtablePat,
       });
       const users = new UserRepository(airtable);
-      audit = new AuditRecorder(new AuditEventRepository(airtable));
+      const auditEvents = new AuditEventRepository(airtable);
+      audit = new AuditRecorder(auditEvents);
       const sessionDependencies = {
         users,
         demoCredentials: config.demoCredentials,
@@ -116,6 +118,13 @@ export async function handleRequest(
       if (url.pathname === "/v1/session" && request.method === "GET") {
         return await restoreSession(request, context, sessionDependencies);
       }
+      const auditResponse = await auditRoute(request, context, {
+        users,
+        events: auditEvents,
+        signingKey: config.sessionSigningKey,
+        audit,
+      });
+      if (auditResponse) return auditResponse;
       const credentialResponse = await credentialsRoute(request, context, {
         users,
         credentials: new CredentialRepository(airtable),

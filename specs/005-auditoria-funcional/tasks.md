@@ -57,29 +57,29 @@
 
 ### Tests
 
-- [ ] T022 [P] [US-AUD-02] Escribir tests fallidos de permisos/filtros/orden/página en `worker/tests/unit/audit-query.test.ts`
-- [ ] T023 [P] [US-AUD-02] Escribir contrato fallido de `GET /v1/audit-events` y ausencia de mutaciones en `worker/tests/contract/audit.contract.test.ts`
-- [ ] T024 [P] [US-AUD-02] Escribir tests móviles fallidos de loading/empty/error/filtros/roles en `mobile/tests/component/audit-list.test.tsx`
+- [x] T022 [P] [US-AUD-02] Escribir tests fallidos de permisos/filtros/orden/página en `worker/tests/unit/audit-query.test.ts`
+- [x] T023 [P] [US-AUD-02] Escribir contrato fallido de `GET /v1/audit-events` y ausencia de mutaciones en `worker/tests/contract/audit.contract.test.ts`
+- [x] T024 [P] [US-AUD-02] Escribir tests móviles fallidos de loading/empty/error/filtros/roles en `mobile/tests/component/audit-list.test.tsx`
 
 ### Implementation
 
-- [ ] T025 [US-AUD-02] Implementar consulta/filtros/orden determinista en `worker/src/audit/listAuditEvents.ts`
-- [ ] T026 [US-AUD-02] Exponer solo `GET /v1/audit-events` autorizado en `worker/src/routes/v1/audit.ts` y registrar su rechazo
-- [ ] T027 [P] [US-AUD-02] Añadir recurso al modelo y completar schemas/mapper en `mobile/src/domain/model/audit.ts`, `mobile/src/data/schemas/audit.ts`, `mobile/src/data/schemas/auditList.ts` y `mobile/src/data/mappers/auditMapper.ts`
-- [ ] T028 [US-AUD-02] Sustituir alias por `RestAuditRepository.list()` real en `mobile/src/data/repositories/RestAuditRepository.ts`
-- [ ] T029 [US-AUD-02] Conectar filtros, estado vacío y errores en `mobile/src/presentation/controllers/useAuditController.ts`
-- [ ] T030 [US-AUD-02] Aplicar visibilidad por permiso y filtros conservados en `mobile/src/presentation/components/audit/index.tsx` y la ruta de auditoría
+- [x] T025 [US-AUD-02] Implementar consulta/filtros/orden determinista en `worker/src/audit/listAuditEvents.ts`
+- [x] T026 [US-AUD-02] Exponer solo `GET /v1/audit-events` autorizado en `worker/src/routes/v1/audit.ts` y registrar su rechazo
+- [x] T027 [P] [US-AUD-02] Añadir recurso al modelo y completar schemas/mapper en `mobile/src/domain/model/audit.ts`, `mobile/src/data/schemas/audit.ts`, `mobile/src/data/schemas/auditList.ts` y `mobile/src/data/mappers/auditMapper.ts`
+- [x] T028 [US-AUD-02] Sustituir alias por `RestAuditRepository.list()` real en `mobile/src/data/repositories/RestAuditRepository.ts`
+- [x] T029 [US-AUD-02] Conectar filtros, estado vacío y errores en `mobile/src/presentation/controllers/useAuditController.ts`
+- [x] T030 [US-AUD-02] Aplicar visibilidad por permiso y filtros conservados en `mobile/src/presentation/components/audit/index.tsx` y la ruta de auditoría
 
 **Checkpoint**: Consulta independiente contra eventos sembrados; un analista directo recibe rechazo y genera evento.
 
 ## Phase 5: Sprint validation and honest evidence
 
 - [ ] T031 Ejecutar integración Airtable de escritura/lectura y registrar fecha/recuento en `specs/005-auditoria-funcional/quickstart.md`
-- [ ] T032 [P] Ejecutar suite completa de redacción y búsqueda de secretos en `worker/tests/security/audit-redaction.test.ts`
-- [ ] T033 [P] Verificar por contrato que PATCH/PUT/DELETE de auditoría devuelven 404/405 en `worker/tests/contract/audit.contract.test.ts`
+- [x] T032 [P] Ejecutar suite completa de redacción y búsqueda de secretos en `worker/tests/security/audit-redaction.test.ts`
+- [x] T033 [P] Verificar por contrato que PATCH/PUT/DELETE de auditoría devuelven 404/405 en `worker/tests/contract/audit.contract.test.ts`
 - [ ] T034 Recorrer desde preview un acceso y una operación, consultar eventos y registrar evidencia en `specs/005-auditoria-funcional/quickstart.md`
-- [ ] T035 Contabilizar registros/eventos y documentar margen y política de fixtures en `specs/005-auditoria-funcional/plan.md`
-- [ ] T036 Revisar evidencia conjunta 002–005 y declarar explícitamente que no prueba inmutabilidad administrativa ni retención de cinco años
+- [x] T035 Contabilizar registros/eventos y documentar margen y política de fixtures en `specs/005-auditoria-funcional/plan.md`
+- [x] T036 Revisar evidencia conjunta 002–005 y declarar explícitamente que no prueba inmutabilidad administrativa ni retención de cinco años
 
 ## Dependencies & Execution Order
 

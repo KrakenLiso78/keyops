@@ -30,19 +30,19 @@ Añadir un registrador de auditoría transversal al Worker que persiste eventos 
 
 ## Constitution Check
 
-*GATE: Passed before Phase 0 and re-checked after Phase 1.*
+_GATE: Passed before Phase 0 and re-checked after Phase 1._
 
-| Gate | Design evidence | Result |
-|---|---|---|
-| Seguridad/privacidad | Allowlist de campos, causas seguras y redacción antes de persistir; no hay body completo ni material de entrega | PASS |
-| Mínimo privilegio | Consulta exige `audit:read`; no existen endpoints de mutación de eventos | PASS |
-| Auditabilidad | Éxito, fallo y rechazo pasan por un finalizador común y escriben actor/recurso/ambiente/IP/tiempo | PASS |
-| Tres capas | `AuditRepository` móvil consume REST; UI filtra/representa; persistencia solo en Worker | PASS |
-| Estado fiable | La respuesta crítica no afirma éxito si el evento requerido no pudo persistirse; errores controlados | PASS |
-| Testing | Cobertura de tres resultados, permiso, filtros, orden y redacción; integración persistente | PASS |
-| Simplicidad/coste | Una tabla y un middleware/finalizador; sin SIEM, cola o analítica | PASS |
-| Versionado | Contrato `/v1`, `schemaVersion` en evento y Zod en ambos límites | PASS |
-| Evidencia honesta | Se valida trazabilidad funcional, no inmutabilidad frente a administradores ni cinco años | PASS |
+| Gate                 | Design evidence                                                                                                 | Result |
+| -------------------- | --------------------------------------------------------------------------------------------------------------- | ------ |
+| Seguridad/privacidad | Allowlist de campos, causas seguras y redacción antes de persistir; no hay body completo ni material de entrega | PASS   |
+| Mínimo privilegio    | Consulta exige `audit:read`; no existen endpoints de mutación de eventos                                        | PASS   |
+| Auditabilidad        | Éxito, fallo y rechazo pasan por un finalizador común y escriben actor/recurso/ambiente/IP/tiempo               | PASS   |
+| Tres capas           | `AuditRepository` móvil consume REST; UI filtra/representa; persistencia solo en Worker                         | PASS   |
+| Estado fiable        | La respuesta crítica no afirma éxito si el evento requerido no pudo persistirse; errores controlados            | PASS   |
+| Testing              | Cobertura de tres resultados, permiso, filtros, orden y redacción; integración persistente                      | PASS   |
+| Simplicidad/coste    | Una tabla y un middleware/finalizador; sin SIEM, cola o analítica                                               | PASS   |
+| Versionado           | Contrato `/v1`, `schemaVersion` en evento y Zod en ambos límites                                                | PASS   |
+| Evidencia honesta    | Se valida trazabilidad funcional, no inmutabilidad frente a administradores ni cinco años                       | PASS   |
 
 No hay violaciones constitucionales que justificar.
 
@@ -95,3 +95,11 @@ worker/tests/{unit,contract,integration,security}/
 3. Integrar finalización en sesión, gestión y comandos de credenciales.
 4. Prueba Airtable bajo demanda con un éxito, un fallo y un rechazo, seguida de lectura desde proceso nuevo.
 5. Inspección automatizada de registros para cero secretos y recuento de presupuesto.
+
+## Record budget
+
+El fixture canónico ocupa 43 registros: 37 de catálogo/ciclo de credenciales y
+6 de auditoría. La reserva máxima de 650 eventos eleva el uso planificado a 687
+registros y conserva un margen de 313 sobre el límite operativo de 1.000. La
+limpieza de pruebas elimina exclusivamente eventos con el `testRunId` creado por
+esa ejecución; no borra fixtures de demostración ni eventos de otros procesos.

@@ -1,5 +1,5 @@
-import type { AuditEvent } from '@/domain/model/audit';
+import type { AuditEvent, AuditFilters } from '@/domain/model/audit';
 import type { Page } from '@/domain/model/page';
 export interface AuditRepository {
-  list(filters?: Record<string, string>): Promise<Page<AuditEvent>>;
+  list(filters?: AuditFilters, signal?: AbortSignal): Promise<Page<AuditEvent>>;
 }

@@ -1,17 +1,38 @@
-import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
+import type { AuthenticatedUser } from '@/domain/model/user';
+import type { AuditRepository } from '@/domain/ports/AuditRepository';
 import { listAuditEvents } from '@/domain/use-cases/audit/listAuditEvents';
+import { permissionsForProfile } from '@/domain/policies/profilePermissions';
+
+const repository: AuditRepository = {
+  list: jest.fn(async () => ({ items: [], page: 1, pageSize: 20, total: 0 })),
+};
+
+function user(profile: AuthenticatedUser['profile']): AuthenticatedUser {
+  return {
+    id: `user-${profile}`,
+    loginIdentifier: `${profile}@example.invalid`,
+    displayName: profile,
+    profile,
+    enabled: true,
+    permissions: permissionsForProfile(profile),
+  };
+}
 
 describe('consulta de auditoría', () => {
-  const auditor = fakeRepository.signIn('auditor');
+  it.each(['senior_analyst', 'administrator', 'auditor'] as const)(
+    'autoriza el perfil %s mediante su permiso explícito',
+    async (profile) => {
+      await expect(
+        listAuditEvents(repository, user(profile), { result: 'rejected' }),
+      ).resolves.toMatchObject({ pageSize: 20 });
+      expect(repository.list).toHaveBeenCalledWith({ result: 'rejected' }, undefined);
+    },
+  );
 
-  it('autoriza al auditor, filtra y pagina por datos visibles', () => {
-    fakeRepository.signIn('analista');
-    const page = listAuditEvents(auditor, { query: 'Ana', pageSize: 1 });
-    expect(page).toMatchObject({ page: 1, pageSize: 1, total: expect.any(Number) });
-    expect(page.items[0]?.actorDisplayName).toBe('Ana Torres');
-  });
-
-  it('rechaza la consulta al analista', () => {
-    expect(() => listAuditEvents(fakeRepository.signIn('analista'))).toThrow('permiso');
+  it('rechaza al analista antes de consultar el repositorio', async () => {
+    const analyst = user('analyst');
+    const isolated: AuditRepository = { list: jest.fn() };
+    await expect(listAuditEvents(isolated, analyst)).rejects.toThrow('permiso');
+    expect(isolated.list).not.toHaveBeenCalled();
   });
 });
