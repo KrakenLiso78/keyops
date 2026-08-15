@@ -2,6 +2,9 @@ import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import { FakeAuthRepository } from '@/data/fake/FakeAuthRepository';
 import { FetchHttpClient } from '@/data/http/FetchHttpClient';
 import { RestAuthRepository } from '@/data/repositories/RestAuthRepository';
+import { RestApplicationRepository } from '@/data/repositories/RestApplicationRepository';
+import { fakeApplicationRepository } from '@/data/fake/FakeApplicationRepository';
+import type { ApplicationRepository } from '@/domain/ports/ApplicationRepository';
 import { SecureStoreSessionStore } from '@/data/session/SecureStoreSessionStore';
 import type { AuthRepository } from '@/domain/ports/AuthRepository';
 import { runtimeConfig } from './runtimeConfig';
@@ -10,6 +13,7 @@ export interface AppDependencies {
   dataSource: 'remote' | 'fake';
   sessionStore: SecureStoreSessionStore;
   auth: AuthRepository;
+  applications: ApplicationRepository;
   keyOps: typeof fakeRepository;
 }
 export function createAppDependencies(
@@ -24,6 +28,8 @@ export function createAppDependencies(
     dataSource,
     sessionStore,
     auth: dataSource === 'remote' ? new RestAuthRepository(http) : new FakeAuthRepository(),
+    applications:
+      dataSource === 'remote' ? new RestApplicationRepository(http) : fakeApplicationRepository,
     keyOps: fakeRepository,
   };
 }

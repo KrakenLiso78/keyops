@@ -72,7 +72,7 @@
 ### Implementation
 
 - [X] T029 [US-WEB-02] Centralizar cambio y reset inmutable en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`
-- [ ] T030 [US-WEB-02] Cancelar/ignorar respuestas del ambiente anterior en `mobile/src/data/http/EnvironmentRequestScope.ts` y controladores dependientes
+- [X] T030 [US-WEB-02] Cancelar/ignorar respuestas del ambiente anterior en `mobile/src/data/http/EnvironmentRequestScope.ts` y controladores dependientes
 - [X] T031 [US-WEB-02] Mostrar ambiente y etiqueta de demostración en todo el chrome protegido desde `mobile/src/presentation/components/environment/index.tsx` y `mobile/src/presentation/components/chrome.tsx`
 
 **Checkpoint**: Ningún dato visual del ambiente anterior sobrevive al cambio.

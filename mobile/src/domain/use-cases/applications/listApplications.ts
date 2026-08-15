@@ -1,5 +1,9 @@
 import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import type { Environment } from '@/domain/model/types';
+import type {
+  ApplicationListInput,
+  ApplicationRepository,
+} from '@/domain/ports/ApplicationRepository';
 export type ListApplicationsInput = {
   query?: string;
   state?: string;
@@ -27,4 +31,12 @@ export function listApplications(environment: Environment, input: ListApplicatio
     pageSize,
     total: sorted.length,
   };
+}
+
+export function listPersistentApplications(
+  repository: ApplicationRepository,
+  environment: Environment,
+  input: ApplicationListInput = {},
+) {
+  return repository.list(environment, input);
 }

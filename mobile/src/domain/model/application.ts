@@ -7,6 +7,7 @@ export interface TechnicalContact {
 }
 export interface ManagementContext {
   technicalContact?: TechnicalContact;
+  reason?: string;
   requestOrTicketId?: string;
   updatedAt?: Instant;
 }
@@ -22,4 +23,5 @@ export interface IntegratedApplication {
   credential?: Credential;
   stateHistory: CredentialStateChange[];
   lastChangedAt: Instant;
+  updatedAt?: Instant;
 }

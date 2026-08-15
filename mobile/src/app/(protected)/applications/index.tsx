@@ -1,32 +1,46 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import { Body, Card, Heading, Screen } from '@/presentation/components/base';
 import { AppHeader, CredentialStateBadge, RoleBadge } from '@/presentation/components/chrome';
 import { EnvironmentBar } from '@/presentation/components/environment';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
 import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
+import { useApplicationListController } from '@/presentation/controllers/useApplicationListController';
+import { LoadingState, PersistentError } from '@/presentation/components/feedback';
+import type { CredentialState } from '@/domain/model/types';
+
+const stateFilters: { value?: CredentialState; label: string }[] = [
+  { label: 'Todas' },
+  { value: 'active', label: 'Activas' },
+  { value: 'no_credentials', label: 'Sin credenciales' },
+  { value: 'suspended', label: 'Suspendidas' },
+  { value: 'revoked', label: 'Revocadas' },
+];
+
+const sortLabels = {
+  name: 'aplicación',
+  institution: 'institución',
+  lastChangedAt: 'último cambio',
+} as const;
 
 export default function ApplicationsScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [query, setQuery] = useState('');
   const { environment, user, signOut } = useApp();
   const { registerReset } = useEnvironment();
+  const controller = useApplicationListController(environment);
+  const { query, setQuery } = controller;
   useEffect(
     () =>
       registerReset(() => {
         setMenuOpen(false);
         setQuery('');
       }),
-    [registerReset],
+    [registerReset, setQuery],
   );
-  const apps = useMemo(
-    () => fakeRepository.listApplications(environment, query),
-    [environment, query],
-  );
-  const resultCount = apps.length === 1 ? '1 resultado' : `${apps.length} resultados`;
+  const apps = controller.items;
+  const resultCount = controller.total === 1 ? '1 resultado' : `${controller.total} resultados`;
 
   return (
     <Screen style={styles.screen}>
@@ -106,8 +120,56 @@ export default function ApplicationsScreen() {
         <Text accessibilityLiveRegion="polite" style={styles.resultCount}>
           {resultCount}
         </Text>
+        <ScrollView
+          horizontal
+          accessibilityLabel="Filtros de estado"
+          contentContainerStyle={styles.filters}
+          showsHorizontalScrollIndicator={false}
+        >
+          {stateFilters.map((filter) => {
+            const selected = controller.state === filter.value;
+            return (
+              <Pressable
+                key={filter.label}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => controller.setState(filter.value)}
+                style={[styles.filter, selected && styles.filterSelected]}
+              >
+                <Text style={[styles.filterText, selected && styles.filterTextSelected]}>
+                  {filter.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Ordenar por ${sortLabels[controller.sort]}`}
+          onPress={() =>
+            controller.setSort(
+              controller.sort === 'name'
+                ? 'institution'
+                : controller.sort === 'institution'
+                  ? 'lastChangedAt'
+                  : 'name',
+            )
+          }
+          style={styles.sortButton}
+        >
+          <Text style={styles.sortText}>Orden: {sortLabels[controller.sort]}</Text>
+        </Pressable>
       </View>
       <ScrollView contentContainerStyle={styles.list}>
+        {controller.status === 'loading' && apps.length === 0 ? (
+          <LoadingState label="Cargando aplicaciones…" />
+        ) : null}
+        {controller.status === 'error' ? (
+          <PersistentError
+            message={controller.error ?? 'No se pudo cargar el inventario.'}
+            onRetry={controller.retry}
+          />
+        ) : null}
         {apps.map((app) => (
           <Pressable
             key={app.id}
@@ -142,12 +204,35 @@ export default function ApplicationsScreen() {
             </Card>
           </Pressable>
         ))}
-        {apps.length === 0 ? (
+        {controller.status === 'success' && apps.length === 0 ? (
           <Body>
             {query.trim()
               ? `No hay resultados para “${query.trim()}”.`
               : 'No existen aplicaciones en el ambiente seleccionado.'}
           </Body>
+        ) : null}
+        {controller.total > controller.pageSize ? (
+          <View style={styles.pagination}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Página anterior"
+              disabled={controller.page === 1}
+              onPress={() => controller.setPage(Math.max(1, controller.page - 1))}
+              style={styles.pageButton}
+            >
+              <Text style={styles.pageText}>Anterior</Text>
+            </Pressable>
+            <Text style={styles.resultCount}>Página {controller.page}</Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Página siguiente"
+              disabled={controller.page * controller.pageSize >= controller.total}
+              onPress={() => controller.setPage(controller.page + 1)}
+              style={styles.pageButton}
+            >
+              <Text style={styles.pageText}>Siguiente</Text>
+            </Pressable>
+          </View>
         ) : null}
       </ScrollView>
     </Screen>
@@ -195,6 +280,20 @@ const styles = StyleSheet.create({
   clearSearch: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   clearSearchText: { color: colors.slate, fontSize: 26, lineHeight: 28 },
   resultCount: { color: colors.slate, fontSize: 13, textAlign: 'right' },
+  filters: { gap: 8, paddingVertical: 2 },
+  filter: {
+    minHeight: 36,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: 18,
+    paddingHorizontal: 12,
+  },
+  filterSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  filterText: { color: colors.ink, fontSize: 13, fontWeight: '600' },
+  filterTextSelected: { color: colors.canvas },
+  sortButton: { minHeight: 36, justifyContent: 'center', alignSelf: 'flex-end' },
+  sortText: { color: colors.primaryDeep, fontSize: 13, fontWeight: '700' },
   list: { gap: 14, paddingHorizontal: 12, paddingTop: 4, paddingBottom: space.xxl },
   applicationCard: {
     gap: 12,
@@ -219,4 +318,11 @@ const styles = StyleSheet.create({
   menuItem: { minHeight: 44, justifyContent: 'center', paddingHorizontal: space.sm },
   menuText: { color: colors.primaryDeep, fontWeight: '700' },
   menuProfile: { color: colors.steel, fontSize: 13, padding: space.sm },
+  pagination: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  pageButton: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 12 },
+  pageText: { color: colors.primaryDeep, fontWeight: '700' },
 });

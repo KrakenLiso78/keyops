@@ -12,6 +12,9 @@ export function ApplicationDetail({ application }: { application: Application })
       <CredentialStateBadge state={application.credentialState} />
       <Body>Client ID: {application.clientId ?? 'Aún no disponible'}</Body>
       <Body>IPs declaradas: {application.declaredIps.join(', ')}</Body>
+      <Body>Contacto: {application.technicalContact ?? 'Sin registrar'}</Body>
+      <Body>Solicitud: {application.requestOrTicketId ?? 'Sin registrar'}</Body>
+      {application.managementReason ? <Body>Motivo: {application.managementReason}</Body> : null}
     </Card>
   );
 }

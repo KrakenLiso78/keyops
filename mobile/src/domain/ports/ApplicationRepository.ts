@@ -1,12 +1,28 @@
-import type { IntegratedApplication } from '@/domain/model/application';
-import type { Environment } from '@/domain/model/common';
+import type { Application, CredentialState, Environment } from '@/domain/model/types';
 import type { Page } from '@/domain/model/page';
+
+export interface ApplicationListInput {
+  query?: string;
+  state?: CredentialState;
+  sort?: 'name' | 'institution' | 'lastChangedAt';
+  page?: number;
+  signal?: AbortSignal;
+}
+
+export interface ManagementInput {
+  technicalContact?: { name: string; email?: string; phone?: string };
+  reason?: string;
+  requestOrTicketId?: string;
+  expectedUpdatedAt: string;
+  signal?: AbortSignal;
+}
+
 export interface ApplicationRepository {
-  list(environment: Environment, query?: string): Promise<Page<IntegratedApplication>>;
-  get(environment: Environment, applicationId: string): Promise<IntegratedApplication>;
+  list(environment: Environment, input?: ApplicationListInput): Promise<Page<Application>>;
+  get(environment: Environment, applicationId: string, signal?: AbortSignal): Promise<Application>;
   updateManagement(
     environment: Environment,
     applicationId: string,
-    input: { technicalContact?: string; requestOrTicketId?: string },
-  ): Promise<IntegratedApplication>;
+    input: ManagementInput,
+  ): Promise<Application>;
 }

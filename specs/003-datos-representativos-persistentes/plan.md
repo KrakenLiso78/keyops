@@ -91,13 +91,13 @@ worker/tests/{unit,contract,integration}/
 
 | Data | Budget |
 |---|---:|
-| Institutions | 6 |
-| API roles | 8 |
+| Institutions | 24 |
+| API roles | 4 |
 | Applications | 24 |
 | Users from 002 | 6 |
 | Reserved credentials/delivery/idempotency | 250 |
 | Reserved audit events | 650 |
-| Operational margin | 56 |
+| Operational margin | 42 |
 | **Maximum** | **1,000** |
 
 ## Delivery and Validation

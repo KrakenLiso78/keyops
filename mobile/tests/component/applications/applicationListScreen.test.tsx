@@ -1,4 +1,4 @@
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import ApplicationsScreen from '@/app/(protected)/applications';
 import { DependenciesProvider } from '@/composition/DependenciesProvider';
 import { createAppDependencies } from '@/composition/createAppDependencies';
@@ -33,7 +33,7 @@ describe('inventario de aplicaciones', () => {
     fireEvent.changeText(search, 'malaga');
 
     expect(search.props.value).toBe('malaga');
-    expect(getByText('1 resultado')).toBeTruthy();
+    await waitFor(() => expect(getByText('1 resultado')).toBeTruthy());
     expect(getByRole('button', { name: 'Abrir Tributos locales' })).toBeTruthy();
     expect(queryByRole('button', { name: 'Abrir Sede electrónica' })).toBeNull();
   });
@@ -43,7 +43,9 @@ describe('inventario de aplicaciones', () => {
 
     fireEvent.changeText(getByLabelText('Buscar en aplicaciones'), 'Ana Torres');
 
-    expect(getByRole('button', { name: 'Abrir Sede electrónica' })).toBeTruthy();
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Abrir Sede electrónica' })).toBeTruthy(),
+    );
   });
 
   it('conserva la consulta cuando no hay coincidencias', async () => {
@@ -53,6 +55,8 @@ describe('inventario de aplicaciones', () => {
     fireEvent.changeText(search, 'registro inexistente');
 
     expect(search.props.value).toBe('registro inexistente');
-    expect(getByText('No hay resultados para “registro inexistente”.')).toBeTruthy();
+    await waitFor(() =>
+      expect(getByText('No hay resultados para “registro inexistente”.')).toBeTruthy(),
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import ApplicationsScreen from '@/app/(protected)/applications';
 
 jest.mock('expo-router', () => ({
@@ -15,13 +15,28 @@ jest.mock('@/presentation/state/AppProvider', () => {
     }),
   };
 });
-jest.mock('@/presentation/state/EnvironmentProvider', () => ({
-  useEnvironment: () => ({
-    environment: 'test',
-    changeEnvironment: jest.fn(),
-    registerReset: () => () => undefined,
-  }),
-}));
+jest.mock('@/presentation/state/EnvironmentProvider', () => {
+  const changeEnvironment = jest.fn();
+  const registerReset = () => () => undefined;
+  const signal = new AbortController().signal;
+  const beginRequest = () => ({ sequence: 1, signal });
+  const isCurrentRequest = () => true;
+  return {
+    useEnvironment: () => ({
+      environment: 'test',
+      changeEnvironment,
+      registerReset,
+      beginRequest,
+      isCurrentRequest,
+    }),
+  };
+});
+jest.mock('@/composition/DependenciesProvider', () => {
+  const applications = jest.requireActual(
+    '@/data/fake/FakeApplicationRepository',
+  ).fakeApplicationRepository;
+  return { useDependencies: () => ({ applications }) };
+});
 
 describe('navegación web visible', () => {
   const mockRouter = jest.requireMock('expo-router').router;
@@ -31,6 +46,7 @@ describe('navegación web visible', () => {
 
   it('asigna nombre, rol y recorrido a los controles del menú', async () => {
     const screen = render(<ApplicationsScreen />);
+    await waitFor(() => expect(screen.getByText('12 resultados')).toBeTruthy());
     fireEvent.press(screen.getByRole('button', { name: 'Abrir menú' }));
 
     fireEvent.press(screen.getByRole('button', { name: 'Abrir auditoría' }));

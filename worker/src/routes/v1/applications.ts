@@ -20,7 +20,7 @@ const listQuerySchema = z.object({
   environment: environmentSchema,
   query: z.string().max(200).optional(),
   state: credentialStateSchema.optional(),
-  sort: z.enum(["name", "lastChangedAt"]).default("name"),
+  sort: z.enum(["name", "institution", "lastChangedAt"]).default("name"),
   page: z.coerce.number().int().min(1).default(1),
 });
 

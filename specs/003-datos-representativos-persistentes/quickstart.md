@@ -30,7 +30,10 @@ Verify list, search, empty result, detail, unauthorized scope and conflict respo
 
 ## Persistent check on demand
 
-Run `npm run test:integration:airtable -- applications`. The scenario updates a management context, creates a new HTTP client/session, reads the same application as another authorized fixture user, and then restores the original value. Capture the request count and do not run this command in the continuous unit-test loop.
+Run `RUN_AIRTABLE_INTEGRATION=1 npm run test:integration:airtable`. The scenario updates a
+management context, destroys the first repository/client, reads the same application from a new
+client and then restores the original ticket. Capture the request count and do not run this command
+without a base-scoped write PAT.
 
 ## Evidence
 
@@ -44,3 +47,12 @@ Record seed counts, Airtable test base identifier (never the PAT), test timestam
   estados de visualización.
 - El runner REST local queda validado en sintaxis, tests y modo seguro; su ejecución directa
   requiere un PAT local en `worker/.env` y no se ha utilizado para esta evidencia.
+- 2026-08-15: `worker/npm run validate` completó tipo, 6 pruebas legacy, 10 ficheros Vitest
+  locales y 13 pruebas de contrato. La simulación de cuota devolvió `429` controlado tras reintentos
+  y no activó datos fake.
+- 2026-08-15: `mobile/npm run validate` completó Expo Doctor 21/21, lint, formato, tipos,
+  85 suites y 146 tests, contrato local y exportación web de 20 rutas. `npm run test:e2e` añadió
+  4 recorridos en viewports 390×844 y 360×800.
+- `npm run test:integration:airtable` ejecutó la prueba local de cuota y dejó la prueba destructiva
+  de persistencia marcada como `skipped`. Por tanto, esta evidencia no demuestra todavía la
+  actualización y relectura real con dos clientes Airtable.

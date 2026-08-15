@@ -18,7 +18,7 @@ export interface ApplicationListQuery {
   environment: "test" | "production";
   query?: string;
   state?: ApplicationFields["credentialState"];
-  sort?: "name" | "lastChangedAt";
+  sort?: "name" | "institution" | "lastChangedAt";
   page?: number;
 }
 
@@ -50,6 +50,13 @@ export class ApplicationRepository {
         return (
           right.lastChangedAt.localeCompare(left.lastChangedAt) ||
           left.name.localeCompare(right.name, "es")
+        );
+      }
+      if (query.sort === "institution") {
+        return (
+          left.institution.name.localeCompare(right.institution.name, "es", {
+            sensitivity: "base",
+          }) || left.name.localeCompare(right.name, "es")
         );
       }
       return left.name.localeCompare(right.name, "es", { sensitivity: "base" });

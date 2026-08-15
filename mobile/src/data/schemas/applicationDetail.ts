@@ -1,18 +1,52 @@
 import { z } from 'zod';
-import { applicationListItemSchema } from './applicationList';
-import { contractVersionSchema } from './common';
-export const applicationDetailSchema = applicationListItemSchema.extend({
-  apiRole: z.string().min(1),
-  declaredIps: z.array(z.string()),
-  technicalContact: z.string().optional(),
-  requestOrTicketId: z.string().optional(),
-  clientId: z.string().optional(),
-  messagesSent: z.number().int().nonnegative().optional(),
-  consumedServices: z.array(z.string()).optional(),
-  usedIps: z.array(z.string()).optional(),
-  lastConsumedAt: z.string().datetime({ offset: true }).optional(),
-});
+import { contractVersionSchema, environmentSchema } from './common';
+
+const credentialStateSchema = z.enum([
+  'no_credentials',
+  'active',
+  'suspended',
+  'rotated_inactive',
+  'revoked',
+]);
+
+export const apiApplicationSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    institution: z.object({ id: z.string().min(1), name: z.string().min(1) }).strict(),
+    environment: environmentSchema,
+    apiRole: z
+      .object({
+        id: z.string().min(1),
+        name: z.string().min(1),
+        serviceIdentifiers: z.array(z.string()),
+      })
+      .strict(),
+    declaredIps: z.array(z.string()),
+    management: z
+      .object({
+        technicalContact: z
+          .object({
+            name: z.string().min(1),
+            email: z.string().email().optional(),
+            phone: z.string().optional(),
+          })
+          .strict()
+          .optional(),
+        reason: z.string().optional(),
+        requestOrTicketId: z.string().optional(),
+        updatedAt: z.string().datetime({ offset: true }).optional(),
+      })
+      .strict(),
+    credentialState: credentialStateSchema,
+    stateHistory: z.array(z.record(z.string(), z.unknown())),
+    clientId: z.string().optional(),
+    lastChangedAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+  })
+  .strict();
+
 export const applicationDetailResponseSchema = z.object({
   contractVersion: contractVersionSchema,
-  application: applicationDetailSchema,
+  application: apiApplicationSchema,
 });

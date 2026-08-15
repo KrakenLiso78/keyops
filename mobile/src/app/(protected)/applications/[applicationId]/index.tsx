@@ -1,6 +1,5 @@
 import { useLocalSearchParams, router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { fakeRepository } from '@/data/fake/FakeKeyOpsRepository';
 import type { CredentialHistoryEntry, CredentialState } from '@/domain/model/types';
 import { permittedActions } from '@/domain/policies/permittedActions';
 import { Body, Button, Card, Heading, Screen } from '@/presentation/components/base';
@@ -15,6 +14,8 @@ import {
 } from '@/presentation/components/chrome';
 import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
+import { useApplicationDetailController } from '@/presentation/controllers/useApplicationDetailController';
+import { LoadingState, PersistentError } from '@/presentation/components/feedback';
 
 const actionLabels: Record<string, string> = {
   issue: 'Generar credenciales',
@@ -66,12 +67,30 @@ function HistoryItem({ entry, last }: { entry: CredentialHistoryEntry; last: boo
 export default function ApplicationDetailScreen() {
   const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
   const { environment, user } = useApp();
-  const app = fakeRepository.getApplication(applicationId, environment);
-  if (!app || !user)
+  const controller = useApplicationDetailController(environment, applicationId);
+  const app = controller.application;
+  if (!user)
     return (
       <Screen>
         <BackHeader onBack={() => router.back()} />
         <Heading>Aplicación no encontrada</Heading>
+      </Screen>
+    );
+  if (controller.status === 'loading' || controller.status === 'idle')
+    return (
+      <Screen>
+        <BackHeader onBack={() => router.back()} />
+        <LoadingState label="Cargando aplicación…" />
+      </Screen>
+    );
+  if (controller.status === 'error' || !app)
+    return (
+      <Screen>
+        <BackHeader onBack={() => router.back()} />
+        <PersistentError
+          message={controller.error ?? 'Aplicación no encontrada.'}
+          onRetry={controller.retry}
+        />
       </Screen>
     );
 

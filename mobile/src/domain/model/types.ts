@@ -32,10 +32,14 @@ export interface Application {
   apiRole: string;
   declaredIps: string[];
   technicalContact?: string;
+  technicalContactEmail?: string;
+  technicalContactPhone?: string;
+  managementReason?: string;
   requestOrTicketId?: string;
   credentialState: CredentialState;
   clientId?: string;
   lastChangedAt: string;
+  updatedAt?: string;
   credentialHistory?: CredentialHistoryEntry[];
   messagesSent?: number;
   consumedServices?: string[];

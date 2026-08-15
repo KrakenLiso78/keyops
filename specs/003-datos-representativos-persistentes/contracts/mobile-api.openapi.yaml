@@ -11,39 +11,47 @@ paths:
     get:
       operationId: listApplications
       parameters:
-        - $ref: '#/components/parameters/Environment'
+        - $ref: "#/components/parameters/Environment"
         - { name: query, in: query, schema: { type: string } }
         - { name: state, in: query, schema: { type: string } }
-        - { name: sort, in: query, schema: { type: string, enum: [name, lastChangedAt] } }
-        - { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+        - {
+            name: sort,
+            in: query,
+            schema: { type: string, enum: [name, institution, lastChangedAt] },
+          }
+        - {
+            name: page,
+            in: query,
+            schema: { type: integer, minimum: 1, default: 1 },
+          }
       responses:
-        '200':
+        "200":
           description: Authorized application page
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationPage'
-        '401': { $ref: '#/components/responses/Error' }
-        '403': { $ref: '#/components/responses/Error' }
+                $ref: "#/components/schemas/ApplicationPage"
+        "401": { $ref: "#/components/responses/Error" }
+        "403": { $ref: "#/components/responses/Error" }
   /applications/{applicationId}:
     get:
       operationId: getApplication
       parameters:
-        - $ref: '#/components/parameters/ApplicationId'
-        - $ref: '#/components/parameters/Environment'
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/Environment"
       responses:
-        '200':
+        "200":
           description: Application detail
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Application' }
-        '404': { $ref: '#/components/responses/Error' }
+              schema: { $ref: "#/components/schemas/ApplicationResponse" }
+        "404": { $ref: "#/components/responses/Error" }
   /applications/{applicationId}/management:
     patch:
       operationId: updateApplicationManagement
       parameters:
-        - $ref: '#/components/parameters/ApplicationId'
-        - $ref: '#/components/parameters/Environment'
+        - $ref: "#/components/parameters/ApplicationId"
+        - $ref: "#/components/parameters/Environment"
         - name: If-Match
           in: header
           required: true
@@ -52,15 +60,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ManagementCommand' }
+            schema: { $ref: "#/components/schemas/ManagementCommand" }
       responses:
-        '200':
+        "200":
           description: Persisted application
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Application' }
-        '409': { $ref: '#/components/responses/Error' }
-        '503': { $ref: '#/components/responses/Error' }
+              schema: { $ref: "#/components/schemas/ApplicationResponse" }
+        "409": { $ref: "#/components/responses/Error" }
+        "503": { $ref: "#/components/responses/Error" }
 components:
   securitySchemes:
     bearerAuth: { type: http, scheme: bearer }
@@ -80,34 +88,55 @@ components:
       description: Controlled error
       content:
         application/json:
-          schema: { $ref: '#/components/schemas/Error' }
+          schema: { $ref: "#/components/schemas/Error" }
   schemas:
     ApplicationPage:
       type: object
-      required: [items, page, pageSize, total]
+      required: [contractVersion, items, page, pageSize, total]
       properties:
-        items: { type: array, items: { $ref: '#/components/schemas/Application' } }
+        contractVersion: { type: string, const: "1" }
+        items:
+          { type: array, items: { $ref: "#/components/schemas/Application" } }
         page: { type: integer }
         pageSize: { type: integer, const: 20 }
         total: { type: integer }
     Application:
       type: object
       additionalProperties: false
-      required: [id, name, institution, environment, apiRole, declaredIps, management, credentialState, stateHistory, lastChangedAt]
+      required:
+        [
+          id,
+          name,
+          institution,
+          environment,
+          apiRole,
+          declaredIps,
+          management,
+          credentialState,
+          stateHistory,
+          lastChangedAt,
+          updatedAt,
+        ]
       properties:
         id: { type: string }
         name: { type: string }
-        institution: { $ref: '#/components/schemas/Institution' }
+        institution: { $ref: "#/components/schemas/Institution" }
         environment: { type: string, enum: [test, production] }
-        apiRole: { $ref: '#/components/schemas/ApiRole' }
+        apiRole: { $ref: "#/components/schemas/ApiRole" }
         declaredIps: { type: array, items: { type: string } }
-        management: { $ref: '#/components/schemas/Management' }
+        management: { $ref: "#/components/schemas/Management" }
         credentialState:
           type: string
           enum: [no_credentials, active, suspended, rotated_inactive, revoked]
         stateHistory: { type: array, items: { type: object } }
         lastChangedAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+    ApplicationResponse:
+      type: object
+      required: [contractVersion, application]
+      properties:
+        contractVersion: { type: string, const: "1" }
+        application: { $ref: "#/components/schemas/Application" }
     Institution:
       type: object
       additionalProperties: false
