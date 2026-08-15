@@ -81,15 +81,15 @@
 
 ### Tests
 
-- [ ] T032 [P] [US-CRED-03] Escribir tests fallidos de estado/motivo/permisos en `worker/tests/unit/credential-suspension.test.ts`
-- [ ] T033 [P] [US-CRED-03] Escribir test de componente fallido de formularios y errores en `mobile/tests/component/credential-suspension.test.tsx`
+- [x] T032 [P] [US-CRED-03] Escribir tests fallidos de estado/motivo/permisos en `worker/tests/unit/credential-suspension.test.ts`
+- [x] T033 [P] [US-CRED-03] Escribir test de componente fallido de formularios y errores en `mobile/tests/component/credential-suspension.test.tsx`
 
 ### Implementation
 
-- [ ] T034 [US-CRED-03] Implementar suspensión/reactivación en `worker/src/credentials/transitionCredential.ts`
-- [ ] T035 [US-CRED-03] Exponer acciones validadas en `worker/src/routes/v1/credentials.ts`
-- [ ] T036 [US-CRED-03] Implementar `suspend()`/`reactivate()` REST en `mobile/src/data/repositories/RestCredentialRepository.ts`
-- [ ] T037 [US-CRED-03] Conectar motivo, confirmación y acciones visibles en `mobile/src/presentation/components/credentials/index.tsx`
+- [x] T034 [US-CRED-03] Implementar suspensión/reactivación en `worker/src/credentials/transitionCredential.ts`
+- [x] T035 [US-CRED-03] Exponer acciones validadas en `worker/src/routes/v1/credentials.ts`
+- [x] T036 [US-CRED-03] Implementar `suspend()`/`reactivate()` REST en `mobile/src/data/repositories/RestCredentialRepository.ts`
+- [x] T037 [US-CRED-03] Conectar motivo, confirmación y acciones visibles en `mobile/src/presentation/components/credentials/index.tsx`
 
 **Checkpoint**: La historia se ejecuta desde fixtures active/suspended sin depender de revocación UI.
 
@@ -101,15 +101,15 @@
 
 ### Tests
 
-- [ ] T038 [P] [US-CRED-04] Escribir tests fallidos de terminalidad y perfil en `worker/tests/unit/credential-revocation.test.ts`
-- [ ] T039 [P] [US-CRED-04] Escribir contrato fallido de 403/409/reintento en `worker/tests/contract/credential-revocation.contract.test.ts`
-- [ ] T040 [P] [US-CRED-04] Escribir test móvil fallido de doble confirmación y acciones posteriores ocultas en `mobile/tests/component/credential-revocation.test.tsx`
+- [x] T038 [P] [US-CRED-04] Escribir tests fallidos de terminalidad y perfil en `worker/tests/unit/credential-revocation.test.ts`
+- [x] T039 [P] [US-CRED-04] Escribir contrato fallido de 403/409/reintento en `worker/tests/contract/credential-revocation.contract.test.ts`
+- [x] T040 [P] [US-CRED-04] Escribir test móvil fallido de doble confirmación y acciones posteriores ocultas en `mobile/tests/component/credential-revocation.test.tsx`
 
 ### Implementation
 
-- [ ] T041 [US-CRED-04] Completar revocación terminal e invalidación de grants en `worker/src/credentials/transitionCredential.ts`
-- [ ] T042 [US-CRED-04] Implementar `revoke()` REST en `mobile/src/data/repositories/RestCredentialRepository.ts`
-- [ ] T043 [US-CRED-04] Conectar `RevokeConfirmation` y reset tras respuesta en `mobile/src/presentation/components/credentials/RevokeConfirmation.tsx`
+- [x] T041 [US-CRED-04] Completar revocación terminal e invalidación de grants en `worker/src/credentials/transitionCredential.ts`
+- [x] T042 [US-CRED-04] Implementar `revoke()` REST en `mobile/src/data/repositories/RestCredentialRepository.ts`
+- [x] T043 [US-CRED-04] Conectar `RevokeConfirmation` y reset tras respuesta en `mobile/src/presentation/components/credentials/RevokeConfirmation.tsx`
 
 **Checkpoint**: Ninguna ruta posterior modifica o entrega una credencial revocada.
 

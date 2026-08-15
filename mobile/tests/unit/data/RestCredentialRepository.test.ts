@@ -49,4 +49,53 @@ describe('RestCredentialRepository', () => {
       }),
     );
   });
+
+  it('sends transition commands without changing their retained key', async () => {
+    const request = jest.fn().mockResolvedValue({ ...receipt, delivery: undefined });
+    const repository = new RestCredentialRepository({ request } as unknown as FetchHttpClient);
+    await repository.suspend(
+      'test',
+      'app-001',
+      'credential-1',
+      'Pausa operativa',
+      'transition-key-000001',
+    );
+    await repository.reactivate(
+      'test',
+      'app-001',
+      'credential-1',
+      'Reanudación autorizada',
+      'transition-key-000002',
+    );
+    await repository.revoke(
+      'test',
+      'app-001',
+      'credential-1',
+      'Baja definitiva',
+      'transition-key-000003',
+    );
+    expect(request.mock.calls).toEqual([
+      [
+        '/v1/applications/app-001/credentials/credential-1/transitions?environment=test',
+        expect.objectContaining({
+          headers: { 'idempotency-key': 'transition-key-000001' },
+          body: JSON.stringify({ action: 'suspend', reason: 'Pausa operativa' }),
+        }),
+      ],
+      [
+        '/v1/applications/app-001/credentials/credential-1/transitions?environment=test',
+        expect.objectContaining({
+          headers: { 'idempotency-key': 'transition-key-000002' },
+          body: JSON.stringify({ action: 'reactivate', reason: 'Reanudación autorizada' }),
+        }),
+      ],
+      [
+        '/v1/applications/app-001/credentials/credential-1/transitions?environment=test',
+        expect.objectContaining({
+          headers: { 'idempotency-key': 'transition-key-000003' },
+          body: JSON.stringify({ action: 'revoke', reason: 'Baja definitiva' }),
+        }),
+      ],
+    ]);
+  });
 });

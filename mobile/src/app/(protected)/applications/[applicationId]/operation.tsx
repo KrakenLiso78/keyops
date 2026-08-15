@@ -24,8 +24,10 @@ import { LoadingState, PersistentError } from '@/presentation/components/feedbac
 import { fakeUsers } from '@/data/fake/seed';
 import {
   CredentialOperationFeedback,
+  CredentialReasonForm,
   SyntheticCredentialNotice,
 } from '@/presentation/components/credentials';
+import { RevokeConfirmation } from '@/presentation/components/credentials/RevokeConfirmation';
 
 const titles: Record<string, string> = {
   issue: 'Generar credenciales',
@@ -220,29 +222,41 @@ export default function OperationScreen() {
               <CredentialStateBadge state={application.credentialState} />
             </Card>
             <SyntheticCredentialNotice />
-            {actionNeedsReason(action) ? (
-              <Field
-                label="Motivo"
-                value={reason}
-                onChangeText={setReason}
-                placeholder="Describe el motivo"
-                multiline
-              />
-            ) : null}
             {action === 'revoke' ? (
-              <View accessibilityRole="alert" style={styles.warning}>
-                <Text style={styles.warningIcon}>!</Text>
-                <Text style={styles.warningText}>Esta acción es irreversible.</Text>
-              </View>
-            ) : null}
-            <Button
-              title={operation.submitting ? 'Procesando…' : title}
-              danger={action === 'revoke'}
-              disabled={operation.submitting}
-              onPress={submit}
-            />
+              <>
+                <Field
+                  label="Motivo"
+                  value={reason}
+                  onChangeText={setReason}
+                  placeholder="Describe el motivo"
+                  multiline
+                />
+                <RevokeConfirmation
+                  onConfirm={submit}
+                  disabled={operation.submitting || !reason.trim()}
+                />
+                <CredentialOperationFeedback submitting={operation.submitting} error={error} />
+              </>
+            ) : actionNeedsReason(action) ? (
+              <CredentialReasonForm
+                actionLabel={title}
+                reason={reason}
+                onReasonChange={setReason}
+                onSubmit={submit}
+                submitting={operation.submitting}
+                error={error}
+              />
+            ) : (
+              <>
+                <Button
+                  title={operation.submitting ? 'Procesando…' : title}
+                  disabled={operation.submitting}
+                  onPress={submit}
+                />
+                <CredentialOperationFeedback submitting={operation.submitting} error={error} />
+              </>
+            )}
             <Button title="Cancelar" variant="ghost" onPress={() => router.back()} />
-            <CredentialOperationFeedback submitting={operation.submitting} error={error} />
           </>
         )}
       </ScrollView>

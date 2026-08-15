@@ -1,6 +1,6 @@
 import { Linking, Text, View } from 'react-native';
 import type { Delivery } from '@/domain/model/types';
-import { Button, Card } from '@/presentation/components/base';
+import { Button, Card, Field } from '@/presentation/components/base';
 import type { OperationReceipt } from '@/domain/model/audit';
 export function DeliveryLinkCard({ delivery }: { delivery: Delivery }) {
   return (
@@ -47,4 +47,41 @@ export function CredentialOperationFeedback({
     return <Text accessibilityRole="alert">Operación confirmada por el servidor.</Text>;
   }
   return null;
+}
+
+export function CredentialReasonForm({
+  actionLabel,
+  reason,
+  onReasonChange,
+  onSubmit,
+  submitting = false,
+  error,
+  danger = false,
+}: {
+  actionLabel: string;
+  reason: string;
+  onReasonChange: (value: string) => void;
+  onSubmit: () => void;
+  submitting?: boolean;
+  error?: string;
+  danger?: boolean;
+}) {
+  return (
+    <View style={{ gap: 12 }}>
+      <Field
+        label="Motivo"
+        value={reason}
+        onChangeText={onReasonChange}
+        placeholder="Describe el motivo"
+        multiline
+      />
+      <Button
+        title={submitting ? 'Procesando…' : actionLabel}
+        danger={danger}
+        disabled={submitting || !reason.trim()}
+        onPress={onSubmit}
+      />
+      <CredentialOperationFeedback submitting={submitting} error={error} />
+    </View>
+  );
 }
