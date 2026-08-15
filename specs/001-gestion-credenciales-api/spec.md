@@ -3,7 +3,7 @@
 **Proyecto**: KeyOps  
 **Rama**: `[001-gestion-credenciales-api]`  
 **Creado**: 17 de julio de 2026  
-**Estado**: Borrador actualizado para candidato persistente\
+**Estado**: Borrador actualizado para MVP web persistente\
 **Entradas**: `Lean Canvas Full · Gestión autónoma de credenciales API · Escuadrón 04.docx` y `docs/product/historias-de-usuario-keyops.docx`
 
 ## 1. Contexto y objetivo
@@ -27,20 +27,49 @@ El resultado de negocio buscado es reducir el tiempo de ciclo de emisión o reno
 
 ### 1.2 Alcance del MVP
 
-El MVP cubre el acceso de usuarios internos autorizados, la consulta de aplicaciones y credenciales existentes, la gestión controlada de las acciones esenciales del ciclo de vida en pruebas y producción, y el registro trazable de todas las operaciones relevantes.
+El entregable del próximo Sprint es una aplicación web publicada, optimizada para su uso desde un navegador móvil. El MVP cubre el acceso de usuarios internos autorizados, la consulta de aplicaciones y credenciales del caso de estudio, la gestión controlada de las acciones esenciales del ciclo de vida en dos ambientes claramente diferenciados y el registro trazable de las operaciones relevantes.
 
-El MVP consulta las instituciones, aplicaciones y roles de un catálogo existente, gestionado por otro módulo. KeyOps no crea, modifica ni elimina esos datos; los utiliza como fuente de consulta para operar credenciales.
+El MVP utiliza un conjunto representativo y persistente de instituciones, aplicaciones y roles preparado para el caso de estudio. No depende de que los sistemas corporativos estén disponibles ni modifica datos reales de esos sistemas.
 
 El candidato funcional del caso de estudio debe conservar y compartir los datos operativos no secretos entre cierres de la aplicación y nuevas sesiones autorizadas. Los datos aislados que se reinician al comenzar una demostración pueden utilizarse para pruebas, pero no constituyen evidencia de que una historia con cambios de estado esté superada.
 
 ### 1.3 Decisiones de alcance adoptadas
 
 - La primera versión no gestiona fechas de caducidad, alertas ni renovaciones preventivas.
-- Las instituciones, aplicaciones y roles se consultan desde el catálogo existente de otro módulo; su mantenimiento queda fuera de KeyOps.
-- Pruebas y producción están disponibles desde el inicio. El usuario selecciona el ambiente activo y la misma matriz de permisos se aplica en ambos.
+- Las instituciones, aplicaciones y roles proceden durante este Sprint de datos representativos persistentes. Su sincronización con el catálogo corporativo se difiere.
+- Pruebas y producción se representan como ambientes de demostración separados. El usuario selecciona el ambiente activo y la misma matriz de permisos se aplica en ambos, pero ninguna acción afecta a sistemas reales.
 - Una operación confirmada debe conservar su resultado al cerrar y volver a abrir la aplicación, iniciar una sesión nueva o consultar el mismo recurso desde otro usuario autorizado.
 - El candidato de caso de estudio utiliza credenciales y materiales de entrega sintéticos. Este nivel permite validar el comportamiento y la persistencia, pero no acredita emisión de secretos reales, revocación efectiva en sistemas productivos ni conservación inmutable durante cinco años.
-- La meta de esta iteración es validar 12 de las 14 historias existentes en el candidato persistente: todas las historias P1 y las historias US-09, US-10 y US-12. US-11 y US-14 permanecen en alcance, pero no bloquean esta iteración.
+- La meta de esta iteración es validar 12 de las 14 historias existentes en el MVP web: todas las historias P1 y las historias US-09, US-10 y US-12. US-11 y US-14 quedan fuera del MVP y no deben aparecer como capacidades disponibles.
+
+### 1.4 Definición de MVP web completamente funcional
+
+El MVP se considera completamente funcional cuando cumple simultáneamente estas condiciones:
+
+- Está publicado y puede utilizarse desde un navegador móvil sin instalar una aplicación nativa.
+- Las 12 historias incluidas en el Sprint funcionan de extremo a extremo con datos persistentes y compartidos.
+- Todas las acciones visibles producen el resultado descrito o un error controlado; no existen botones decorativos, pantallas sin recorrido funcional ni confirmaciones basadas únicamente en cambios locales de pantalla.
+- Cerrar la aplicación o iniciar otra sesión no reinicia los datos confirmados.
+- Las credenciales, entregas y ambientes de demostración se identifican claramente como sintéticos y no conceden acceso a servicios reales.
+- La ejecución ordinaria no requiere una conexión operativa con sistemas corporativos ni software de pago.
+
+Esta definición acredita un producto web funcional dentro de su alcance declarado. No acredita todavía preparación para un piloto con credenciales o datos productivos.
+
+### 1.5 Fuera del alcance del MVP web del próximo Sprint
+
+| Capacidad diferida | Comportamiento disponible en el MVP | Motivo y condición futura |
+| ------------------ | ----------------------------------- | ------------------------- |
+| Integración con los sistemas corporativos de instituciones, aplicaciones y roles | Datos representativos persistentes, suficientes para consultar y ejecutar los flujos incluidos | Evita depender de contratos y entornos externos. La integración se abordará antes de operar con datos reales. |
+| Emisión, rotación, suspensión o revocación efectiva de credenciales en servicios reales | Ciclo de vida completo sobre credenciales sintéticas, con estados y versiones persistentes | Permite validar el flujo sin otorgar acceso real. La conexión con el servicio de credenciales será necesaria antes del piloto. |
+| Autenticación corporativa y aprovisionamiento automático de usuarios | Usuarios internos predefinidos con perfiles y permisos verificables | Mantiene el control de acceso del MVP sin incorporar todavía identidad corporativa. |
+| Entrega real de secretos mediante ZIP cifrado, contraseña separada y canales corporativos | Artefacto sintético descargable mediante un código de demostración de un solo uso | Valida el recorrido sin asumir protección criptográfica ni operación externa. La entrega real se exigirá antes del piloto. |
+| Efectos sobre ambientes reales de pruebas o producción | Dos ambientes de demostración claramente etiquetados y aislados | Conserva la separación de contexto sin riesgo para sistemas reales. |
+| Auditoría resistente a modificación por administradores y conservación garantizada durante cinco años | Historial funcional, persistente, de solo adición y restringido por perfil | La garantía de inmutabilidad y retención sigue siendo obligatoria para el piloto, pero no forma parte de la aceptación de este Sprint. |
+| Consulta de consumo real de las aplicaciones (US-11) | La historia no aparece como capacidad disponible | Depende de una fuente externa de consumo y no es necesaria para demostrar el ciclo de vida de credenciales. |
+| Gestión desde la interfaz de usuarios y perfiles (US-14) | Conjunto predefinido de usuarios y perfiles para validar permisos | Se difiere para evitar un módulo administrativo adicional durante el caso de estudio. |
+| Aplicaciones nativas, publicación en tiendas, funcionamiento sin conexión y notificaciones | Aplicación web móvil que requiere conectividad | No son necesarias para validar el valor principal del MVP. |
+| Fechas de caducidad, alertas y renovaciones preventivas | No se ofrecen en el MVP | Ya estaban excluidas de la primera versión y no son necesarias para el flujo ordinario seleccionado. |
+| Medición completa del piloto de tres meses | Se conserva la definición de las métricas, pero no se exige evidencia longitudinal en este Sprint | Requiere uso real y un período de observación posterior a la publicación del MVP. |
 
 ## 2. Objetivos y no objetivos
 
@@ -59,6 +88,9 @@ El candidato funcional del caso de estudio debe conservar y compartir los datos 
 - Construir un portal de autoservicio para responsables de integración externos.
 - Definir la arquitectura, la integración técnica, el almacenamiento, los mecanismos criptográficos o la implementación de autenticación.
 - Sustituir todos los controles y excepciones que actualmente gestiona el equipo técnico.
+- Integrarse durante este Sprint con los sistemas corporativos de catálogo, identidad, credenciales, entrega o consumo.
+- Operar sobre credenciales, instituciones, aplicaciones o ambientes reales.
+- Publicar aplicaciones nativas o admitir operaciones sin conexión.
 - Gestionar fechas de caducidad, alertas automáticas o renovaciones programadas.
 - Crear, modificar o eliminar instituciones, aplicaciones o roles del catálogo externo.
 - Incorporar analítica avanzada o monitorización en tiempo real del uso de la API.
@@ -67,6 +99,8 @@ El candidato funcional del caso de estudio debe conservar y compartir los datos 
 
 ## 3. Requisitos funcionales
 
+Salvo que se identifiquen como **diferidos**, los requisitos de esta sección forman parte del MVP web. Los requisitos relativos a credenciales, entregas y ambientes se validan en el MVP con elementos sintéticos claramente identificados; sus efectos sobre sistemas reales corresponden al piloto posterior.
+
 - **FR-001**: KeyOps DEBE permitir el acceso únicamente a usuarios internos autorizados y mostrarles solo las acciones permitidas por su perfil.
 - **FR-002**: KeyOps DEBE rechazar los accesos de usuarios inexistentes, deshabilitados o no autorizados e informar del rechazo sin revelar información sensible.
 - **FR-003**: El sistema DEBE ofrecer un inventario paginado de aplicaciones y sus credenciales, con institución, aplicación, ambiente, estado y fecha del último cambio.
@@ -74,7 +108,7 @@ El candidato funcional del caso de estudio debe conservar y compartir los datos 
 - **FR-005**: El sistema DEBE mostrar el detalle de una aplicación con su institución, ambiente, rol, contacto técnico, IP declaradas, datos de solicitud, historial de estados e información de credenciales.
 - **FR-006**: El detalle DEBE identificar el Client ID cuando exista y NO DEBE mostrar el Client Secret.
 - **FR-007**: Un analista autorizado DEBE poder generar, entregar y activar credenciales para una aplicación que no tenga credenciales activas en una misma operación, dejando el resultado trazado.
-- **FR-008**: La entrega DEBE ofrecer a la institución un ZIP protegido, al que accede autenticándose con un OTP de un solo uso válido durante dos minutos. La contraseña del ZIP DEBE ser distinta del OTP.
+- **FR-008**: La entrega del MVP DEBE ofrecer un artefacto sintético descargable mediante un código de demostración de un solo uso válido durante dos minutos. El artefacto NO DEBE contener secretos reales. El ZIP cifrado, su contraseña separada y la entrega por canales corporativos quedan diferidos hasta el piloto.
 - **FR-009**: Un analista autorizado DEBE poder regenerar credenciales activas; la nueva credencial queda activa y la versión anterior queda inmediatamente inactiva por rotación.
 - **FR-010**: El sistema DEBE impedir que un fallo durante la generación o regeneración deje la aplicación en un estado incoherente; en una regeneración fallida, las credenciales vigentes deben conservarse.
 - **FR-011**: Un analista autorizado DEBE poder suspender temporalmente una credencial activa y reactivarla cuando esté suspendida, registrando el motivo de cada acción.
@@ -82,17 +116,21 @@ El candidato funcional del caso de estudio debe conservar y compartir los datos 
 - **FR-013**: Toda acción relevante de acceso, consulta sensible, emisión, descarga, regeneración, suspensión, reactivación, revocación o cambio de permisos DEBE generar un evento de auditoría con fecha y hora, usuario, operación, institución, aplicación, resultado e IP de origen.
 - **FR-014**: El sistema DEBE permitir registrar y actualizar información operativa asociada a una gestión, incluyendo contacto técnico, motivo y número de solicitud o ticket.
 - **FR-015**: El auditor, el administrador y el analista senior DEBEN poder consultar el historial de auditoría y filtrarlo por fechas, institución, aplicación y usuario.
-- **FR-016**: Los analistas DEBEN poder solicitar una nueva entrega de credenciales vigentes. Cada reenvío DEBE generar un ZIP protegido, una contraseña de ZIP distinta del OTP y un nuevo OTP de un solo uso válido durante dos minutos.
-- **FR-017**: Cuando exista información de consumo, el sistema DEBE mostrar mensajes enviados, servicios consumidos, IP utilizadas y fecha del último consumo de la aplicación.
-- **FR-018**: El sistema DEBE ofrecer los ambientes de pruebas y producción desde el inicio, mantenerlos claramente separados y mostrar solo la información y acciones del ambiente activo.
-- **FR-019**: Un administrador DEBE poder gestionar los usuarios autorizados, sus perfiles y su estado de habilitación cuando esta capacidad se incorpore.
+- **FR-016**: Los analistas DEBEN poder solicitar una nueva entrega sintética de credenciales vigentes. Cada reenvío DEBE generar un artefacto nuevo y un código de demostración de un solo uso válido durante dos minutos, sin reutilizar el código anterior.
+- **FR-017 [DIFERIDO]**: Cuando exista información de consumo real, el sistema DEBE mostrar mensajes enviados, servicios consumidos, IP utilizadas y fecha del último consumo de la aplicación.
+- **FR-018**: El sistema DEBE ofrecer dos ambientes de demostración, pruebas y producción, mantenerlos claramente separados, identificarlos como no reales y mostrar solo la información y acciones del ambiente activo.
+- **FR-019 [DIFERIDO]**: Un administrador DEBE poder gestionar los usuarios autorizados, sus perfiles y su estado de habilitación cuando esta capacidad se incorpore.
 - **FR-020**: El sistema DEBE conservar los cambios confirmados sobre credenciales, versiones, estados, información de gestión, usuarios autorizados, permisos y eventos de auditoría cuando se cierre la aplicación o finalice la sesión.
 - **FR-021**: El estado no secreto resultante de un cambio confirmado DEBE ser visible en una sesión posterior y para otro usuario autorizado con acceso al mismo recurso, sin depender del dispositivo o de la sesión que realizó la operación.
 - **FR-022**: El sistema NO DEBE comunicar que una operación se completó hasta que su resultado haya quedado confirmado. Si no puede conservarlo, DEBE mantener el último estado confirmado, informar del fallo y permitir un nuevo intento.
 - **FR-023**: Reintentar la misma solicitud después de una respuesta incierta NO DEBE crear una versión adicional de credencial, repetir una transición de estado ni duplicar otro efecto de negocio. Cada intento y su resultado DEBEN conservar trazabilidad.
 - **FR-024**: Las consultas posteriores DEBEN reflejar el último estado confirmado y mantener separados los datos de pruebas y producción, incluso al cambiar de usuario o iniciar una sesión nueva.
 - **FR-025**: El candidato funcional DEBE poder validar el comportamiento con credenciales y materiales de entrega sintéticos, identificando claramente que esa evidencia no acredita las garantías exigidas para un piloto con servicios reales.
-- **FR-026**: La validación del candidato persistente DEBE poder realizarse sin contratar licencias, suscripciones ni servicios de software de pago adicionales.
+- **FR-026**: La publicación y validación del MVP web persistente DEBE poder realizarse sin contratar licencias, suscripciones ni servicios de software de pago adicionales.
+- **FR-027**: El MVP DEBE estar publicado como aplicación web utilizable desde un navegador móvil y permitir completar todos los flujos incluidos sin instalar una aplicación nativa.
+- **FR-028**: Toda acción que aparezca disponible en el MVP DEBE ejecutar su comportamiento completo o devolver un error controlado. Las capacidades diferidas NO DEBEN presentarse como disponibles mediante botones, enlaces o pantallas sin funcionamiento.
+- **FR-029**: El MVP DEBE incluir datos representativos persistentes de instituciones, aplicaciones, roles y usuarios suficientes para validar las 12 historias seleccionadas sin conectarse a sistemas corporativos.
+- **FR-030**: El MVP DEBE identificar de forma visible que las credenciales, entregas y ambientes son de demostración y NO DEBE permitir confundirlos con datos o accesos reales.
 
 ## 4. Reglas de negocio y estados
 
@@ -101,12 +139,12 @@ El candidato funcional del caso de estudio debe conservar y compartir los datos 
 | Estado                | Significado                                                                                | Acciones esperadas                                                          |
 | --------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
 | Sin credenciales      | La aplicación no dispone de una credencial utilizable.                                     | Generar.                                                                    |
-| Activa                | La credencial se ha emitido, se ha generado su entrega protegida y puede utilizarse.       | Solicitar una nueva entrega, regenerar, suspender o revocar según permisos. |
+| Activa                | La credencial se ha emitido y dispone de una entrega. En el MVP representa una credencial sintética. | Solicitar una nueva entrega, regenerar, suspender o revocar según permisos. |
 | Suspendida            | La credencial queda temporalmente inutilizable.                                            | Reactivar o revocar.                                                        |
 | Inactiva por rotación | Versión anterior sustituida por una regeneración; deja de poder utilizarse inmediatamente. | Consulta histórica.                                                         |
 | Revocada              | La credencial ha quedado definitivamente inutilizable.                                     | Consulta histórica; no descargar ni reactivar.                              |
 
-La emisión, la generación de la entrega protegida y la activación ocurren en una misma operación.
+La emisión, la generación de la entrega de demostración y la activación ocurren en una misma operación. En el MVP web, los estados describen el comportamiento de credenciales sintéticas y no conceden ni retiran acceso en servicios reales.
 
 ### 4.2 Reglas transversales
 
@@ -120,14 +158,16 @@ La emisión, la generación de la entrega protegida y la activación ocurren en 
 - Repetir una solicitud tras una respuesta incierta no repite el efecto de negocio, aunque cada intento conserva su propia trazabilidad.
 - Los usuarios autorizados para el mismo recurso deben observar el mismo estado confirmado dentro de su ambiente activo.
 - La regeneración activa la nueva credencial e inactiva inmediatamente la versión anterior por rotación; no existe período de coexistencia.
-- La institución se autentica con un OTP de un solo uso, válido durante dos minutos, para acceder a un ZIP protegido. La contraseña del ZIP es distinta del OTP y se entrega por el canal operativo autorizado.
-- Los eventos de auditoría son inmutables, se conservan durante cinco años y solo son consultables por auditor, administrador y analista senior.
+- En el MVP, el usuario accede a un artefacto sintético con un código de demostración de un solo uso válido durante dos minutos. El ZIP cifrado, su contraseña separada y la entrega real por canales corporativos quedan diferidos.
+- En el MVP, los eventos de auditoría se conservan de forma persistente, se añaden sin edición desde la aplicación y solo son consultables por auditor, administrador y analista senior.
+- Antes de un piloto real, los eventos de auditoría deben ser resistentes a modificación por administradores y contar con conservación garantizada durante cinco años; estas garantías no forman parte de la aceptación del próximo Sprint.
 
 ### 4.3 Matriz de permisos
 
 | Acción                              | Analista | Analista senior | Administrador | Auditor |
 | ----------------------------------- | -------- | --------------- | ------------- | ------- |
-| Consultar inventario, detalle y uso | Sí       | Sí              | Sí            | No      |
+| Consultar inventario y detalle      | Sí       | Sí              | Sí            | No      |
+| Consultar uso (capacidad diferida)  | Sí       | Sí              | Sí            | No      |
 | Generar, entregar y regenerar       | Sí       | Sí              | Sí            | No      |
 | Suspender y reactivar               | Sí       | Sí              | Sí            | No      |
 | Revocar                             | No       | Sí              | Sí            | No      |
@@ -139,9 +179,23 @@ La matriz anterior se aplica de igual forma en pruebas y en producción.
 
 ## 5. Historias de usuario, prioridad y pruebas
 
+### Mapa de alcance por historia para el próximo Sprint
+
+| Historias | Estado | Límite de validación del MVP web |
+| --------- | ------ | -------------------------------- |
+| US-01 | Incluida | Acceso con usuarios predefinidos y permisos efectivos; sin identidad corporativa. |
+| US-02 y US-03 | Incluidas | Inventario y detalle sobre datos representativos persistentes; sin conexión con el catálogo corporativo. |
+| US-04, US-05, US-06 y US-07 | Incluidas | Ciclo de vida completo sobre credenciales sintéticas; sin emisión, suspensión o revocación en servicios reales. |
+| US-08 y US-12 | Incluidas | Registro y consulta de auditoría funcional persistente; sin acreditar inmutabilidad frente a administradores ni retención de cinco años. |
+| US-09 | Incluida | Reentrega de un artefacto sintético con código de un solo uso; sin ZIP cifrado real ni canal corporativo. |
+| US-10 | Incluida | Registro y actualización persistente del contexto de gestión. |
+| US-13 | Incluida | Separación entre dos ambientes de demostración sin efectos externos. |
+| US-11 | Fuera del MVP | No se muestra; requiere información de consumo de una fuente externa. |
+| US-14 | Fuera del MVP | No se muestra; el Sprint utiliza usuarios y perfiles predefinidos. |
+
 ### Niveles de validación y criterio transversal
 
-Una historia se considera **validada en el candidato persistente** cuando todos sus escenarios de aceptación se ejecutan con datos compartidos y, si crea o modifica información, el resultado se comprueba después de cerrar la aplicación e iniciar una sesión nueva. Para esta validación pueden utilizarse credenciales y materiales de entrega sintéticos, siempre que no se presenten como credenciales reales.
+Una historia se considera **validada en el MVP web** cuando todos sus escenarios de aceptación se ejecutan en la aplicación publicada con datos compartidos y, si crea o modifica información, el resultado se comprueba después de cerrar la aplicación e iniciar una sesión nueva. Para esta validación se utilizan credenciales y materiales de entrega sintéticos, identificados de forma visible como demostración.
 
 Una historia se considera **validada para piloto real** únicamente cuando, además de lo anterior, se han comprobado con los servicios reales las garantías que le correspondan: autorización efectiva, emisión o invalidación real de credenciales, OTP de un solo uso, entrega protegida y auditoría con las garantías de inmutabilidad y retención exigidas.
 
@@ -169,7 +223,7 @@ Escenario: Reintento después de una respuesta incierta
   Y conserva la trazabilidad de cada intento
 ```
 
-La meta de esta iteración es validar en este nivel persistente las nueve historias P1 y las historias P2 US-09, US-10 y US-12: 12 de las 14 historias existentes. US-11 depende de disponer de información de consumo y US-14 sigue siendo una capacidad P3, por lo que ninguna bloquea esta iteración.
+La meta de esta iteración es validar en el MVP web las nueve historias P1 y las historias P2 US-09, US-10 y US-12: 12 de las 14 historias existentes. US-11 y US-14 quedan expresamente fuera del MVP y no deben aparecer como capacidades disponibles. Las integraciones y garantías diferidas de la sección 1.5 tampoco forman parte de la aceptación del Sprint.
 
 ### P1 - Incremento mínimo publicable
 
@@ -264,9 +318,11 @@ Escenario: Consulta de aplicación inexistente
 
 **Historia**: Como analista autorizado, quiero emitir y poner a disposición de la institución las credenciales de una aplicación para habilitar el consumo de la API.
 
+**Aplicación en el MVP**: El recorrido se completa con una credencial y una entrega sintéticas; no habilita consumo real de la API.
+
 **Por qué P1**: Es la capacidad que elimina la espera actual al equipo técnico y materializa la propuesta de valor del producto.
 
-**Prueba independiente**: Con una aplicación sin credenciales activas se emite una nueva credencial, se genera su ZIP protegido y su OTP, y se verifican activación y auditoría. Con una aplicación activa se exige regeneración.
+**Prueba independiente**: Con una aplicación sin credenciales activas se emite una credencial sintética, se genera su artefacto descargable y su código de demostración, y se verifican activación y auditoría. Con una aplicación activa se exige regeneración.
 
 **Criterios de aceptación**:
 
@@ -275,9 +331,8 @@ Escenario: Generación inicial exitosa
   Dado que la aplicación no tiene credenciales activas y el analista tiene permiso de emisión
   Cuando solicita generar credenciales
   Entonces el sistema crea y activa las credenciales de la aplicación
-  Y genera un ZIP protegido para la institución
-  Y genera un OTP de un solo uso válido durante dos minutos para acceder al ZIP
-  Y garantiza que la contraseña del ZIP es distinta del OTP
+  Y genera un artefacto sintético descargable que no contiene secretos reales
+  Y genera un código de demostración de un solo uso válido durante dos minutos para acceder al artefacto
   Y registra el resultado de la operación en la auditoría
 
 Escenario: Intento de generación con credenciales activas
@@ -298,6 +353,8 @@ Escenario: Fallo de generación
 
 **Historia**: Como analista autorizado, quiero regenerar las credenciales de una aplicación para reemplazarlas ante una necesidad operativa o de seguridad.
 
+**Aplicación en el MVP**: La rotación se valida sobre versiones sintéticas persistentes y no sustituye credenciales de un servicio real.
+
 **Por qué P1**: La regeneración evita generar credenciales duplicadas y permite resolver sustituciones operativas o de seguridad sin escalar al equipo técnico.
 
 **Prueba independiente**: Se valida una regeneración correcta, el rechazo cuando no hay credenciales y la conservación de la versión vigente si ocurre un fallo.
@@ -310,7 +367,7 @@ Escenario: Regeneración exitosa
   Cuando solicita regenerarlas
   Entonces el sistema genera y activa una nueva versión de credenciales
   Y inactiva inmediatamente la versión anterior por rotación
-  Y genera una nueva entrega protegida con OTP de un solo uso válido durante dos minutos
+  Y genera un nuevo artefacto sintético con un código de demostración de un solo uso válido durante dos minutos
   Y registra la operación en la auditoría
 
 Escenario: Regeneración sin credenciales previas
@@ -329,6 +386,8 @@ Escenario: Fallo durante la regeneración
 #### US-06 - Suspender y reactivar credenciales
 
 **Historia**: Como analista autorizado, quiero suspender temporalmente una credencial y reactivarla para impedir el acceso a la API mientras se investiga un incidente o se realiza una revisión.
+
+**Aplicación en el MVP**: La suspensión y reactivación impiden o permiten las operaciones posteriores dentro de la demostración, sin cambiar accesos reales.
 
 **Por qué P1**: Permite responder rápidamente ante incidentes sin invalidar definitivamente una credencial que puede volver a ser válida.
 
@@ -361,6 +420,8 @@ Escenario: Operación no válida por estado
 
 **Historia**: Como analista senior autorizado, quiero revocar definitivamente una credencial para impedir que vuelva a utilizarse ante un incidente de seguridad o el cierre de una aplicación.
 
+**Aplicación en el MVP**: La revocación bloquea definitivamente las operaciones posteriores sobre la credencial sintética, sin invalidar accesos reales.
+
 **Por qué P1**: La revocación es un control crítico de seguridad y debe estar disponible sin depender de una operación manual externa.
 
 **Prueba independiente**: Se valida la revocación desde estado activo y suspendido, el bloqueo posterior de uso y la no repetición de una revocación ya efectuada.
@@ -392,6 +453,8 @@ Escenario: Revocación repetida
 
 **Historia**: Como organización, quiero que las acciones relevantes de KeyOps queden registradas automáticamente para asegurar la trazabilidad y el cumplimiento de las políticas aplicables.
 
+**Aplicación en el MVP**: Se valida la trazabilidad funcional persistente; la resistencia a administradores y la retención de cinco años se verifican después del MVP.
+
 **Por qué P1**: La delegación de operaciones solo es segura si existe evidencia de las acciones exitosas y fallidas.
 
 **Prueba independiente**: Se ejecuta una operación correcta y una fallida; en ambos casos se comprueba que existe un evento completo y consultable cuando el permiso aplica.
@@ -415,18 +478,19 @@ Escenario: Registro de una operación fallida
 
 **Historia**: Como analista, quiero seleccionar el ambiente de trabajo para realizar operaciones únicamente sobre la información correspondiente.
 
-**Por qué P1**: El piloto opera desde el inicio tanto en pruebas como en producción y debe evitar cualquier mezcla de información o acciones entre ambos ambientes.
+**Por qué P1**: El MVP representa desde el inicio los contextos de pruebas y producción y debe evitar cualquier mezcla de información o acciones entre ambos, aunque ninguno tenga efectos sobre sistemas reales.
 
-**Prueba independiente**: Con ambos ambientes disponibles, se comprueba que el cambio muestra solo datos del ambiente activo y que este es visible en toda operación.
+**Prueba independiente**: Con ambos ambientes de demostración disponibles, se comprueba que el cambio muestra solo datos del ambiente activo, que este es visible en toda operación y que ambos se identifican como no reales.
 
 **Criterios de aceptación**:
 
 ```gherkin
 Escenario: Cambio de ambiente
-  Dado que el analista tiene los ambientes de pruebas y producción disponibles
+  Dado que el analista tiene disponibles los ambientes de demostración de pruebas y producción
   Cuando selecciona un ambiente de trabajo
   Entonces el sistema muestra únicamente la información de ese ambiente
   Y identifica claramente el ambiente activo
+  Y lo identifica como un ambiente de demostración sin efectos externos
   Y aplica la misma matriz de permisos en ambos ambientes
 
 Escenario: Ambiente sin aplicaciones
@@ -441,6 +505,8 @@ Escenario: Ambiente sin aplicaciones
 
 **Historia**: Como analista, quiero solicitar una nueva descarga de credenciales vigentes para entregarlas otra vez a la institución cuando sea necesario.
 
+**Aplicación en el MVP**: La descarga contiene únicamente material sintético y no utiliza un ZIP cifrado ni un canal corporativo.
+
 **Por qué P2**: Aporta eficiencia a la operación diaria, pero depende de que la emisión ya funcione.
 
 **Prueba independiente**: Se valida una nueva entrega de credenciales vigentes y el rechazo cuando no existen o están revocadas.
@@ -451,9 +517,9 @@ Escenario: Ambiente sin aplicaciones
 Escenario: Nueva entrega de credenciales vigentes
   Dado que la aplicación tiene credenciales vigentes y el analista tiene permiso de descarga
   Cuando solicita una nueva descarga
-  Entonces el sistema genera un nuevo ZIP protegido para la institución
-  Y genera una contraseña de ZIP distinta del nuevo OTP
-  Y genera un OTP de un solo uso válido durante dos minutos
+  Entonces el sistema genera un nuevo artefacto sintético descargable
+  Y genera un código de demostración nuevo, de un solo uso y válido durante dos minutos
+  Y deja de aceptar el código anterior
   Y registra la descarga en la auditoría
 
 Escenario: Solicitud de descarga no permitida
@@ -489,6 +555,8 @@ Escenario: Falta de motivo obligatorio
 
 #### US-11 - Consultar el uso de una aplicación
 
+**Estado en el próximo Sprint**: Diferida y fuera del MVP web. No debe aparecer como capacidad disponible.
+
 **Historia**: Como analista, quiero consultar el uso de las aplicaciones integradas para detectar anomalías y prestar soporte contextual.
 
 **Por qué P2**: Mejora el soporte y el diagnóstico, pero el ciclo de vida de credenciales puede operar sin esta información.
@@ -513,6 +581,8 @@ Escenario: Ausencia de datos de uso
 
 **Historia**: Como auditor, administrador o analista senior, quiero consultar el historial de acciones sobre credenciales para verificar operaciones e investigar incidencias.
 
+**Aplicación en el MVP**: La consulta cubre el historial funcional persistente del caso de estudio, sin certificar inmutabilidad administrativa ni retención de cinco años.
+
 **Por qué P2**: La auditoría se registra desde P1; esta capacidad habilita su explotación operativa y de cumplimiento.
 
 **Prueba independiente**: Con eventos de varias fechas, usuarios, instituciones y aplicaciones, se valida la ordenación, los filtros y la respuesta sin coincidencias.
@@ -536,6 +606,8 @@ Escenario: Filtrado de auditoría
 ### P3 - Administración de usuarios
 
 #### US-14 - Gestionar usuarios y perfiles autorizados
+
+**Estado en el próximo Sprint**: Diferida y fuera del MVP web. Los usuarios y perfiles necesarios para demostrar permisos estarán predefinidos.
 
 **Historia**: Como administrador, quiero gestionar usuarios autorizados, perfiles y su estado para controlar quién entra a KeyOps y qué operaciones puede realizar.
 
@@ -569,29 +641,47 @@ Escenario: Intento de alta duplicada
 - **Confirmación y reintento**: El sistema no debe mostrar éxito antes de conservar el resultado. Un reintento tras una respuesta incierta no debe duplicar el efecto de negocio.
 - **Separación de ambientes**: La información de pruebas y producción no debe mezclarse ni permitir acciones sobre un ambiente distinto del visible para el usuario.
 - **Usabilidad**: Un analista del piloto debe poder localizar una aplicación desde una única línea de búsqueda, conservar la consulta cuando no haya resultados y completar la operación permitida sin recurrir a un miembro técnico para el flujo ordinario.
-- **Cumplimiento**: Los eventos de auditoría son inmutables, se conservan cinco años y solo pueden ser consultados por auditor, administrador y analista senior. Incluyen la IP de origen y los datos de contacto estrictamente necesarios para la gestión.
+- **Cumplimiento del MVP**: Los eventos de auditoría son persistentes, se añaden sin edición desde la aplicación y solo pueden ser consultados por auditor, administrador y analista senior. La resistencia a modificación por administradores y la conservación garantizada durante cinco años se exigen antes del piloto real, no para aceptar este Sprint.
 - **Disponibilidad y rendimiento**: En el 95 % de los casos del piloto, el inventario y el detalle deben estar disponibles en menos de dos segundos, y la emisión o regeneración en menos de 30 segundos. Ante una operación fallida, el sistema conserva el estado anterior, registra el resultado y permite al usuario reintentarla.
-- **Coste del caso de estudio**: El candidato persistente debe poder desarrollarse, ejecutarse y validarse sin licencias, suscripciones ni servicios de software de pago adicionales.
+- **Coste del caso de estudio**: El MVP web persistente debe poder desarrollarse, publicarse, ejecutarse y validarse sin licencias, suscripciones ni servicios de software de pago adicionales.
 - **Alcance de la evidencia**: La validación con datos y credenciales sintéticos demuestra comportamiento y persistencia funcional, pero no sustituye la validación de seguridad, invalidación, inmutabilidad y retención exigida antes de un piloto real.
+- **Publicación web móvil**: Los flujos incluidos deben poder completarse desde un navegador móvil mediante la versión publicada, sin instalación nativa y sin desplazamiento horizontal en los tamaños de pantalla objetivo.
+- **Independencia de integraciones diferidas**: La indisponibilidad de los sistemas corporativos no debe impedir el uso ordinario del MVP ni provocar una sustitución silenciosa de datos persistentes por datos reiniciables.
+- **Transparencia de demostración**: Toda credencial, entrega o ambiente sintético debe identificarse de forma visible para evitar que un usuario lo interprete como acceso o dato real.
 
 ## 7. Entidades clave
 
 | Entidad               | Descripción y datos relevantes                                                                                                                                 |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Institución           | Organización conectada a la plataforma; agrupa aplicaciones.                                                                                                   |
-| Aplicación integrada  | Integración de una institución en un ambiente; incluye identificador, rol, contacto técnico, IP declaradas, solicitud y estados.                               |
-| Rol de API            | Conjunto de servicios de API permitidos para una aplicación.                                                                                                   |
-| Credencial            | Identidad de acceso asociada a una aplicación, con Client ID, secreto no visible, estado, ambiente y versión.                                                  |
+| Institución           | Organización conectada a la plataforma; agrupa aplicaciones. En el MVP se representa mediante datos persistentes del caso de estudio.                           |
+| Aplicación integrada  | Integración de una institución en un ambiente; incluye identificador, rol, contacto técnico, IP declaradas, solicitud y estados. En el MVP no modifica catálogos reales. |
+| Rol de API            | Conjunto de servicios de API permitidos para una aplicación. En el MVP procede del conjunto representativo predefinido.                                        |
+| Credencial            | Identidad de acceso asociada a una aplicación, con Client ID, secreto no visible, estado, ambiente y versión. En el MVP es sintética y no concede acceso real.   |
 | Versión de credencial | Registro histórico de una emisión o regeneración, incluyendo su relación con la versión previa.                                                                |
-| Entrega protegida     | ZIP protegido asociado a una emisión, regeneración o reenvío, con contraseña distinta del OTP y acceso mediante OTP de un solo uso válido durante dos minutos. |
-| Ambiente              | Contexto operativo de pruebas, producción u otro ambiente aprobado.                                                                                            |
-| Usuario interno       | Persona autorizada a acceder a KeyOps.                                                                                                                         |
+| Entrega               | Artefacto asociado a una emisión, regeneración o reenvío. En el MVP solo contiene material sintético y se accede con un código de demostración de un solo uso válido durante dos minutos. El ZIP cifrado real queda diferido. |
+| Ambiente              | Contexto operativo de pruebas o producción. En el MVP es un contexto de demostración sin efectos externos.                                                     |
+| Usuario interno       | Persona autorizada a acceder a KeyOps. En el MVP pertenece al conjunto predefinido para el caso de estudio.                                                     |
 | Perfil de usuario     | Conjunto de acciones permitidas para un usuario, por ejemplo analista, analista senior, administrador o auditor.                                               |
 | Gestión               | Información operativa asociada a una acción: motivo, contacto técnico y solicitud o ticket.                                                                    |
-| Evento de auditoría   | Evidencia de una acción o intento, con actor, fecha y hora, objetivo, resultado e IP de origen.                                                                |
-| Registro de uso       | Información disponible sobre mensajes, servicios, IP y último consumo de una aplicación.                                                                       |
+| Evento de auditoría   | Evidencia persistente de una acción o intento, con actor, fecha y hora, objetivo, resultado e IP de origen. Las garantías de inmutabilidad y retención se validan después del MVP. |
+| Registro de uso       | Información sobre mensajes, servicios, IP y último consumo de una aplicación; su consulta queda diferida fuera del MVP.                                         |
 
-## 8. Criterios de éxito y medición del piloto
+## 8. Criterios de éxito
+
+### 8.1 Aceptación del MVP web del próximo Sprint
+
+- **SC-009 - Cobertura funcional persistente**: Las 12 historias incluidas deben quedar validadas en la aplicación web publicada: todas las historias P1 y las historias US-09, US-10 y US-12, con evidencia repetible de cada escenario aplicable.
+- **SC-010 - Conservación entre sesiones**: El 100 % de los cambios confirmados durante la validación de esas 12 historias debe seguir visible después de cerrar la aplicación e iniciar una sesión nueva, y debe ser observable por otro usuario autorizado para el mismo recurso.
+- **SC-011 - Fallos y reintentos seguros**: En el 100 % de los casos de validación en que se fuerce un fallo de conservación, el sistema debe evitar un falso mensaje de éxito y mantener el estado anterior; al repetir la misma solicitud no debe aparecer más de un efecto de negocio.
+- **SC-012 - Coste adicional de software**: El coste obligatorio de licencias, suscripciones y consumo de software para publicar, ejecutar y validar el MVP debe ser de 0 euros.
+- **SC-013 - Acceso web móvil**: El MVP debe ser accesible mediante una URL publicada y permitir completar las 12 historias incluidas en dos tamaños representativos de navegador móvil, 390 × 844 y 360 × 800, sin instalación ni desplazamiento horizontal.
+- **SC-014 - Flujos visibles completos**: El 100 % de los botones, enlaces y acciones mostrados como disponibles debe completar su comportamiento o devolver un error controlado; debe haber cero controles decorativos o pantallas sin recorrido funcional.
+- **SC-015 - Alcance transparente**: El 100 % de las pantallas que muestran credenciales, entregas o ambientes sintéticos debe identificarlos como demostración, y US-11 y US-14 no deben aparecer como capacidades disponibles.
+- **SC-016 - Independencia externa**: Las 12 historias incluidas deben poder validarse sin acceder a sistemas corporativos y sin crear, modificar, entregar o invalidar credenciales reales.
+
+### 8.2 Medición del piloto posterior
+
+Los siguientes criterios se conservan como objetivos del piloto real y no bloquean la aceptación del próximo Sprint:
 
 - **SC-001 - Tiempo de ciclo**: Se medirá la reducción del tiempo mediano desde que la solicitud está completa hasta que la credencial queda disponible. Fórmula: `((tiempo mediano antes - tiempo mediano después) / tiempo mediano antes) x 100`. El piloto debe lograr una reducción de al menos el 50 %.
 - **SC-002 - Comparabilidad**: Las métricas separarán altas de renovaciones, pruebas de producción y operaciones de complejidad equivalente. El período de referencia y el grupo de control deben documentarse antes del piloto.
@@ -601,10 +691,6 @@ Escenario: Intento de alta duplicada
 - **SC-006 - Trazabilidad**: El 100 % de las operaciones P1, tanto exitosas como fallidas, debe poder asociarse a un evento de auditoría completo antes de ampliar el despliegue.
 - **SC-007 - Autonomía operativa**: Las operaciones P1 que no sean excepciones deben poder ser completadas por analistas del piloto sin solicitar intervención del equipo técnico.
 - **SC-008 - Localización de registros**: Con un inventario de al menos 20 aplicaciones, un analista debe poder reducir la lista a los registros coincidentes en menos de un segundo tras introducir una búsqueda por cualquiera de los campos operativos autorizados.
-- **SC-009 - Cobertura funcional persistente**: Al menos 12 de las 14 historias existentes deben quedar validadas en el candidato persistente: todas las historias P1 y las historias US-09, US-10 y US-12, con evidencia repetible de cada escenario aplicable.
-- **SC-010 - Conservación entre sesiones**: El 100 % de los cambios confirmados durante la validación de esas 12 historias debe seguir visible después de cerrar la aplicación e iniciar una sesión nueva, y debe ser observable por otro usuario autorizado para el mismo recurso.
-- **SC-011 - Fallos y reintentos seguros**: En el 100 % de los casos de validación en que se fuerce un fallo de conservación, el sistema debe evitar un falso mensaje de éxito y mantener el estado anterior; al repetir la misma solicitud no debe aparecer más de un efecto de negocio.
-- **SC-012 - Coste adicional de software**: El coste obligatorio de licencias, suscripciones y consumo de software para ejecutar y validar el candidato debe ser de 0 euros.
 
 ## 9. Suposiciones
 
@@ -613,24 +699,24 @@ Escenario: Intento de alta duplicada
 - Las tres instituciones de mayor volumen aportarán suficientes altas, regeneraciones o incidencias para evaluar el piloto durante tres meses.
 - Es posible obtener o acordar un coste/hora medio de analistas y administradores técnicos, así como horas productivas comparables.
 - Se dispondrá de datos suficientes para distinguir solicitudes completas, tiempo de ciclo, retrabajo y tipo de operación antes y después del piloto.
-- Los usuarios externos recibirán las credenciales mediante el proceso de entrega definido, sin necesitar un portal propio en esta fase.
+- Durante el MVP no se entregan credenciales reales a usuarios externos; los materiales sintéticos se utilizan únicamente para validar el recorrido.
 - La matriz de permisos y las transiciones de estado definidas en este documento se aplicarán antes de habilitar acciones irreversibles.
-- La búsqueda se limita al ambiente activo y a campos operativos autorizados. El “usuario” buscable corresponde a los actores registrados en el historial de la credencial, ya que KeyOps consulta aplicaciones creadas en un catálogo externo.
+- La búsqueda se limita al ambiente activo y a campos operativos autorizados. El “usuario” buscable corresponde a los actores registrados en el historial de la credencial dentro del conjunto representativo persistente.
 - Las operaciones críticas se realizan con conectividad disponible; esta versión no ofrece una cola de operaciones sin conexión.
-- El candidato utiliza datos representativos y materiales de entrega sintéticos. Su validación no demuestra emisión o revocación sobre servicios reales ni las garantías materiales de inmutabilidad y retención de la auditoría.
-- La información de consumo necesaria para US-11 puede no estar disponible durante esta iteración y la administración de usuarios US-14 puede seguir apoyándose en el mecanismo existente; ambas historias quedan fuera del objetivo de 12 historias persistentes.
+- El MVP utiliza datos representativos persistentes, usuarios predefinidos y materiales de entrega sintéticos. Su validación no demuestra emisión o revocación sobre servicios reales ni las garantías materiales de inmutabilidad y retención de la auditoría.
+- La información de consumo US-11 y la administración de usuarios US-14 quedan fuera del MVP. Ninguna de las dos debe mostrarse como capacidad disponible durante este Sprint.
 
 ## 10. Decisiones confirmadas
 
 - La primera versión no gestiona fechas de caducidad, alertas ni renovaciones preventivas.
-- KeyOps solo consulta el catálogo existente de instituciones, aplicaciones y roles, gestionado por otro módulo.
-- Emitir credenciales activa la nueva credencial y genera su entrega protegida en una misma operación.
+- El MVP utiliza instituciones, aplicaciones y roles representativos y persistentes; la integración con el catálogo corporativo queda diferida.
+- Emitir credenciales activa una credencial sintética y genera su entrega de demostración en una misma operación; no concede acceso a servicios reales.
 - Regenerar activa una nueva versión e inactiva inmediatamente la versión anterior por rotación.
 - Analistas, analistas senior, administradores y auditores operan conforme a la matriz de permisos de la sección 4.3, idéntica en pruebas y producción.
-- La institución accede al ZIP protegido con un OTP de un solo uso válido durante dos minutos; la contraseña del ZIP es distinta del OTP.
-- Los eventos de auditoría son inmutables, se conservan cinco años y solo los consultan auditor, administrador y analista senior.
+- La entrega de demostración utiliza un artefacto sintético y un código de un solo uso válido durante dos minutos; el ZIP cifrado, su contraseña separada y la entrega real por canales corporativos quedan diferidos.
+- En el MVP, los eventos de auditoría son persistentes, se añaden sin edición desde la aplicación y solo los consultan auditor, administrador y analista senior. La inmutabilidad frente a administradores y la conservación garantizada durante cinco años siguen siendo requisitos previos al piloto real.
 - El piloto debe cumplir los objetivos de tiempo de ciclo, coste operativo, adopción y satisfacción definidos en la sección 8 antes de iniciar el despliegue por olas.
 - El inventario ofrece una única búsqueda insensible a mayúsculas y acentos sobre los campos operativos autorizados; los datos sensibles de credenciales y entrega quedan siempre fuera de su índice.
 - Los cambios confirmados se conservan entre cierres de la aplicación y nuevas sesiones, y son coherentes para los usuarios autorizados dentro del mismo ambiente.
-- El candidato persistente puede usar credenciales sintéticas para validar comportamiento, pero no se considera evidencia de garantías productivas sobre secretos, invalidación o auditoría.
-- Esta iteración busca validar 12 de las 14 historias existentes sin coste obligatorio de software adicional; US-11 y US-14 no bloquean ese objetivo.
+- El MVP se publica como aplicación web móvil y puede usar credenciales sintéticas para validar comportamiento, pero no se considera evidencia de garantías productivas sobre secretos, invalidación o auditoría.
+- Esta iteración debe validar 12 de las 14 historias existentes sin coste obligatorio de software adicional; US-11 y US-14 están expresamente fuera de alcance y no deben aparecer como disponibles.

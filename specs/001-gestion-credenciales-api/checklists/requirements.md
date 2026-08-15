@@ -33,6 +33,7 @@
 
 ## Notes
 
-- La especificación distingue la evidencia del candidato persistente de las garantías exigidas para un piloto real; no rebaja los requisitos productivos.
-- El objetivo de esta iteración es validar 12 de las 14 historias: todas las P1 y US-09, US-10 y US-12. US-11 y US-14 continúan en alcance sin bloquear esta iteración.
+- La sección 1.5 enumera de forma explícita las capacidades fuera del MVP web y el comportamiento simplificado disponible durante el Sprint.
+- La especificación distingue la aceptación del MVP web de las garantías exigidas para un piloto real; difiere, pero no elimina, las obligaciones productivas de seguridad y auditoría.
+- El objetivo de esta iteración es validar 12 de las 14 historias: todas las P1 y US-09, US-10 y US-12. US-11 y US-14 quedan fuera del MVP y no deben aparecer como capacidades disponibles.
 - La persistencia se expresa como comportamiento observable entre sesiones y usuarios autorizados. La tecnología concreta permanece reservada para `plan.md`.
