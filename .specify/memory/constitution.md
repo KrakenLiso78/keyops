@@ -1,10 +1,15 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 -> 3.0.0
-- Modified sections: Stack tecnológico; Governance
-- Added sections: Modo de candidato local
+- Version change: 3.0.0 -> 4.0.0
+- Modified principles: I. Seguridad de credenciales API; VII. Estado confiable y
+  operaciones críticas en línea; VIII. Testing proporcional y cambios verificables;
+  IX. Simplicidad deliberada; X. Gobierno explícito de versiones
+- Added principles: XI. Persistencia real y evidencia funcional
+- Modified sections: Stack tecnológico; Modo de candidato local -> Candidato
+  persistente de caso de estudio; Governance
+- Added sections: Restricciones de coste y capacidad
 - Removed sections: none
-- Follow-up TODOs: validar integración, Android e iOS antes de cualquier piloto
+- Follow-up TODOs: none
 -->
 
 # KeyOps Constitution
@@ -20,6 +25,10 @@ Client Secret MUST NOT aparecer en pantallas de consulta, logs, errores, analít
 artefactos de depuración. Toda operación sensible MUST usar autenticación,
 autorización y transporte cifrado; la emisión real de secretos MUST ejecutarse en un
 servicio de confianza fuera del dispositivo.
+
+El token personal de Airtable MUST existir únicamente como secreto del adaptador
+servidor. MUST NOT incluirse en el bundle móvil, variables `EXPO_PUBLIC_*`, repositorio,
+logs ni respuestas al cliente. La app móvil MUST NOT acceder directamente a Airtable.
 
 ### II. Mínimo privilegio
 
@@ -84,8 +93,9 @@ triviales.
 
 ### VII. Estado confiable y operaciones críticas en línea
 
-El servicio remoto MUST ser la única fuente de verdad para credenciales, permisos,
-auditoría, versiones y estados operativos. El estado de UI MUST ser inmutable y seguir
+El servicio remoto, respaldado por Airtable para los datos operativos no secretos,
+MUST ser la única fuente de verdad persistente para aplicaciones, usuarios, permisos,
+versiones, estados y contexto de gestión. El estado de UI MUST ser inmutable y seguir
 flujo unidireccional: el estado baja hacia las vistas y los eventos suben hacia su
 controlador o hook de pantalla. La app MUST NOT mantener colas offline ni presentar
 éxito optimista para generar, regenerar, suspender, reactivar o revocar credenciales.
@@ -114,6 +124,13 @@ prueba de regresión cuando sea técnica y proporcionalmente viable. Todo cambio
 ser trazable a una especificación o decisión y aportar evidencia repetible de la
 validación aplicable.
 
+Los fakes MAY utilizarse en pruebas unitarias y de componentes, pero una historia que
+requiera persistencia MUST NOT declararse superada solo con un fake. Su evidencia MUST
+incluir al menos una prueba de integración contra una base Airtable de prueba mediante
+el adaptador servidor, verificando lectura posterior en una nueva sesión o proceso.
+Estas pruebas MUST ejecutarse bajo demanda, reutilizar fixtures sembrados en lotes y
+MUST NOT formar parte del bucle continuo de tests unitarios que consumiría la cuota.
+
 ### IX. Simplicidad deliberada
 
 KeyOps MUST resolver cada necesidad con la solución más sencilla que cumpla seguridad,
@@ -121,6 +138,10 @@ privacidad, auditabilidad y operación. MUST preferirse capacidades estándar de
 React Native y Expo antes de añadir librerías. Un gestor global de estado, base de
 datos local, sincronización offline, generación de código o nueva capa arquitectónica
 MUST NOT incorporarse sin un caso de uso verificable y una justificación en `plan.md`.
+
+La persistencia MUST implementarse reutilizando los contratos de repositorio y el
+cliente REST existentes. Airtable MUST quedar encapsulado tras un único adaptador
+servidor; no se crearán integraciones distintas por pantalla o historia de usuario.
 
 ### X. Gobierno explícito de versiones
 
@@ -130,6 +151,26 @@ declarar impacto, migración, compatibilidad temporal y retirada antes de adopta
 Las dependencias MUST fijarse mediante `package-lock.json`; las versiones concretas se
 deciden en `plan.md` y no en `spec.md`. La aplicación MUST rechazar de forma segura una
 respuesta de API incompatible en lugar de continuar con datos ambiguos.
+
+Los límites y condiciones de los planes gratuitos de Airtable y Cloudflare MUST
+revalidarse antes de cada release demostrable. Un cambio del proveedor que introduzca
+coste, elimine una capacidad necesaria o reduzca los límites por debajo del uso previsto
+MUST tratarse como un cambio de arquitectura y no aceptarse de forma automática.
+
+### XI. Persistencia real y evidencia funcional
+
+La ejecución demostrable de KeyOps MUST utilizar Airtable como persistencia real de los
+datos operativos no secretos. Reiniciar la app, abrir una sesión nueva o desplegar una
+nueva versión MUST conservar las aplicaciones, estados, usuarios, gestiones y eventos
+creados previamente. El modo fake MUST limitarse a desarrollo aislado y pruebas; MUST
+NOT ser el origen de datos predeterminado de una demo, validación funcional o release.
+
+Una historia de usuario se considera superada únicamente cuando sus criterios de
+aceptación observables se validan con la fuente persistente si la historia crea o
+modifica datos. El número de tests o checkboxes completados MUST NOT sustituir esta
+evidencia. Se priorizarán las historias que puedan compartir el mismo modelo de datos,
+adaptador y flujo de autorización para aumentar cobertura funcional sin añadir capas,
+servicios de pago ni implementaciones duplicadas.
 
 ## Stack tecnológico
 
@@ -147,6 +188,13 @@ El stack obligatorio de la aplicación móvil es:
   se usa Redux ni otro gestor global por defecto.
 - **Integración**: API REST/JSON mediante `fetch`, encapsulada por repositorios, con
   validación de respuestas externas mediante Zod.
+- **Adaptador servidor**: Cloudflare Worker en plan Free, implementado en TypeScript,
+  como único backend para la app móvil y único consumidor de la API de Airtable.
+- **Persistencia**: una base Airtable en plan Free para datos operativos no secretos,
+  accedida mediante Web API y un Personal Access Token almacenado como secreto del
+  Worker.
+- **Eficiencia**: caché de lecturas en Cloudflare, paginación, batching y `upsert` para
+  reducir llamadas a Airtable; el polling periódico queda prohibido.
 - **Sesión segura**: `expo-secure-store` exclusivamente para tokens de sesión. Client
   Secrets, contraseñas de ZIP y OTP MUST permanecer solo en memoria el tiempo mínimo
   indispensable y MUST NOT persistirse.
@@ -154,20 +202,44 @@ El stack obligatorio de la aplicación móvil es:
   cuando haya binarios y dispositivos disponibles para E2E nativo.
 - **Calidad local**: TypeScript, ESLint y Prettier ejecutables con scripts de `npm`.
 
-La aplicación consume servicios remotos existentes para catálogo, autenticación,
-credenciales y auditoría cuando están disponibles. Durante el caso de estudio MAY
-utilizarse un adaptador falso en memoria y un stub HTTP local que implementen los
-contratos de repositorio con datos exclusivamente sintéticos. Expo Application Services
-es opcional y MUST NOT ser requisito para desarrollar, probar o ejecutar localmente.
+La aplicación consume Cloudflare Worker como único endpoint remoto. El Worker aplica
+autenticación y autorización, adapta el contrato REST existente y accede a Airtable.
+La emisión de secretos reales permanece fuera de Airtable; el caso de estudio MUST usar
+datos y secretos sintéticos. Los fakes y el stub HTTP local MAY conservarse para tests
+y desarrollo aislado, pero MUST NOT ser el modo predeterminado de demostración. Expo
+Application Services es opcional y MUST NOT ser requisito para desarrollar, probar o
+ejecutar el caso de estudio.
 
-## Modo de candidato local
+## Candidato persistente de caso de estudio
 
-Cuando no existen entornos remotos, dispositivos o tooling E2E, el proyecto MAY cerrar
-un candidato local mediante fake, stub HTTP y exportación Expo Web. La evidencia MUST
-identificarse como local y MUST NOT afirmar autenticación corporativa, autorización
-remota, atomicidad, OTP de un uso, revocación efectiva, auditoría inmutable, retención
-ni compatibilidad Android/iOS. Antes de un piloto, estas garantías MUST validarse contra
-los servicios y dispositivos reales.
+El candidato demostrable MUST usar Cloudflare Worker y Airtable, y MUST demostrar que
+los cambios persisten entre sesiones. MAY ejecutarse mediante Expo Web cuando no haya
+dispositivos, pero esa evidencia MUST identificarse como caso de estudio y MUST NOT
+afirmar autenticación corporativa, emisión de credenciales reales, auditoría
+antimanipulación, retención efectiva de cinco años ni compatibilidad Android/iOS.
+
+Airtable MUST registrar eventos append-only a través del Worker para demostrar
+trazabilidad funcional. Esto no prueba inmutabilidad frente a administradores de la
+base ni capacidad de retención a cinco años. Antes de cualquier piloto real, esas
+garantías MUST migrarse o validarse contra servicios adecuados para producción.
+
+## Restricciones de coste y capacidad
+
+El caso de estudio MUST mantenerse dentro de los planes gratuitos y MUST NOT activar
+suscripciones, add-ons, automatizaciones de pago ni facturación por consumo sin
+aprobación expresa. A fecha de esta enmienda, el diseño MUST respetar como máximo:
+
+- Airtable Free: 1.000 registros acumulados por base, 1 GB de adjuntos y 1.000 llamadas
+  API por workspace y mes.
+- Airtable Web API: 5 solicitudes por segundo y base, páginas de hasta 100 registros y
+  lotes de hasta 10 registros por solicitud.
+- Cloudflare Workers Free: 100.000 solicitudes diarias y 10 ms de CPU por invocación.
+
+El adaptador MUST cachear lecturas no sensibles, agrupar escrituras, evitar consultas
+duplicadas y cargar datos bajo demanda. MUST exponer un error controlado cuando el
+proveedor limite peticiones y MUST NOT ocultar un agotamiento de cuota mediante datos
+fake. El volumen del caso de estudio MUST presupuestarse antes de implementar las
+historias seleccionadas, reservando capacidad para eventos de auditoría.
 
 ## Flujo de Trabajo SDD
 
@@ -195,4 +267,4 @@ artefacto técnico correspondiente; una excepción de seguridad, privacidad o
 auditabilidad MUST incluir alcance, riesgo, mitigación, responsable y caducidad. No se
 considerará aprobada una excepción implícita.
 
-**Version**: 3.0.0 | **Ratified**: 2026-08-08 | **Last Amended**: 2026-08-10
+**Version**: 4.0.0 | **Ratified**: 2026-08-08 | **Last Amended**: 2026-08-15
