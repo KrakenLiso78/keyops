@@ -14,3 +14,14 @@ export interface SyntheticArtifact {
   credentialVersionId: EntityId;
   generatedAt: Instant;
 }
+
+export interface RealDeliveryReference {
+  deliveryId: EntityId;
+  expiresAt: Instant;
+}
+
+export type OperationDelivery = ProtectedDelivery | RealDeliveryReference;
+
+export function isProtectedDelivery(delivery: OperationDelivery): delivery is ProtectedDelivery {
+  return 'deliveryUrl' in delivery;
+}

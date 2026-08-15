@@ -17,6 +17,24 @@ export const credentialOperationSchema = z.object({
   delivery: protectedDeliverySchema.optional(),
 });
 
+export const realCredentialOperationSchema = z
+  .object({
+    contractVersion: z.literal('2'),
+    operationId: z.string().min(1),
+    requestId: z.string().min(1),
+    auditEventId: z.string().min(1).optional(),
+    status: z.enum(['confirmed', 'reconciliation_required']),
+    result: z.enum(['succeeded', 'failed', 'rejected']),
+    delivery: z
+      .object({
+        deliveryId: z.string().min(1),
+        expiresAt: z.string().datetime({ offset: true }),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
 export const syntheticArtifactSchema = z
   .object({
     contractVersion: contractVersionSchema,

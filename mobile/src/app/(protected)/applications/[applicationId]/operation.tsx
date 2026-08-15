@@ -4,7 +4,8 @@ import * as Clipboard from 'expo-clipboard';
 import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { createFakeCredentialRepository } from '@/data/fake/FakeCredentialRepository';
 import { actionNeedsReason } from '@/domain/policies/credentialTransitions';
-import type { Delivery, User } from '@/domain/model/types';
+import type { User } from '@/domain/model/types';
+import { isProtectedDelivery, type ProtectedDelivery } from '@/domain/model/delivery';
 import type { CredentialAction } from '@/domain/policies/permittedActions';
 import { useDependencies } from '@/composition/DependenciesProvider';
 import { Body, Button, Card, Field, Heading, Screen } from '@/presentation/components/base';
@@ -25,6 +26,7 @@ import { fakeUsers } from '@/data/fake/seed';
 import {
   CredentialOperationFeedback,
   CredentialReasonForm,
+  RealCredentialNotice,
   SyntheticCredentialNotice,
 } from '@/presentation/components/credentials';
 import { RevokeConfirmation } from '@/presentation/components/credentials/RevokeConfirmation';
@@ -47,7 +49,7 @@ const consequences: Record<string, string> = {
   revoke: 'La credencial quedará revocada de forma irreversible.',
 };
 
-function Countdown({ delivery }: { delivery: Delivery }) {
+function Countdown({ delivery }: { delivery: ProtectedDelivery }) {
   const [seconds, setSeconds] = useState(120);
   useEffect(() => {
     const update = () =>
@@ -104,6 +106,11 @@ export default function OperationScreen() {
     [registerReset, resetOperation],
   );
   const title = titles[action] ?? 'Operación sobre credencial';
+  const isReal = dependencies.dataSource === 'remote';
+  const protectedDelivery =
+    result?.delivery && isProtectedDelivery(result.delivery) ? result.delivery : undefined;
+  const realDelivery =
+    result?.delivery && !isProtectedDelivery(result.delivery) ? result.delivery : undefined;
 
   const submit = () => {
     if (!user) return;
@@ -144,7 +151,66 @@ export default function OperationScreen() {
           <EnvironmentBadge environment={environment} />
         </View>
 
-        {result?.delivery ? (
+        {result?.status === 'reconciliation_required' ? (
+          <>
+            <Heading level={1}>Pendiente de reconciliación</Heading>
+            <RealCredentialNotice />
+            <Card tone="yellow">
+              <Text style={styles.institution}>Resultado todavía no confirmado</Text>
+              <Body>La operación conserva su identificador y no se repetirá al reintentar.</Body>
+              <Body>Operación {result.operationId}</Body>
+            </Card>
+            <CredentialOperationFeedback
+              submitting={operation.submitting}
+              receipt={result}
+              error={error}
+            />
+            <Button
+              title={operation.submitting ? 'Reconciliando…' : 'Reintentar reconciliación'}
+              disabled={operation.submitting}
+              onPress={() => void operation.reconcile()}
+            />
+            <Button title="Volver al detalle" variant="ghost" onPress={returnToDetail} />
+          </>
+        ) : realDelivery ? (
+          <>
+            <Heading level={1}>Entrega protegida preparada</Heading>
+            <RealCredentialNotice />
+            <Card tone="sky" style={styles.deliveryCard}>
+              <Text style={styles.institution}>
+                {application.institution} /{`\n`}
+                {application.name}
+              </Text>
+              <Text style={styles.deliveryText}>Referencia de entrega</Text>
+              <CopyableValue
+                value={realDelivery.deliveryId}
+                copyLabel="Copiar referencia"
+                iconBackgroundColor={colors.sky}
+                outlined={false}
+                style={styles.linkRow}
+                textStyle={styles.linkText}
+              />
+              <Text style={styles.deliveryText}>
+                Disponible hasta {formatDateTime(realDelivery.expiresAt)}
+              </Text>
+            </Card>
+            <Card tone="lavender" style={styles.otpCard}>
+              <Text style={styles.otpLabel}>Canales corporativos separados</Text>
+              <Body>
+                La contraseña del ZIP y el OTP se envían por canales distintos. KeyOps no los
+                muestra ni los conserva.
+              </Body>
+            </Card>
+            <View style={styles.resultFooter}>
+              <CredentialOperationFeedback submitting={operation.submitting} receipt={result} />
+              <Card tone="mint">
+                <Text style={styles.confirmed}>Operación real confirmada y auditada</Text>
+                <Body>Solicitud {result!.requestId}</Body>
+              </Card>
+              <Button title="Volver al detalle" variant="ghost" onPress={returnToDetail} />
+            </View>
+          </>
+        ) : protectedDelivery ? (
           <>
             <Heading level={1}>Entrega al cliente</Heading>
             <SyntheticCredentialNotice />
@@ -158,7 +224,7 @@ export default function OperationScreen() {
               </Text>
               <Text style={styles.deliveryText}>Enlace seguro</Text>
               <CopyableValue
-                value={result.delivery.deliveryUrl}
+                value={protectedDelivery.deliveryUrl}
                 copyLabel="Copiar enlace"
                 iconBackgroundColor={colors.sky}
                 outlined={false}
@@ -168,19 +234,19 @@ export default function OperationScreen() {
             </Card>
             <Button
               title="Compartir enlace"
-              onPress={() => Share.share({ message: result.delivery!.deliveryUrl })}
+              onPress={() => Share.share({ message: protectedDelivery.deliveryUrl })}
             />
 
             <Card tone="lavender" style={styles.otpCard}>
               <Text style={styles.otpLabel}>OTP de un solo uso</Text>
               <Text selectable style={styles.otp}>
-                {result.delivery.otp.slice(0, 3)} {result.delivery.otp.slice(3)}
+                {protectedDelivery.otp.slice(0, 3)} {protectedDelivery.otp.slice(3)}
               </Text>
-              <Countdown delivery={result.delivery} />
+              <Countdown delivery={protectedDelivery} />
               <Button
                 title="Copiar OTP"
                 variant="secondary"
-                onPress={() => Clipboard.setStringAsync(result.delivery!.otp)}
+                onPress={() => Clipboard.setStringAsync(protectedDelivery.otp)}
               />
             </Card>
 
@@ -192,7 +258,7 @@ export default function OperationScreen() {
               <CredentialOperationFeedback submitting={operation.submitting} receipt={result} />
               <Card tone="mint">
                 <Text style={styles.confirmed}>Operación completada y auditada</Text>
-                <Body>Solicitud {result.requestId}</Body>
+                <Body>Solicitud {result!.requestId}</Body>
               </Card>
               <Button title="Volver al detalle" variant="ghost" onPress={returnToDetail} />
             </View>
@@ -200,7 +266,7 @@ export default function OperationScreen() {
         ) : result ? (
           <>
             <Heading level={1}>Operación completada</Heading>
-            <SyntheticCredentialNotice />
+            {isReal ? <RealCredentialNotice /> : <SyntheticCredentialNotice />}
             <CredentialOperationFeedback submitting={operation.submitting} receipt={result} />
             <Card tone="mint">
               <Text style={styles.confirmed}>{title}</Text>
@@ -221,7 +287,7 @@ export default function OperationScreen() {
               <Body>{application.name}</Body>
               <CredentialStateBadge state={application.credentialState} />
             </Card>
-            <SyntheticCredentialNotice />
+            {isReal ? <RealCredentialNotice /> : <SyntheticCredentialNotice />}
             {action === 'revoke' ? (
               <>
                 <Field
@@ -262,6 +328,13 @@ export default function OperationScreen() {
       </ScrollView>
     </Screen>
   );
+}
+
+function formatDateTime(value: string) {
+  return new Intl.DateTimeFormat('es-ES', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(value));
 }
 
 const styles = StyleSheet.create({

@@ -1,6 +1,6 @@
 import type { FetchHttpClient } from '@/data/http/FetchHttpClient';
 import {
-  mapCredentialOperation,
+  mapRealCredentialOperation,
   mapSyntheticArtifact,
 } from '@/data/mappers/credentialOperationMapper';
 import type { Environment } from '@/domain/model/common';
@@ -10,23 +10,26 @@ export class RestCredentialRepository implements CredentialRepository {
   constructor(private readonly http: FetchHttpClient) {}
 
   issue(environment: Environment, applicationId: string, key: string) {
-    return this.operation(
-      `/v1/applications/${encodeURIComponent(applicationId)}/credentials?environment=${environment}`,
+    return this.realOperation(
+      `/v2/applications/${encodeURIComponent(applicationId)}/credentials?environment=${environment}`,
       key,
     );
   }
 
   regenerate(environment: Environment, applicationId: string, credentialId: string, key: string) {
-    return this.operation(
-      `/v1/applications/${encodeURIComponent(applicationId)}/credentials/${encodeURIComponent(credentialId)}/regenerations?environment=${environment}`,
+    return this.realOperation(
+      `/v2/applications/${encodeURIComponent(applicationId)}/credentials/${encodeURIComponent(credentialId)}/regenerations?environment=${environment}`,
       key,
     );
   }
 
   deliver(environment: Environment, applicationId: string, credentialId: string, key: string) {
-    return this.operation(
-      `/v1/applications/${encodeURIComponent(applicationId)}/credentials/${encodeURIComponent(credentialId)}/deliveries?environment=${environment}`,
-      key,
+    void environment;
+    void applicationId;
+    void credentialId;
+    void key;
+    return Promise.reject(
+      new Error('La entrega real solo se prepara al emitir o regenerar la credencial.'),
     );
   }
 
@@ -69,11 +72,23 @@ export class RestCredentialRepository implements CredentialRepository {
     );
   }
 
-  private async operation(path: string, key: string, body?: unknown) {
-    return mapCredentialOperation(
+  async status(operationId: string) {
+    return mapRealCredentialOperation(
+      await this.http.request(`/v2/operations/${encodeURIComponent(operationId)}`, {
+        method: 'GET',
+        headers: { 'x-keyops-contract-version': '2' },
+      }),
+    );
+  }
+
+  private async realOperation(path: string, key: string, body?: unknown) {
+    return mapRealCredentialOperation(
       await this.http.request(path, {
         method: 'POST',
-        headers: { 'idempotency-key': key },
+        headers: {
+          'idempotency-key': key,
+          'x-keyops-contract-version': '2',
+        },
         body: body === undefined ? undefined : JSON.stringify(body),
       }),
     );
@@ -87,8 +102,8 @@ export class RestCredentialRepository implements CredentialRepository {
     reason: string,
     key: string,
   ) {
-    return this.operation(
-      `/v1/applications/${encodeURIComponent(applicationId)}/credentials/${encodeURIComponent(credentialId)}/transitions?environment=${environment}`,
+    return this.realOperation(
+      `/v2/applications/${encodeURIComponent(applicationId)}/credentials/${encodeURIComponent(credentialId)}/transitions?environment=${environment}`,
       key,
       { action, reason },
     );

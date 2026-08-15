@@ -16,6 +16,7 @@ import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
 import { useApplicationDetailController } from '@/presentation/controllers/useApplicationDetailController';
 import { LoadingState, PersistentError } from '@/presentation/components/feedback';
+import { useDependencies } from '@/composition/DependenciesProvider';
 
 const actionLabels: Record<string, string> = {
   issue: 'Generar credenciales',
@@ -67,6 +68,7 @@ function HistoryItem({ entry, last }: { entry: CredentialHistoryEntry; last: boo
 export default function ApplicationDetailScreen() {
   const { applicationId } = useLocalSearchParams<{ applicationId: string }>();
   const { environment, user } = useApp();
+  const dependencies = useDependencies();
   const controller = useApplicationDetailController(environment, applicationId);
   const app = controller.application;
   if (!user)
@@ -94,7 +96,9 @@ export default function ApplicationDetailScreen() {
       </Screen>
     );
 
-  const actions = permittedActions(user.profile, app.credentialState);
+  const actions = permittedActions(user.profile, app.credentialState).filter(
+    (action) => dependencies.dataSource !== 'remote' || action !== 'delivery',
+  );
   const featuredAction = actions.includes('delivery') ? 'delivery' : actions[0];
   const additionalActions = actions.filter((action) => action !== featuredAction);
   const history = app.credentialHistory ?? [

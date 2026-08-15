@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-
 import { AppState, Button, Text, View, type AppStateStatus } from 'react-native';
 import type { CredentialRepository } from '@/domain/ports/CredentialRepository';
 import { useCredentialOperationController } from '@/presentation/controllers/useCredentialOperationController';
+import { isProtectedDelivery } from '@/domain/model/delivery';
 
 function Harness({ repository }: { repository: CredentialRepository }) {
   const controller = useCredentialOperationController(
@@ -13,7 +14,9 @@ function Harness({ repository }: { repository: CredentialRepository }) {
   return (
     <View>
       <Button title="Entregar" onPress={() => controller.execute('delivery')} />
-      {controller.receipt?.delivery ? <Text>{controller.receipt.delivery.otp}</Text> : null}
+      {controller.receipt?.delivery && isProtectedDelivery(controller.receipt.delivery) ? (
+        <Text>{controller.receipt.delivery.otp}</Text>
+      ) : null}
     </View>
   );
 }

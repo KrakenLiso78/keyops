@@ -59,5 +59,8 @@ export function createFakeCredentialRepository(user: User): CredentialRepository
     revoke: async (environment, applicationId, _credentialId, reason) =>
       adapt(legacy.revoke(environment, applicationId, reason)),
     consumeDelivery: (deliveryId, code) => legacy.consumeDelivery(deliveryId, code),
+    status: async () => {
+      throw new Error('El modo sintético no tiene operaciones reconciliables.');
+    },
   };
 }

@@ -2,18 +2,15 @@ import type { FetchHttpClient } from '@/data/http/FetchHttpClient';
 import { RestCredentialRepository } from '@/data/repositories/RestCredentialRepository';
 
 const receipt = {
-  contractVersion: '1' as const,
+  contractVersion: '2' as const,
   operationId: 'operation-1',
   requestId: 'request-1',
   auditEventId: 'audit-1',
   result: 'succeeded' as const,
+  status: 'confirmed' as const,
   delivery: {
     deliveryId: 'delivery-1',
-    credentialVersionId: 'version-1',
-    deliveryUrl: 'https://keyops.test/v1/deliveries/delivery-1/artifact',
-    otp: '123456',
-    otpExpiresAt: '2026-08-15T10:02:00.000Z',
-    createdAt: '2026-08-15T10:00:00.000Z',
+    expiresAt: '2026-08-15T10:02:00.000Z',
   },
 };
 
@@ -24,15 +21,19 @@ describe('RestCredentialRepository', () => {
     await expect(repository.issue('test', 'app-001', 'keyops-key-00000001')).resolves.toMatchObject(
       {
         operationId: 'operation-1',
-        delivery: { otp: '123456' },
+        status: 'confirmed',
+        delivery: { deliveryId: 'delivery-1' },
       },
     );
     expect(request).toHaveBeenCalledTimes(1);
     expect(request).toHaveBeenCalledWith(
-      '/v1/applications/app-001/credentials?environment=test',
+      '/v2/applications/app-001/credentials?environment=test',
       expect.objectContaining({
         method: 'POST',
-        headers: { 'idempotency-key': 'keyops-key-00000001' },
+        headers: {
+          'idempotency-key': 'keyops-key-00000001',
+          'x-keyops-contract-version': '2',
+        },
       }),
     );
   });
@@ -42,10 +43,13 @@ describe('RestCredentialRepository', () => {
     const repository = new RestCredentialRepository({ request } as unknown as FetchHttpClient);
     await repository.regenerate('production', 'app/001', 'cred/001', 'keyops-key-00000002');
     expect(request).toHaveBeenCalledWith(
-      '/v1/applications/app%2F001/credentials/cred%2F001/regenerations?environment=production',
+      '/v2/applications/app%2F001/credentials/cred%2F001/regenerations?environment=production',
       expect.objectContaining({
         method: 'POST',
-        headers: { 'idempotency-key': 'keyops-key-00000002' },
+        headers: {
+          'idempotency-key': 'keyops-key-00000002',
+          'x-keyops-contract-version': '2',
+        },
       }),
     );
   });
@@ -76,23 +80,32 @@ describe('RestCredentialRepository', () => {
     );
     expect(request.mock.calls).toEqual([
       [
-        '/v1/applications/app-001/credentials/credential-1/transitions?environment=test',
+        '/v2/applications/app-001/credentials/credential-1/transitions?environment=test',
         expect.objectContaining({
-          headers: { 'idempotency-key': 'transition-key-000001' },
+          headers: {
+            'idempotency-key': 'transition-key-000001',
+            'x-keyops-contract-version': '2',
+          },
           body: JSON.stringify({ action: 'suspend', reason: 'Pausa operativa' }),
         }),
       ],
       [
-        '/v1/applications/app-001/credentials/credential-1/transitions?environment=test',
+        '/v2/applications/app-001/credentials/credential-1/transitions?environment=test',
         expect.objectContaining({
-          headers: { 'idempotency-key': 'transition-key-000002' },
+          headers: {
+            'idempotency-key': 'transition-key-000002',
+            'x-keyops-contract-version': '2',
+          },
           body: JSON.stringify({ action: 'reactivate', reason: 'Reanudación autorizada' }),
         }),
       ],
       [
-        '/v1/applications/app-001/credentials/credential-1/transitions?environment=test',
+        '/v2/applications/app-001/credentials/credential-1/transitions?environment=test',
         expect.objectContaining({
-          headers: { 'idempotency-key': 'transition-key-000003' },
+          headers: {
+            'idempotency-key': 'transition-key-000003',
+            'x-keyops-contract-version': '2',
+          },
           body: JSON.stringify({ action: 'revoke', reason: 'Baja definitiva' }),
         }),
       ],
@@ -107,24 +120,31 @@ describe('RestCredentialRepository', () => {
       credentialVersionId: 'version-1',
       generatedAt: '2026-08-15T10:01:00.000Z',
     };
-    const request = jest.fn().mockResolvedValueOnce(receipt).mockResolvedValueOnce(artifact);
+    const request = jest.fn().mockResolvedValueOnce(artifact);
     const repository = new RestCredentialRepository({ request } as unknown as FetchHttpClient);
-    await repository.deliver('test', 'app-001', 'credential-1', 'delivery-key-000001');
+    await expect(
+      repository.deliver('test', 'app-001', 'credential-1', 'delivery-key-000001'),
+    ).rejects.toThrow('solo se prepara');
     await expect(repository.consumeDelivery('delivery/1', '482193')).resolves.toMatchObject({
       classification: 'SYNTHETIC-NON-FUNCTIONAL',
     });
     expect(request.mock.calls).toEqual([
       [
-        '/v1/applications/app-001/credentials/credential-1/deliveries?environment=test',
-        expect.objectContaining({
-          method: 'POST',
-          headers: { 'idempotency-key': 'delivery-key-000001' },
-        }),
-      ],
-      [
         '/v1/deliveries/delivery%2F1/artifact',
         { method: 'POST', body: JSON.stringify({ code: '482193' }) },
       ],
     ]);
+  });
+
+  it('reconciles a v2 operation by its opaque identifier', async () => {
+    const request = jest.fn().mockResolvedValue(receipt);
+    const repository = new RestCredentialRepository({ request } as unknown as FetchHttpClient);
+
+    await repository.status('operation/1');
+
+    expect(request).toHaveBeenCalledWith('/v2/operations/operation%2F1', {
+      method: 'GET',
+      headers: { 'x-keyops-contract-version': '2' },
+    });
   });
 });

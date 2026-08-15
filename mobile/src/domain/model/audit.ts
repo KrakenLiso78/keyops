@@ -1,5 +1,5 @@
 import type { EntityId, Environment, Instant } from './common';
-import type { ProtectedDelivery } from './delivery';
+import type { OperationDelivery } from './delivery';
 export type OperationResult = 'succeeded' | 'failed' | 'rejected';
 export interface AuditEvent {
   id: EntityId;
@@ -33,5 +33,6 @@ export interface OperationReceipt {
   requestId: string;
   auditEventId?: EntityId;
   result: OperationResult;
-  delivery?: ProtectedDelivery;
+  status?: 'confirmed' | 'reconciliation_required';
+  delivery?: OperationDelivery;
 }

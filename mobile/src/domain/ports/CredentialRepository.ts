@@ -38,4 +38,5 @@ export interface CredentialRepository {
     key: string,
   ): Promise<OperationReceipt>;
   consumeDelivery(deliveryId: string, code: string): Promise<SyntheticArtifact>;
+  status(operationId: string): Promise<OperationReceipt>;
 }

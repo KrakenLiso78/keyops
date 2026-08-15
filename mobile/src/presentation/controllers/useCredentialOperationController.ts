@@ -4,6 +4,7 @@ import type { Environment } from '@/domain/model/common';
 import type { OperationReceipt } from '@/domain/model/audit';
 import type { CredentialRepository } from '@/domain/ports/CredentialRepository';
 import type { CredentialAction } from '@/domain/policies/permittedActions';
+import { isProtectedDelivery } from '@/domain/model/delivery';
 
 function createIdempotencyKey(applicationId: string): string {
   const random = globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
@@ -68,8 +69,14 @@ export function useCredentialOperationController(
           }
         }
         setReceipt(next);
-        pending.current = undefined;
-        await onConfirmed?.();
+        if (next.status === 'reconciliation_required') {
+          setError(
+            'El proveedor aplicó o pudo aplicar la operación, pero falta confirmar el resultado. Reintenta la reconciliación.',
+          );
+        } else {
+          pending.current = undefined;
+          await onConfirmed?.();
+        }
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'La operación no se completó.');
       } finally {
@@ -79,8 +86,33 @@ export function useCredentialOperationController(
     [applicationId, credentialId, environment, onConfirmed, repository, submitting],
   );
 
+  const reconcile = useCallback(async () => {
+    if (submitting || !receipt || receipt.status !== 'reconciliation_required') return;
+    setSubmitting(true);
+    setError(undefined);
+    try {
+      const next = await repository.status(receipt.operationId);
+      setReceipt(next);
+      if (next.status === 'confirmed') {
+        pending.current = undefined;
+        await onConfirmed?.();
+      } else {
+        setError('La operación todavía requiere reconciliación con el proveedor.');
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo reconciliar la operación.');
+    } finally {
+      setSubmitting(false);
+    }
+  }, [onConfirmed, receipt, repository, submitting]);
+
   const clearSensitive = useCallback(() => {
-    setReceipt((current) => (current?.delivery ? undefined : current));
+    setReceipt((current) => {
+      if (!current?.delivery) return current;
+      return isProtectedDelivery(current.delivery)
+        ? undefined
+        : { ...current, delivery: undefined };
+    });
   }, []);
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
@@ -95,5 +127,5 @@ export function useCredentialOperationController(
     setSubmitting(false);
   }, []);
 
-  return { receipt, error, submitting, execute, clearSensitive, reset };
+  return { receipt, error, submitting, execute, reconcile, clearSensitive, reset };
 }

@@ -28,6 +28,15 @@ export function SyntheticCredentialNotice() {
   );
 }
 
+export function RealCredentialNotice() {
+  return (
+    <Card tone="sky">
+      <Text style={{ fontWeight: '700' }}>Operación real</Text>
+      <Text>El proveedor corporativo confirmará el estado antes de mostrar éxito.</Text>
+    </Card>
+  );
+}
+
 export function CredentialOperationFeedback({
   submitting,
   receipt,
@@ -44,6 +53,13 @@ export function CredentialOperationFeedback({
     return <Text accessibilityRole="alert">{error}</Text>;
   }
   if (receipt) {
+    if (receipt.status === 'reconciliation_required') {
+      return (
+        <Text accessibilityRole="alert">
+          Operación pendiente de reconciliación con el proveedor.
+        </Text>
+      );
+    }
     return <Text accessibilityRole="alert">Operación confirmada por el servidor.</Text>;
   }
   return null;
