@@ -6,10 +6,10 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Añadir `Credentials`, `CredentialVersions`, `DeliveryGrants` e `IdempotencyRecords` a `worker/scripts/airtable/schema.md`
-- [ ] T002 Crear fixtures por estado y ambiente en `worker/scripts/airtable/fixtures/credentials.json`
-- [ ] T003 Extender el seed idempotente con credenciales sintéticas en `worker/scripts/airtable/seed-credentials.ts` usando lotes de diez
-- [ ] T004 [P] Añadir `DELIVERY_PEPPER` al ejemplo y validación de secretos en `worker/.dev.vars.example` y `worker/src/config/env.ts`
+- [x] T001 Añadir `Credentials`, `CredentialVersions`, `DeliveryGrants` e `IdempotencyRecords` a `worker/scripts/airtable/schema.md`
+- [x] T002 Crear fixtures por estado y ambiente en `worker/scripts/airtable/fixtures/credentials.json`
+- [x] T003 Extender el seed idempotente con credenciales sintéticas en `worker/scripts/airtable/seed-credentials.ts` usando lotes de diez
+- [x] T004 [P] Añadir `DELIVERY_PEPPER` al ejemplo y validación de secretos en `worker/.dev.vars.example` y `worker/src/config/env.ts`
 
 **Checkpoint**: Fixtures sintéticos disponibles sin Client Secret, OTP persistido ni efecto externo.
 

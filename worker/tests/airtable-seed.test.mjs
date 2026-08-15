@@ -133,3 +133,37 @@ test("usa exclusivamente la matriz canónica de permisos granulares", () => {
     /credentials:transition|users:manage/,
   );
 });
+
+test("mantiene fixtures sintéticos por estado y ambiente sin secretos", async () => {
+  const fixture = JSON.parse(
+    await readFile(
+      new URL("../scripts/airtable/fixtures/credentials.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  assert.equal(fixture.credentials.length, 6);
+  assert.equal(fixture.versions.length, 7);
+  assert.deepEqual(
+    new Set(
+      fixture.credentials.map(({ environment, state }) =>
+        JSON.stringify([environment, state]),
+      ),
+    ),
+    new Set(
+      ["test", "production"].flatMap((environment) =>
+        ["active", "suspended", "revoked"].map((state) =>
+          JSON.stringify([environment, state]),
+        ),
+      ),
+    ),
+  );
+  assert.ok(
+    fixture.credentials.every(({ syntheticClientId }) =>
+      syntheticClientId.startsWith("synthetic_"),
+    ),
+  );
+  assert.doesNotMatch(
+    JSON.stringify(fixture),
+    /clientSecret|password|\botp\b|deliveryUrl/i,
+  );
+});
