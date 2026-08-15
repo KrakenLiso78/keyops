@@ -33,6 +33,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
     "@types/node": "^25.0.3",
@@ -57,6 +58,7 @@
     "test": "jest",
     "test:contract": "jest tests/contract --runInBand",
     "test:contract:local": "jest tests/contract/local --runInBand",
+    "test:e2e": "playwright test",
     "export:web": "expo export --platform web",
     "doctor": "npx expo-doctor@latest",
     "validate": "npm run doctor && npm run lint && npm run format:check && npm run typecheck && npm test -- --runInBand && npm run test:contract:local && npm run export:web"

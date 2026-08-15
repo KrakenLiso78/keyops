@@ -1,4 +1,5 @@
-import { Redirect, Stack, usePathname } from 'expo-router';
+import { useEffect } from 'react';
+import { router, Stack, usePathname } from 'expo-router';
 import { useApp } from '@/presentation/state/AppProvider';
 import {
   firstAllowedPath,
@@ -8,12 +9,18 @@ import {
 export default function ProtectedLayout() {
   const { restoring, user } = useApp();
   const pathname = usePathname();
-  if (restoring) return null;
-  if (!user) return <Redirect href="/sign-in" />;
-
   const requiredPermission = requiredPermissionForPath(pathname);
-  if (!user.permissions.includes(requiredPermission)) {
-    return <Redirect href={firstAllowedPath(user) ?? '/sign-in'} />;
-  }
+  const redirectTo = !user
+    ? '/sign-in'
+    : !user.permissions.includes(requiredPermission)
+      ? (firstAllowedPath(user) ?? '/sign-in')
+      : undefined;
+
+  useEffect(() => {
+    if (!restoring && redirectTo && pathname !== redirectTo) router.replace(redirectTo);
+  }, [pathname, redirectTo, restoring]);
+
+  if (restoring) return null;
+  if (redirectTo) return null;
   return <Stack screenOptions={{ headerShown: false }} />;
 }

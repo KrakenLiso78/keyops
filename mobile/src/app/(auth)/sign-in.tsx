@@ -64,7 +64,7 @@ export default function SignInScreen() {
               <Text style={styles.link}>Soporte técnico</Text>
             </Pressable>
           </View>
-          <View pointerEvents="none" style={styles.cornerDecoration} />
+          <View style={styles.cornerDecoration} />
         </View>
       </ScrollView>
     </Screen>
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   link: { color: colors.primaryDeep, fontSize: 15, fontWeight: '500' },
   error: { color: colors.error, fontSize: 13, textAlign: 'center' },
   cornerDecoration: {
+    pointerEvents: 'none',
     position: 'absolute',
     width: 94,
     height: 94,

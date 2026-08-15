@@ -15,7 +15,15 @@ export function Screen({ children, style }: PropsWithChildren<{ style?: ViewStyl
   return <SafeAreaView style={[styles.screen, style]}>{children}</SafeAreaView>;
 }
 export function Heading({ children, level = 2 }: PropsWithChildren<{ level?: 1 | 2 | 3 | 4 }>) {
-  return <Text style={[styles.heading, styles[`heading${level}`]]}>{children}</Text>;
+  return (
+    <Text
+      accessibilityRole="header"
+      aria-level={level}
+      style={[styles.heading, styles[`heading${level}`]]}
+    >
+      {children}
+    </Text>
+  );
 }
 export function Body({ children }: PropsWithChildren) {
   return <Text style={styles.body}>{children}</Text>;

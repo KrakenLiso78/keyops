@@ -85,20 +85,20 @@
 
 ### Tests
 
-- [ ] T032 [P] [US-WEB-03] Escribir test de accesibilidad/navegación de controles visibles en `mobile/tests/accessibility/web-navigation.test.tsx`
-- [ ] T033 [P] [US-WEB-03] Fijar Playwright Test 1.61.1 en `mobile/package.json`/`mobile/package-lock.json` y crear el E2E fallido de ambos viewports en `mobile/playwright.config.ts` y `mobile/tests/e2e/web-access.spec.ts`
+- [X] T032 [P] [US-WEB-03] Escribir test de accesibilidad/navegación de controles visibles en `mobile/tests/accessibility/web-navigation.test.tsx`
+- [X] T033 [P] [US-WEB-03] Fijar Playwright Test 1.61.1 en `mobile/package.json`/`mobile/package-lock.json` y crear el E2E fallido de ambos viewports en `mobile/playwright.config.ts` y `mobile/tests/e2e/web-access.spec.ts`
 
 ### Implementation
 
-- [ ] T034 [US-WEB-03] Retirar de la navegación MVP usuarios/consumo y reparar enlaces sin recorrido en `mobile/app/(protected)/_layout.tsx` y `mobile/src/presentation/components/chrome.tsx`
-- [ ] T035 [US-WEB-03] Corregir overflow/foco/scroll en los componentes afectados bajo `mobile/src/presentation/components/`
-- [ ] T036 [US-WEB-03] Añadir scripts reproducibles `export:web` y preview Worker en `mobile/package.json` y `worker/package.json`
+- [X] T034 [US-WEB-03] Retirar consumo y controles sin recorrido; mantener usuarios solo para administradores porque la feature 007 lo incorpora al alcance final, en `mobile/src/app/(protected)/_layout.tsx` y el chrome
+- [X] T035 [US-WEB-03] Corregir overflow/foco/scroll y semántica de encabezados en los componentes afectados bajo `mobile/src/presentation/components/`
+- [X] T036 [US-WEB-03] Añadir scripts reproducibles `export:web`, `test:e2e` y preview Worker en `mobile/package.json` y `worker/package.json`
 
 **Checkpoint**: Preview web recorrible en ambos tamaños, sin desplazamiento horizontal ni controles inertes.
 
 ## Phase 6: Validation and release evidence
 
-- [ ] T037 [P] Ejecutar y documentar `npm run validate` móvil y tests Worker en `specs/002-publicacion-web-acceso/quickstart.md`
+- [X] T037 [P] Ejecutar y documentar `npm run validate` móvil y tests Worker en `specs/002-publicacion-web-acceso/quickstart.md`
 - [ ] T038 Ejecutar bajo demanda la prueba de usuario persistente contra Airtable de test desde `worker/tests/integration/airtable-session.test.ts`
 - [ ] T039 Publicar preview, recorrer ambos viewports y registrar URL/fecha/limitaciones en `specs/002-publicacion-web-acceso/quickstart.md`
 - [ ] T040 Revalidar límites Free y revisar bundle/logs por secretos antes del checkpoint de la feature

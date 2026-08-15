@@ -8,7 +8,6 @@ export function ApplicationDetailTitle() {
       <View
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
-        pointerEvents="none"
         testID="application-detail-decoration-strip"
         style={styles.decorationStrip}
       >
@@ -24,6 +23,7 @@ export function ApplicationDetailTitle() {
 const styles = StyleSheet.create({
   titleBlock: { gap: space.xs },
   decorationStrip: {
+    pointerEvents: 'none',
     position: 'relative',
     alignSelf: 'flex-end',
     width: 104,
