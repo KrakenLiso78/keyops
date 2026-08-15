@@ -15,16 +15,16 @@
 
 ## Phase 2: Foundational
 
-- [ ] T005 [P] Definir schemas Airtable para credencial/versión en `worker/src/airtable/credentialSchema.ts`
-- [ ] T006 [P] Definir schemas de idempotencia/entrega en `worker/src/airtable/operationSchema.ts`
-- [ ] T007 [P] Implementar máquina de estados pura y permisos por acción en `worker/src/credentials/stateMachine.ts`
-- [ ] T008 [P] Implementar generador sintético y digest HMAC en `worker/src/credentials/syntheticDelivery.ts`
-- [ ] T009 Implementar persistencia/reconciliación de credenciales en `worker/src/airtable/CredentialRepository.ts`
-- [ ] T010 [P] Implementar reservas y receipts idempotentes en `worker/src/airtable/IdempotencyRepository.ts`
-- [ ] T011 [P] Implementar creación/invalidez/consumo de grants en `worker/src/airtable/DeliveryGrantRepository.ts`
-- [ ] T012 Implementar orquestador `processing/committed/failed` en `worker/src/credentials/operationService.ts`
-- [ ] T013 [P] Crear fixtures y dobles de fallo por paso en `worker/tests/fixtures/credentials.ts` y `worker/tests/support/FailingCredentialStore.ts`
-- [ ] T014 [P] Completar tipos/schemas y puerto de consumo de artefacto sin secretos persistibles en `mobile/src/domain/ports/CredentialRepository.ts` y `mobile/src/data/schemas/credentialOperation.ts`
+- [x] T005 [P] Definir schemas Airtable para credencial/versión en `worker/src/airtable/credentialSchema.ts`
+- [x] T006 [P] Definir schemas de idempotencia/entrega en `worker/src/airtable/operationSchema.ts`
+- [x] T007 [P] Implementar máquina de estados pura y permisos por acción en `worker/src/credentials/stateMachine.ts`
+- [x] T008 [P] Implementar generador sintético y digest HMAC en `worker/src/credentials/syntheticDelivery.ts`
+- [x] T009 Implementar persistencia/reconciliación de credenciales en `worker/src/airtable/CredentialRepository.ts`
+- [x] T010 [P] Implementar reservas y receipts idempotentes en `worker/src/airtable/IdempotencyRepository.ts`
+- [x] T011 [P] Implementar creación/invalidez/consumo de grants en `worker/src/airtable/DeliveryGrantRepository.ts`
+- [x] T012 Implementar orquestador `processing/committed/failed` en `worker/src/credentials/operationService.ts`
+- [x] T013 [P] Crear fixtures y dobles de fallo por paso en `worker/tests/fixtures/credentials.ts` y `worker/tests/support/FailingCredentialStore.ts`
+- [x] T014 [P] Completar tipos/schemas y puerto de consumo de artefacto sin secretos persistibles en `mobile/src/domain/ports/CredentialRepository.ts` y `mobile/src/data/schemas/credentialOperation.ts`
 
 **Checkpoint**: Reglas puras y repositorios pueden probar fallos intermedios antes de exponer rutas.
 

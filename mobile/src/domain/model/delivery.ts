@@ -7,3 +7,10 @@ export interface ProtectedDelivery {
   otpExpiresAt: Instant;
   createdAt: Instant;
 }
+
+export interface SyntheticArtifact {
+  classification: 'SYNTHETIC-NON-FUNCTIONAL';
+  applicationId: EntityId;
+  credentialVersionId: EntityId;
+  generatedAt: Instant;
+}

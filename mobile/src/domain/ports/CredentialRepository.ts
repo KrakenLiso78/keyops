@@ -1,5 +1,7 @@
 import type { Environment } from '@/domain/model/common';
 import type { OperationReceipt } from '@/domain/model/audit';
+import type { SyntheticArtifact } from '@/domain/model/delivery';
+
 export interface CredentialRepository {
   issue(environment: Environment, applicationId: string, key: string): Promise<OperationReceipt>;
   regenerate(
@@ -35,4 +37,5 @@ export interface CredentialRepository {
     reason: string,
     key: string,
   ): Promise<OperationReceipt>;
+  consumeDelivery(deliveryId: string, code: string): Promise<SyntheticArtifact>;
 }

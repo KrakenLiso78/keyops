@@ -20,4 +20,13 @@ export class FakeCredentialRepository {
   revoke(environment: 'test' | 'production', applicationId: string, reason: string) {
     return fakeRepository.operate(this.user, applicationId, environment, 'revoke', reason);
   }
+  async consumeDelivery(deliveryId: string, code: string) {
+    if (!deliveryId || !code) throw new Error('La entrega sintética no es válida.');
+    return {
+      classification: 'SYNTHETIC-NON-FUNCTIONAL' as const,
+      applicationId: 'fake-application',
+      credentialVersionId: 'fake-version',
+      generatedAt: new Date().toISOString(),
+    };
+  }
 }
