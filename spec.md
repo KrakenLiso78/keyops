@@ -3,7 +3,7 @@
 **Proyecto**: KeyOps  
 **Rama**: `[001-gestion-credenciales-api]`  
 **Creado**: 17 de julio de 2026  
-**Estado**: Borrador para validación  
+**Estado**: Borrador actualizado para candidato persistente\
 **Entradas**: `Lean Canvas Full · Gestión autónoma de credenciales API · Escuadrón 04.docx` y `docs/product/historias-de-usuario-keyops.docx`
 
 ## 1. Contexto y objetivo
@@ -31,11 +31,16 @@ El MVP cubre el acceso de usuarios internos autorizados, la consulta de aplicaci
 
 El MVP consulta las instituciones, aplicaciones y roles de un catálogo existente, gestionado por otro módulo. KeyOps no crea, modifica ni elimina esos datos; los utiliza como fuente de consulta para operar credenciales.
 
+El candidato funcional del caso de estudio debe conservar y compartir los datos operativos no secretos entre cierres de la aplicación y nuevas sesiones autorizadas. Los datos aislados que se reinician al comenzar una demostración pueden utilizarse para pruebas, pero no constituyen evidencia de que una historia con cambios de estado esté superada.
+
 ### 1.3 Decisiones de alcance adoptadas
 
 - La primera versión no gestiona fechas de caducidad, alertas ni renovaciones preventivas.
 - Las instituciones, aplicaciones y roles se consultan desde el catálogo existente de otro módulo; su mantenimiento queda fuera de KeyOps.
 - Pruebas y producción están disponibles desde el inicio. El usuario selecciona el ambiente activo y la misma matriz de permisos se aplica en ambos.
+- Una operación confirmada debe conservar su resultado al cerrar y volver a abrir la aplicación, iniciar una sesión nueva o consultar el mismo recurso desde otro usuario autorizado.
+- El candidato de caso de estudio utiliza credenciales y materiales de entrega sintéticos. Este nivel permite validar el comportamiento y la persistencia, pero no acredita emisión de secretos reales, revocación efectiva en sistemas productivos ni conservación inmutable durante cinco años.
+- La meta de esta iteración es validar 12 de las 14 historias existentes en el candidato persistente: todas las historias P1 y las historias US-09, US-10 y US-12. US-11 y US-14 permanecen en alcance, pero no bloquean esta iteración.
 
 ## 2. Objetivos y no objetivos
 
@@ -45,6 +50,8 @@ El MVP consulta las instituciones, aplicaciones y roles de un catálogo existent
 - Mantener una relación visible entre institución, aplicación, ambiente, rol y credenciales.
 - Reducir el tiempo de ciclo de emisión o renovación de credenciales en el piloto.
 - Conservar evidencia suficiente de quién hizo cada operación, sobre qué aplicación y con qué resultado.
+- Conservar el estado operativo confirmado entre sesiones y hacerlo visible de forma coherente a todos los usuarios autorizados.
+- Aumentar la cobertura funcional demostrable sin rebajar los criterios de aceptación ni depender de software de pago adicional.
 - Permitir al propietario medir adopción, satisfacción y ahorro operativo antes de ampliar el despliegue.
 
 ### No objetivos
@@ -56,6 +63,7 @@ El MVP consulta las instituciones, aplicaciones y roles de un catálogo existent
 - Crear, modificar o eliminar instituciones, aplicaciones o roles del catálogo externo.
 - Incorporar analítica avanzada o monitorización en tiempo real del uso de la API.
 - Definir precios, facturación o ingresos directos: el caso económico es de eficiencia interna.
+- Considerar el candidato de caso de estudio como prueba de emisión de secretos reales, revocación productiva, auditoría resistente a administradores o retención efectiva durante cinco años.
 
 ## 3. Requisitos funcionales
 
@@ -78,6 +86,13 @@ El MVP consulta las instituciones, aplicaciones y roles de un catálogo existent
 - **FR-017**: Cuando exista información de consumo, el sistema DEBE mostrar mensajes enviados, servicios consumidos, IP utilizadas y fecha del último consumo de la aplicación.
 - **FR-018**: El sistema DEBE ofrecer los ambientes de pruebas y producción desde el inicio, mantenerlos claramente separados y mostrar solo la información y acciones del ambiente activo.
 - **FR-019**: Un administrador DEBE poder gestionar los usuarios autorizados, sus perfiles y su estado de habilitación cuando esta capacidad se incorpore.
+- **FR-020**: El sistema DEBE conservar los cambios confirmados sobre credenciales, versiones, estados, información de gestión, usuarios autorizados, permisos y eventos de auditoría cuando se cierre la aplicación o finalice la sesión.
+- **FR-021**: El estado no secreto resultante de un cambio confirmado DEBE ser visible en una sesión posterior y para otro usuario autorizado con acceso al mismo recurso, sin depender del dispositivo o de la sesión que realizó la operación.
+- **FR-022**: El sistema NO DEBE comunicar que una operación se completó hasta que su resultado haya quedado confirmado. Si no puede conservarlo, DEBE mantener el último estado confirmado, informar del fallo y permitir un nuevo intento.
+- **FR-023**: Reintentar la misma solicitud después de una respuesta incierta NO DEBE crear una versión adicional de credencial, repetir una transición de estado ni duplicar otro efecto de negocio. Cada intento y su resultado DEBEN conservar trazabilidad.
+- **FR-024**: Las consultas posteriores DEBEN reflejar el último estado confirmado y mantener separados los datos de pruebas y producción, incluso al cambiar de usuario o iniciar una sesión nueva.
+- **FR-025**: El candidato funcional DEBE poder validar el comportamiento con credenciales y materiales de entrega sintéticos, identificando claramente que esa evidencia no acredita las garantías exigidas para un piloto con servicios reales.
+- **FR-026**: La validación del candidato persistente DEBE poder realizarse sin contratar licencias, suscripciones ni servicios de software de pago adicionales.
 
 ## 4. Reglas de negocio y estados
 
@@ -100,6 +115,10 @@ La emisión, la generación de la entrega protegida y la activación ocurren en 
 - No se puede suspender una credencial revocada ni revocar nuevamente una ya revocada.
 - La suspensión, la reactivación y la revocación exigen que el usuario registre un motivo.
 - Toda operación debe conservar su resultado, tanto si termina correctamente como si falla.
+- El éxito solo se comunica cuando el cambio ha quedado confirmado; un fallo de conservación mantiene el último estado confirmado.
+- Cerrar la aplicación, cerrar sesión o acceder desde otra sesión autorizada no reinicia los datos operativos confirmados.
+- Repetir una solicitud tras una respuesta incierta no repite el efecto de negocio, aunque cada intento conserva su propia trazabilidad.
+- Los usuarios autorizados para el mismo recurso deben observar el mismo estado confirmado dentro de su ambiente activo.
 - La regeneración activa la nueva credencial e inactiva inmediatamente la versión anterior por rotación; no existe período de coexistencia.
 - La institución se autentica con un OTP de un solo uso, válido durante dos minutos, para acceder a un ZIP protegido. La contraseña del ZIP es distinta del OTP y se entrega por el canal operativo autorizado.
 - Los eventos de auditoría son inmutables, se conservan durante cinco años y solo son consultables por auditor, administrador y analista senior.
@@ -119,6 +138,38 @@ La emisión, la generación de la entrega protegida y la activación ocurren en 
 La matriz anterior se aplica de igual forma en pruebas y en producción.
 
 ## 5. Historias de usuario, prioridad y pruebas
+
+### Niveles de validación y criterio transversal
+
+Una historia se considera **validada en el candidato persistente** cuando todos sus escenarios de aceptación se ejecutan con datos compartidos y, si crea o modifica información, el resultado se comprueba después de cerrar la aplicación e iniciar una sesión nueva. Para esta validación pueden utilizarse credenciales y materiales de entrega sintéticos, siempre que no se presenten como credenciales reales.
+
+Una historia se considera **validada para piloto real** únicamente cuando, además de lo anterior, se han comprobado con los servicios reales las garantías que le correspondan: autorización efectiva, emisión o invalidación real de credenciales, OTP de un solo uso, entrega protegida y auditoría con las garantías de inmutabilidad y retención exigidas.
+
+Los siguientes escenarios transversales se aplican a todas las historias que crean o modifican información:
+
+```gherkin
+Escenario: Conservación de un cambio confirmado entre sesiones
+  Dado que un usuario autorizado completa una operación que modifica información
+  Cuando cierra la aplicación e inicia una sesión nueva
+  Entonces el sistema muestra el resultado confirmado de la operación
+  Y otro usuario autorizado para el mismo recurso observa el mismo estado no secreto
+
+Escenario: Fallo al conservar un cambio
+  Dado que un usuario autorizado solicita una operación válida
+  Cuando el sistema no puede conservar el resultado
+  Entonces no comunica que la operación se completó
+  Y mantiene el último estado confirmado
+  Y registra el intento fallido en la auditoría
+
+Escenario: Reintento después de una respuesta incierta
+  Dado que un usuario no sabe si una solicitud anterior terminó correctamente
+  Cuando repite la misma solicitud
+  Entonces el sistema no duplica el efecto de negocio
+  Y devuelve o muestra el único resultado confirmado
+  Y conserva la trazabilidad de cada intento
+```
+
+La meta de esta iteración es validar en este nivel persistente las nueve historias P1 y las historias P2 US-09, US-10 y US-12: 12 de las 14 historias existentes. US-11 depende de disponer de información de consumo y US-14 sigue siendo una capacidad P3, por lo que ninguna bloquea esta iteración.
 
 ### P1 - Incremento mínimo publicable
 
@@ -514,10 +565,14 @@ Escenario: Intento de alta duplicada
 - **Seguridad y permisos**: Las acciones y datos visibles deben respetar el perfil del usuario. El Client Secret no se muestra en consultas de detalle. Las acciones de alto impacto deben quedar restringidas a los perfiles aprobados.
 - **Trazabilidad**: Los eventos de auditoría deben permitir reconstruir quién hizo qué, sobre qué institución, aplicación y credencial, cuándo, desde qué IP de origen y con qué resultado.
 - **Integridad operativa**: Las operaciones fallidas no pueden dejar estados parciales o contradictorios. Las credenciales vigentes se preservan cuando falla una regeneración.
+- **Persistencia compartida**: Los cambios confirmados deben sobrevivir al cierre de la aplicación y a nuevas sesiones, y ser coherentes para todos los usuarios autorizados del mismo ambiente.
+- **Confirmación y reintento**: El sistema no debe mostrar éxito antes de conservar el resultado. Un reintento tras una respuesta incierta no debe duplicar el efecto de negocio.
 - **Separación de ambientes**: La información de pruebas y producción no debe mezclarse ni permitir acciones sobre un ambiente distinto del visible para el usuario.
 - **Usabilidad**: Un analista del piloto debe poder localizar una aplicación desde una única línea de búsqueda, conservar la consulta cuando no haya resultados y completar la operación permitida sin recurrir a un miembro técnico para el flujo ordinario.
 - **Cumplimiento**: Los eventos de auditoría son inmutables, se conservan cinco años y solo pueden ser consultados por auditor, administrador y analista senior. Incluyen la IP de origen y los datos de contacto estrictamente necesarios para la gestión.
 - **Disponibilidad y rendimiento**: En el 95 % de los casos del piloto, el inventario y el detalle deben estar disponibles en menos de dos segundos, y la emisión o regeneración en menos de 30 segundos. Ante una operación fallida, el sistema conserva el estado anterior, registra el resultado y permite al usuario reintentarla.
+- **Coste del caso de estudio**: El candidato persistente debe poder desarrollarse, ejecutarse y validarse sin licencias, suscripciones ni servicios de software de pago adicionales.
+- **Alcance de la evidencia**: La validación con datos y credenciales sintéticos demuestra comportamiento y persistencia funcional, pero no sustituye la validación de seguridad, invalidación, inmutabilidad y retención exigida antes de un piloto real.
 
 ## 7. Entidades clave
 
@@ -546,6 +601,10 @@ Escenario: Intento de alta duplicada
 - **SC-006 - Trazabilidad**: El 100 % de las operaciones P1, tanto exitosas como fallidas, debe poder asociarse a un evento de auditoría completo antes de ampliar el despliegue.
 - **SC-007 - Autonomía operativa**: Las operaciones P1 que no sean excepciones deben poder ser completadas por analistas del piloto sin solicitar intervención del equipo técnico.
 - **SC-008 - Localización de registros**: Con un inventario de al menos 20 aplicaciones, un analista debe poder reducir la lista a los registros coincidentes en menos de un segundo tras introducir una búsqueda por cualquiera de los campos operativos autorizados.
+- **SC-009 - Cobertura funcional persistente**: Al menos 12 de las 14 historias existentes deben quedar validadas en el candidato persistente: todas las historias P1 y las historias US-09, US-10 y US-12, con evidencia repetible de cada escenario aplicable.
+- **SC-010 - Conservación entre sesiones**: El 100 % de los cambios confirmados durante la validación de esas 12 historias debe seguir visible después de cerrar la aplicación e iniciar una sesión nueva, y debe ser observable por otro usuario autorizado para el mismo recurso.
+- **SC-011 - Fallos y reintentos seguros**: En el 100 % de los casos de validación en que se fuerce un fallo de conservación, el sistema debe evitar un falso mensaje de éxito y mantener el estado anterior; al repetir la misma solicitud no debe aparecer más de un efecto de negocio.
+- **SC-012 - Coste adicional de software**: El coste obligatorio de licencias, suscripciones y consumo de software para ejecutar y validar el candidato debe ser de 0 euros.
 
 ## 9. Suposiciones
 
@@ -557,6 +616,9 @@ Escenario: Intento de alta duplicada
 - Los usuarios externos recibirán las credenciales mediante el proceso de entrega definido, sin necesitar un portal propio en esta fase.
 - La matriz de permisos y las transiciones de estado definidas en este documento se aplicarán antes de habilitar acciones irreversibles.
 - La búsqueda se limita al ambiente activo y a campos operativos autorizados. El “usuario” buscable corresponde a los actores registrados en el historial de la credencial, ya que KeyOps consulta aplicaciones creadas en un catálogo externo.
+- Las operaciones críticas se realizan con conectividad disponible; esta versión no ofrece una cola de operaciones sin conexión.
+- El candidato utiliza datos representativos y materiales de entrega sintéticos. Su validación no demuestra emisión o revocación sobre servicios reales ni las garantías materiales de inmutabilidad y retención de la auditoría.
+- La información de consumo necesaria para US-11 puede no estar disponible durante esta iteración y la administración de usuarios US-14 puede seguir apoyándose en el mecanismo existente; ambas historias quedan fuera del objetivo de 12 historias persistentes.
 
 ## 10. Decisiones confirmadas
 
@@ -569,3 +631,6 @@ Escenario: Intento de alta duplicada
 - Los eventos de auditoría son inmutables, se conservan cinco años y solo los consultan auditor, administrador y analista senior.
 - El piloto debe cumplir los objetivos de tiempo de ciclo, coste operativo, adopción y satisfacción definidos en la sección 8 antes de iniciar el despliegue por olas.
 - El inventario ofrece una única búsqueda insensible a mayúsculas y acentos sobre los campos operativos autorizados; los datos sensibles de credenciales y entrega quedan siempre fuera de su índice.
+- Los cambios confirmados se conservan entre cierres de la aplicación y nuevas sesiones, y son coherentes para los usuarios autorizados dentro del mismo ambiente.
+- El candidato persistente puede usar credenciales sintéticas para validar comportamiento, pero no se considera evidencia de garantías productivas sobre secretos, invalidación o auditoría.
+- Esta iteración busca validar 12 de las 14 historias existentes sin coste obligatorio de software adicional; US-11 y US-14 no bloquean ese objetivo.
