@@ -209,6 +209,10 @@ export class AirtableClient {
           typeof payload.error === "object"
             ? payload.error?.type
             : payload.error;
+        console.error("airtable_request_failed", {
+          status: response.status,
+          providerCode,
+        });
         throw new ApiError(
           response.status === 429 ? 429 : 503,
           response.status === 429

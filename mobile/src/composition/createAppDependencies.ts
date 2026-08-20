@@ -38,7 +38,10 @@ export function createAppDependencies(
   return {
     dataSource,
     sessionStore,
-    auth: dataSource === 'remote' ? new RestAuthRepository(http) : new FakeAuthRepository(),
+    auth:
+      dataSource === 'remote'
+        ? new RestAuthRepository(http, undefined, runtimeConfig.EXPO_PUBLIC_AUTH_MODE)
+        : new FakeAuthRepository(),
     applications:
       dataSource === 'remote' ? new RestApplicationRepository(http) : fakeApplicationRepository,
     credentials: dataSource === 'remote' ? new RestCredentialRepository(http) : undefined,

@@ -27,4 +27,33 @@ describe('RestAuthRepository', () => {
       'identidad corporativa',
     );
   });
+
+  it('crea una sesión demo cuando el modo remoto usa credenciales', async () => {
+    const request = jest.fn(async () => ({
+      contractVersion: '1',
+      accessToken: 'signed-token',
+      expiresAt: '2026-08-15T20:00:00.000Z',
+      user: {
+        id: 'user-admin',
+        loginIdentifier: 'admin',
+        displayName: 'Administradora',
+        profile: 'administrator',
+        enabled: true,
+        permissions: ['applications:read'],
+      },
+    }));
+    const repository = new RestAuthRepository(
+      { request, resolve: jest.fn() } as never,
+      undefined,
+      'credentials',
+    );
+    await expect(repository.signIn('admin', 'demo-password')).resolves.toMatchObject({
+      user: { id: 'user-admin' },
+      tokens: { accessToken: 'signed-token' },
+    });
+    expect(request).toHaveBeenCalledWith('/v1/sessions', {
+      method: 'POST',
+      body: JSON.stringify({ loginIdentifier: 'admin', password: 'demo-password' }),
+    });
+  });
 });

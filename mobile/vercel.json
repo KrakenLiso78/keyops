@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/v1/:path*",
+      "destination": "https://keyops-web.keyops.workers.dev/v1/:path*"
+    },
+    {
+      "source": "/v2/:path*",
+      "destination": "https://keyops-web.keyops.workers.dev/v2/:path*"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
