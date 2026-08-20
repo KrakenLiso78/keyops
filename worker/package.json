@@ -13,6 +13,8 @@
     "test:unit": "vitest run",
     "test:contract": "vitest run tests/contract",
     "airtable:models:validate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --env-file-if-exists=.env ./scripts/airtable/validate-data-models.mjs",
+    "airtable:schema:check": "node --env-file-if-exists=.env ./scripts/airtable/migrate-20260820-schema.mjs --dry-run",
+    "airtable:schema:migrate": "node --env-file-if-exists=.env ./scripts/airtable/migrate-20260820-schema.mjs --confirm-migrate=KeyOps",
     "airtable:seed:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON ./scripts/airtable/reset-base.mjs --dry-run",
     "seed:test:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types ./scripts/airtable/seed-applications.ts --dry-run",
     "seed:test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --env-file-if-exists=.env ./scripts/airtable/seed-applications.ts --confirm-seed=KeyOps",

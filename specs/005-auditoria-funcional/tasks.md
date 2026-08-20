@@ -100,3 +100,7 @@
 2. Integrar acceso y una operación representativa.
 3. Integrar el resto de rutas 002–004.
 4. Añadir consulta/filtros y ejecutar evidencia persistente conjunta.
+
+## Phase 6: Convergence
+
+- [ ] T037 Alinear el campo remoto de limpieza `testRunId` detectado por la validación completa antes de repetir T031

@@ -1,6 +1,6 @@
 # Reset de la base KeyOps en Airtable
 
-Este proceso vacía las nueve tablas de KeyOps y reconstruye el estado inicial a partir del
+Este proceso vacía las nueve tablas sintéticas de KeyOps y reconstruye el estado inicial a partir del
 seed canónico de `mobile/src/data/fake/seed.ts`. No duplica los datos semilla en otro fichero.
 Restablece registros, no la estructura: no recrea tablas, campos, vistas ni opciones de selección
 que alguien haya modificado manualmente.
@@ -26,10 +26,25 @@ historial embebido— tampoco se persisten.
 
 ## Configuración local
 
-1. Copia `worker/.env.example` a `worker/.env`.
-2. Completa `AIRTABLE_TOKEN` con un PAT restringido a la base KeyOps y los scopes
-   `data.records:read` y `data.records:write`.
+1. Crea `worker/.env` local sin añadirlo a Git.
+2. Completa `AIRTABLE_TOKEN` con un PAT restringido a la base KeyOps. Las pruebas requieren
+   `data.records:read` y `data.records:write`; la validación requiere `schema.bases:read`; y la
+   migración aditiva requiere además `schema.bases:write`.
 3. No compartas ni añadas `worker/.env` a Git.
+
+## Migración aditiva de esquema 2026-08-20
+
+La validación completa detecta tablas y campos documentados que todavía no existen en la base.
+Esta migración solo añade estructura; no cambia tipos, no elimina estructura y no toca registros.
+
+```bash
+npm run airtable:schema:check
+npm run airtable:schema:migrate
+npm run airtable:models:validate
+```
+
+El primer comando es de solo lectura. La migración es idempotente, crea las tablas de las features
+006 y 008 y exige la confirmación literal incluida en el script de npm.
 
 ## Validar el seed sin tocar Airtable
 

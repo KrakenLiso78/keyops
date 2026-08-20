@@ -168,3 +168,5 @@
 - [x] T057 [P] Añadir regresión de emisión seguida de regeneración con el repositorio fake en `mobile/tests/unit/domain/fakeRepository.test.ts`
 - [x] T058 Conservar `credentialId` al emitir en modo fake desde `mobile/src/data/fake/FakeKeyOpsRepository.ts`
 - [x] T059 Repetir emisión, regeneración y transiciones en preview móvil y actualizar la evidencia en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`
+- [x] T060 Ampliar la validación remota a todos los campos documentados en `worker/scripts/airtable/validate-data-models.mjs`
+- [ ] T061 Alinear los campos remotos de credenciales, versiones, entregas e idempotencia detectados por T060 antes de repetir T052

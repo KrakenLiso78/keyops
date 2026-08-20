@@ -11,6 +11,9 @@ const EXPECTED_TABLES = {
       enabled: "checkbox",
       permissions: "multipleSelects",
       updatedAt: "dateTime",
+      corporateIssuer: ["url", "singleLineText"],
+      corporateSubject: "singleLineText",
+      identityValidatedAt: "dateTime",
     },
   },
   Institutions: {
@@ -57,7 +60,9 @@ const EXPECTED_TABLES = {
       syntheticClientId: "singleLineText",
       currentVersionId: "singleLineText",
       state: "singleSelect",
+      operationId: "singleLineText",
       lastChangedAt: "dateTime",
+      schemaVersion: "singleLineText",
     },
   },
   CredentialVersions: {
@@ -72,6 +77,7 @@ const EXPECTED_TABLES = {
       reason: "multilineText",
       createdAt: "dateTime",
       stateChangedAt: "dateTime",
+      schemaVersion: "singleLineText",
     },
   },
   DeliveryGrants: {
@@ -79,11 +85,15 @@ const EXPECTED_TABLES = {
     fields: {
       deliveryId: "singleLineText",
       credentialVersionId: "singleLineText",
+      applicationId: "singleLineText",
+      environment: "singleSelect",
       codeDigest: "singleLineText",
       expiresAt: "dateTime",
       consumedAt: "dateTime",
       invalidatedAt: "dateTime",
       operationId: "singleLineText",
+      createdAt: "dateTime",
+      schemaVersion: "singleLineText",
     },
   },
   IdempotencyRecords: {
@@ -94,7 +104,11 @@ const EXPECTED_TABLES = {
       operationId: "singleLineText",
       status: "singleSelect",
       receiptJson: "multilineText",
+      failureCode: "singleLineText",
       expiresAt: "dateTime",
+      createdAt: "dateTime",
+      updatedAt: "dateTime",
+      schemaVersion: "singleLineText",
     },
   },
   AuditEvents: {
@@ -117,6 +131,62 @@ const EXPECTED_TABLES = {
       failureCode: "singleLineText",
       requestId: "singleLineText",
       operationId: "singleLineText",
+      testRunId: "singleLineText",
+    },
+  },
+  ApplicationOperationalContexts: {
+    owner: "006",
+    fields: {
+      contextId: "singleLineText",
+      catalogApplicationId: "singleLineText",
+      environment: "singleSelect",
+      technicalContact: "multilineText",
+      managementReason: "multilineText",
+      requestOrTicketId: "singleLineText",
+      credentialReferenceId: "singleLineText",
+      declaredIps: "multilineText",
+      updatedAt: "dateTime",
+    },
+  },
+  RealCredentialReferences: {
+    owner: "008",
+    fields: {
+      referenceId: "singleLineText",
+      externalCredentialId: "singleLineText",
+      catalogApplicationId: "singleLineText",
+      environment: "singleSelect",
+      externalVersionId: "singleLineText",
+      effectiveState: "singleSelect",
+      lastOperationId: "singleLineText",
+      lastConfirmedAt: "dateTime",
+      updatedAt: "dateTime",
+      sealedDeliveryHandle: "singleLineText",
+      schemaVersion: "singleLineText",
+    },
+  },
+  RealOperationReceipts: {
+    owner: "008",
+    fields: {
+      operationId: "singleLineText",
+      providerOperationId: "singleLineText",
+      idempotencyScopeHash: "singleLineText",
+      requestFingerprint: "singleLineText",
+      requestId: "singleLineText",
+      actorUserId: "singleLineText",
+      catalogApplicationId: "singleLineText",
+      environment: "singleSelect",
+      referenceId: "singleLineText",
+      action: "singleSelect",
+      status: "singleSelect",
+      result: "singleSelect",
+      deliveryReferenceId: "singleLineText",
+      deliveryExpiresAt: "dateTime",
+      auditEventId: "singleLineText",
+      failureCode: "singleLineText",
+      createdAt: "dateTime",
+      confirmedAt: "dateTime",
+      updatedAt: "dateTime",
+      schemaVersion: "singleLineText",
     },
   },
 };
@@ -179,7 +249,9 @@ for (const [tableName, expected] of Object.entries(EXPECTED_TABLES)) {
         `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}?pageSize=3`,
       );
       const observedFields = [
-        ...new Set(sample.records.flatMap((record) => Object.keys(record.fields))),
+        ...new Set(
+          sample.records.flatMap((record) => Object.keys(record.fields)),
+        ),
       ].sort();
       tables.push({
         table: tableName,
@@ -193,7 +265,10 @@ for (const [tableName, expected] of Object.entries(EXPECTED_TABLES)) {
         table: tableName,
         owner: expected.owner,
         status: "table_unreadable",
-        readError: { status: error.status ?? "unknown", message: error.message },
+        readError: {
+          status: error.status ?? "unknown",
+          message: error.message,
+        },
       });
     }
     continue;
@@ -211,7 +286,9 @@ for (const [tableName, expected] of Object.entries(EXPECTED_TABLES)) {
     continue;
   }
 
-  const actualFields = new Map(actual.fields.map((field) => [field.name, field]));
+  const actualFields = new Map(
+    actual.fields.map((field) => [field.name, field]),
+  );
   const fieldChecks = [];
   for (const [fieldName, expectedType] of Object.entries(expected.fields)) {
     const actualField = actualFields.get(fieldName);

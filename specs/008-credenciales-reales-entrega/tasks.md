@@ -108,6 +108,7 @@
 - [ ] T050 Ejecutar suspend/reactivate/revoke y acceptance probes en `worker/tests/integration/real-credentials.pilot.test.ts`
 - [ ] T051 Ejecutar OTP/canales/expiración contra entrega real en `worker/tests/integration/secure-delivery.pilot.test.ts`
 - [ ] T052 Documentar evidencia, límites y cero secretos en `specs/008-credenciales-reales-entrega/quickstart.md`
+- [ ] T053 Crear `RealCredentialReferences` y `RealOperationReceipts` mediante la migración aditiva antes de T044
 
 ## Dependencies & Execution Order
 

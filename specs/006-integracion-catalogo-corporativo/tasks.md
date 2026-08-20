@@ -60,6 +60,7 @@
 - [ ] T030 Implementar el adapter concreto tras T029 en `worker/src/catalog/CorporateCatalogProviderAdapter.ts`
 - [ ] T031 Ejecutar reconciliación de muestra/indisponibilidad contra entorno autorizado en `worker/tests/integration/corporate-catalog.pilot.test.ts`
 - [ ] T032 Confirmar cero registros fuera de alcance y cero modificaciones corporativas en `specs/006-integracion-catalogo-corporativo/quickstart.md`
+- [ ] T033 Crear `ApplicationOperationalContexts` mediante la migración aditiva y ejecutar T025 contra Airtable
 
 ## Dependencies & Execution Order
 
