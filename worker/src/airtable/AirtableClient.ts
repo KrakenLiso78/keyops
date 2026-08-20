@@ -227,6 +227,10 @@ export class AirtableClient {
       return (await response.json()) as T;
     } catch (error) {
       if (error instanceof ApiError) throw error;
+      console.error("airtable_transport_failed", {
+        name: error instanceof Error ? error.name : "unknown",
+        message: error instanceof Error ? error.message : "unknown",
+      });
       throw new ApiError(
         503,
         "provider_unavailable",
