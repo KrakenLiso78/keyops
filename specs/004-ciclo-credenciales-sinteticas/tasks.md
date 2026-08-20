@@ -138,10 +138,10 @@
 ## Phase 8: Persistence, security and Sprint evidence
 
 - [ ] T052 Ejecutar escenario persistente de las cinco historias desde proceso nuevo en `worker/tests/integration/airtable-credentials.test.ts`
-- [ ] T053 [P] Ejecutar análisis de respuestas/logs/registros por secretos en `worker/tests/security/credential-redaction.test.ts`
+- [x] T053 [P] Ejecutar análisis de respuestas/logs/registros por secretos en `worker/tests/security/credential-redaction.test.ts`
 - [ ] T054 [P] Medir registros/llamadas y actualizar presupuesto real en `specs/004-ciclo-credenciales-sinteticas/plan.md`
 - [ ] T055 Recorrer el ciclo crítico en preview móvil y registrar evidencia/limitaciones en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`
-- [ ] T056 Conectar todos los resultados a la auditoría persistente de feature 005 antes de declarar FR-CRED-012 superado
+- [x] T056 Conectar todos los resultados a la auditoría persistente de feature 005 antes de declarar FR-CRED-012 superado
 
 ## Dependencies & Execution Order
 

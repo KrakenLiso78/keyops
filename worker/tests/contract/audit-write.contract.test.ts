@@ -22,7 +22,16 @@ function setup() {
     Users: [
       {
         ...userFixtures[0]!,
-        permissions: ["applications:read", "credentials:issue"],
+        profile: "senior_analyst",
+        permissions: [
+          "applications:read",
+          "credentials:issue",
+          "credentials:regenerate",
+          "credentials:suspend",
+          "credentials:reactivate",
+          "credentials:deliver",
+          "credentials:revoke",
+        ],
       },
     ],
     Institutions: institutionRecords.map(
@@ -151,6 +160,103 @@ describe("persistent audit write contract", () => {
       applicationId: "app-test",
       result: "succeeded",
     });
+  });
+
+  it("records every synthetic credential lifecycle result", async () => {
+    const headers = async (key: string, requestId: string) => ({
+      ...(await authorization()),
+      "content-type": "application/json",
+      "idempotency-key": key,
+      "x-request-id": requestId,
+    });
+    const execute = async (
+      path: string,
+      key: string,
+      requestId: string,
+      body?: unknown,
+    ) => {
+      const response = await handleRequest(
+        new Request(`https://keyops.test${path}`, {
+          method: "POST",
+          headers: await headers(key, requestId),
+          body: body === undefined ? undefined : JSON.stringify(body),
+        }),
+        applicationEnv,
+      );
+      expect(response.status).toBe(200);
+      return response.json() as Promise<Record<string, unknown>>;
+    };
+
+    await execute(
+      "/v1/applications/app-test/credentials?environment=test",
+      "audit-lifecycle-issue-0001",
+      "request-audit-lifecycle-issue",
+    );
+    const credential = store.fields<{ credentialId: string }>(
+      "Credentials",
+    )[0]!;
+    const base = `/v1/applications/app-test/credentials/${credential.credentialId}`;
+    await execute(
+      `${base}/regenerations?environment=test`,
+      "audit-lifecycle-rotate-001",
+      "request-audit-lifecycle-rotate",
+    );
+    await execute(
+      `${base}/transitions?environment=test`,
+      "audit-lifecycle-suspend-01",
+      "request-audit-lifecycle-suspend",
+      { action: "suspend", reason: "Pausa verificada" },
+    );
+    await execute(
+      `${base}/transitions?environment=test`,
+      "audit-lifecycle-reactivate",
+      "request-audit-lifecycle-reactivate",
+      { action: "reactivate", reason: "Reanudación verificada" },
+    );
+    const delivery = (await execute(
+      `${base}/deliveries?environment=test`,
+      "audit-lifecycle-delivery-01",
+      "request-audit-lifecycle-delivery",
+    )) as { delivery: { deliveryId: string; otp: string } };
+    const consumed = await handleRequest(
+      new Request(
+        `https://keyops.test/v1/deliveries/${delivery.delivery.deliveryId}/artifact`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "request-audit-lifecycle-consume",
+          },
+          body: JSON.stringify({ code: delivery.delivery.otp }),
+        },
+      ),
+      applicationEnv,
+    );
+    expect(consumed.status).toBe(200);
+    await execute(
+      `${base}/transitions?environment=test`,
+      "audit-lifecycle-revoke-001",
+      "request-audit-lifecycle-revoke",
+      { action: "revoke", reason: "Baja definitiva verificada" },
+    );
+
+    const operations = new Set(
+      store
+        .fields<AuditEventFields>("AuditEvents")
+        .filter(({ result }) => result === "succeeded")
+        .map(({ operation }) => operation),
+    );
+    expect(operations).toEqual(
+      new Set([
+        "credential.issue.v1",
+        "credential.regenerate.v1",
+        "credential.suspend.v1",
+        "credential.reactivate.v1",
+        "credential.delivery.v1",
+        "delivery.consume.v1",
+        "credential.revoke.v1",
+      ]),
+    );
   });
 
   it("records an anonymous authorization rejection", async () => {
