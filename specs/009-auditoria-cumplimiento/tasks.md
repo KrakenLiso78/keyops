@@ -76,15 +76,15 @@
 
 ## Phase 5: Compliance validation
 
-- [ ] T035 [P] Ejecutar suites y documentar evidencia local en `specs/009-auditoria-cumplimiento/quickstart.md`
-- [ ] T036 Registrar excepción constitucional/owner/caducidad en `worker/docs/compliance-audit-checkpoint.md`
+- [x] T035 [P] Ejecutar suites y documentar evidencia local en `specs/009-auditoria-cumplimiento/quickstart.md`
+- [x] T036 Registrar excepción constitucional/owner/caducidad en `worker/docs/compliance-audit-checkpoint.md`
 - [ ] T037 Obtener aprobación de proveedor, WORM, cinco años, roles, backup y runbook en `worker/docs/compliance-audit-checkpoint.md`
 - [ ] T038 Implementar adapter concreto tras T037 en `worker/src/compliance/CorporateComplianceAuditAdapter.ts`
 - [ ] T039 Ejecutar append y ataques update/delete con roles autorizados en `worker/tests/integration/compliance-tamper.pilot.test.ts`
 - [ ] T040 Verificar muestra versionada/retention lock en `worker/tests/integration/compliance-retention.pilot.test.ts`
 - [ ] T041 Ejecutar recovery drill y comparar conteo/orden/integridad en `worker/tests/recovery/complianceRecovery.pilot.test.ts`
 - [ ] T042 Ejecutar trazabilidad E2E de 006–008 en `worker/tests/integration/pilot-audit-e2e.test.ts`
-- [ ] T043 Documentar evidencia y limitaciones en `specs/009-auditoria-cumplimiento/quickstart.md`
+- [x] T043 Documentar evidencia y limitaciones en `specs/009-auditoria-cumplimiento/quickstart.md`
 
 ## Dependencies & Execution Order
 
