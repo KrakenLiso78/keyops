@@ -4,49 +4,45 @@ describe('contrato de auditoría', () => {
   it('valida una página inmutable de eventos', () => {
     expect(
       auditPageSchema.parse({
-        contractVersion: '1',
         items: [
           {
-            id: 'aud-1',
+            eventId: 'cmp-1',
+            schemaVersion: 2,
             occurredAt: '2026-08-10T08:00:00Z',
             actorUserId: 'u-1',
-            actorDisplayName: 'Ana',
-            operation: 'credential.issue.v1',
-            resourceType: 'credential',
+            operation: 'credential.issue.v2',
+            resourceType: 'real_credential',
             environment: 'test',
             result: 'succeeded',
             originIp: '203.0.113.80',
             requestId: 'req-1',
+            integrity: 'verified',
+            retentionUntil: '2031-08-10T08:00:00Z',
           },
         ],
-        page: 1,
-        pageSize: 20,
-        total: 1,
-      }).total,
-    ).toBe(1);
+      }).items,
+    ).toHaveLength(1);
   });
 
   it('rechaza campos no publicados que podrían contener material sensible', () => {
     expect(() =>
       auditPageSchema.parse({
-        contractVersion: '1',
         items: [
           {
-            id: 'aud-1',
+            eventId: 'cmp-1',
+            schemaVersion: 2,
             occurredAt: '2026-08-10T08:00:00Z',
             actorUserId: 'u-1',
-            actorDisplayName: 'Ana',
-            operation: 'credential.issue.v1',
-            resourceType: 'credential',
+            operation: 'credential.issue.v2',
+            resourceType: 'real_credential',
             result: 'succeeded',
             originIp: '203.0.113.80',
             requestId: 'req-1',
+            integrity: 'verified',
+            retentionUntil: '2031-08-10T08:00:00Z',
             otp: '123456',
           },
         ],
-        page: 1,
-        pageSize: 20,
-        total: 1,
       }),
     ).toThrow();
   });

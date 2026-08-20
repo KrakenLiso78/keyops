@@ -57,20 +57,20 @@
 
 ### Tests
 
-- [ ] T024 [P] [US-COMP-02] Escribir tests fallidos de upcasters/fixtures históricos en `worker/tests/unit/complianceSchemaRegistry.test.ts`
-- [ ] T025 [P] [US-COMP-02] Escribir tests fallidos de orden/filtros/cursor en `worker/tests/unit/complianceQuery.test.ts`
-- [ ] T026 [P] [US-COMP-02] Escribir recovery drill fallido con conteo/orden/integridad en `worker/tests/recovery/complianceRecovery.test.ts`
-- [ ] T027 [P] [US-COMP-02] Escribir tests móviles fallidos de integrity/empty/error en `mobile/tests/component/audit/complianceAudit.test.tsx`
+- [x] T024 [P] [US-COMP-02] Escribir tests fallidos de upcasters/fixtures históricos en `worker/tests/unit/complianceSchemaRegistry.test.ts`
+- [x] T025 [P] [US-COMP-02] Escribir tests fallidos de orden/filtros/cursor en `worker/tests/unit/complianceQuery.test.ts`
+- [x] T026 [P] [US-COMP-02] Escribir recovery drill fallido con conteo/orden/integridad en `worker/tests/recovery/complianceRecovery.test.ts`
+- [x] T027 [P] [US-COMP-02] Escribir tests móviles fallidos de integrity/empty/error en `mobile/tests/component/audit/complianceAudit.test.tsx`
 
 ### Implementation
 
-- [ ] T028 [US-COMP-02] Implementar query/version upcasting en `worker/src/compliance/queryComplianceEvents.ts`
-- [ ] T029 [US-COMP-02] Implementar verificación de integridad en `worker/src/compliance/verifyComplianceEvent.ts`
-- [ ] T030 [US-COMP-02] Implementar runner de recovery evidence en `worker/src/compliance/runRecoveryProbe.ts`
-- [ ] T031 [US-COMP-02] Completar rutas v2 de consulta/verificación en `worker/src/routes/v2/audit.ts`
-- [ ] T032 [P] [US-COMP-02] Añadir integridad/retención al dominio/DTO móvil en `mobile/src/domain/model/audit.ts` y `mobile/src/data/schemas/audit.ts`
-- [ ] T033 [US-COMP-02] Adaptar `RestAuditRepository` a v2 en `mobile/src/data/repositories/RestAuditRepository.ts`
-- [ ] T034 [US-COMP-02] Mostrar estado de integridad y filtros en `mobile/src/presentation/components/audit/index.tsx`
+- [x] T028 [US-COMP-02] Implementar query/version upcasting en `worker/src/compliance/queryComplianceEvents.ts`
+- [x] T029 [US-COMP-02] Implementar verificación de integridad en `worker/src/compliance/verifyComplianceEvent.ts`
+- [x] T030 [US-COMP-02] Implementar runner de recovery evidence en `worker/src/compliance/runRecoveryProbe.ts`
+- [x] T031 [US-COMP-02] Completar rutas v2 de consulta/verificación en `worker/src/routes/v2/audit.ts`
+- [x] T032 [P] [US-COMP-02] Añadir integridad/retención al dominio/DTO móvil en `mobile/src/domain/model/audit.ts` y `mobile/src/data/schemas/audit.ts`
+- [x] T033 [US-COMP-02] Adaptar `RestAuditRepository` a v2 en `mobile/src/data/repositories/RestAuditRepository.ts`
+- [x] T034 [US-COMP-02] Mostrar estado de integridad y filtros en `mobile/src/presentation/components/audit/index.tsx`
 
 **Checkpoint**: Consulta/recovery completos con fixtures; no prueban retención corporativa.
 

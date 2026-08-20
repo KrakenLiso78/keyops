@@ -2,6 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type {
   AuditEvent,
   AuditFilters as AuditFilterValues,
+  IntegrityVerification,
+  IntegrityStatus,
   OperationResult,
 } from '@/domain/model/audit';
 import { Body, Button, Card, Field } from '@/presentation/components/base';
@@ -23,6 +25,17 @@ const operationLabels: Record<string, string> = {
   'credential.delivery.v1': 'Generación de entrega',
   'delivery.consume.v1': 'Consumo de entrega',
   'audit.list.v1': 'Consulta de auditoría',
+  'identity.login.v1': 'Acceso corporativo',
+  'identity.callback.v1': 'Validación de identidad',
+  'identity.logout.v1': 'Cierre de sesión',
+  'credential.issue.v2': 'Emisión real de credenciales',
+  'credential.rotate.v2': 'Rotación real de credenciales',
+  'credential.suspend.v2': 'Suspensión real de credenciales',
+  'credential.reactivate.v2': 'Reactivación real de credenciales',
+  'credential.revoke.v2': 'Revocación real de credenciales',
+  'audit.list.v2': 'Consulta de cumplimiento',
+  'audit.integrity.v2': 'Verificación de integridad',
+  'audit.tamper_attempt.v2': 'Intento de alteración',
 };
 
 const resultContent: Record<OperationResult, { label: string; tone: string; color: string }> = {
@@ -31,8 +44,29 @@ const resultContent: Record<OperationResult, { label: string; tone: string; colo
   rejected: { label: 'Rechazada', tone: colors.yellow, color: colors.warning },
 };
 
-export function AuditEventCard({ event }: { event: AuditEvent }) {
+const integrityContent: Record<IntegrityStatus, { label: string; tone: string; color: string }> = {
+  verified: { label: 'Íntegro', tone: colors.mint, color: colors.success },
+  failed: { label: 'Integridad fallida', tone: colors.rose, color: colors.error },
+  unavailable: { label: 'Sin verificar', tone: colors.yellow, color: colors.warning },
+};
+
+export type AuditVerificationState = {
+  status: 'loading' | 'success' | 'error';
+  result?: IntegrityVerification;
+  error?: string;
+};
+
+export function AuditEventCard({
+  event,
+  verification,
+  onVerify,
+}: {
+  event: AuditEvent;
+  verification?: AuditVerificationState;
+  onVerify: (eventId: string) => void;
+}) {
   const result = resultContent[event.result];
+  const integrity = integrityContent[verification?.result?.status ?? event.integrity];
   return (
     <Card style={styles.eventCard}>
       <View style={styles.eventHeader}>
@@ -42,7 +76,13 @@ export function AuditEventCard({ event }: { event: AuditEvent }) {
         </View>
       </View>
       {event.environment ? <EnvironmentBadge environment={event.environment} /> : null}
-      <Body>{event.actorDisplayName}</Body>
+      <View style={styles.integrityRow}>
+        <View style={[styles.integrityBadge, { backgroundColor: integrity.tone }]}>
+          <Text style={[styles.integrityText, { color: integrity.color }]}>{integrity.label}</Text>
+        </View>
+        <Text style={styles.schemaVersion}>Esquema v{event.schemaVersion}</Text>
+      </View>
+      <Body>{event.actorDisplayName ?? event.actorUserId}</Body>
       <Text style={styles.timestamp}>{new Date(event.occurredAt).toLocaleString('es-ES')}</Text>
       {event.institutionId || event.applicationId ? (
         <Body>{[event.institutionId, event.applicationId].filter(Boolean).join(' · ')}</Body>
@@ -53,6 +93,19 @@ export function AuditEventCard({ event }: { event: AuditEvent }) {
       <Text selectable style={styles.requestId}>
         {event.requestId}
       </Text>
+      <SectionLabel>Conservación</SectionLabel>
+      <Text style={styles.timestamp}>
+        Hasta {new Date(event.retentionUntil).toLocaleDateString('es-ES')}
+      </Text>
+      <Button
+        title={verification?.status === 'loading' ? 'Verificando…' : 'Verificar integridad'}
+        variant="secondary"
+        disabled={verification?.status === 'loading'}
+        onPress={() => onVerify(event.id)}
+      />
+      {verification?.status === 'error' ? (
+        <Text style={styles.failure}>{verification.error}</Text>
+      ) : null}
     </Card>
   );
 }
@@ -61,7 +114,6 @@ type FilterProps = {
   filters: AuditFilterValues;
   setFrom: (value: string) => void;
   setTo: (value: string) => void;
-  setInstitutionId: (value: string) => void;
   setApplicationId: (value: string) => void;
   setActorUserId: (value: string) => void;
   setResult: (value: OperationResult | undefined) => void;
@@ -71,7 +123,6 @@ export function AuditFilters({
   filters,
   setFrom,
   setTo,
-  setInstitutionId,
   setApplicationId,
   setActorUserId,
   setResult,
@@ -101,12 +152,6 @@ export function AuditFilters({
           />
         </View>
       </View>
-      <Field
-        label="Institución"
-        value={filters.institutionId ?? ''}
-        onChangeText={setInstitutionId}
-        placeholder="Identificador de institución"
-      />
       <Field
         label="Aplicación"
         value={filters.applicationId ?? ''}
@@ -153,10 +198,13 @@ export type AuditListProps = FilterProps & {
   status: 'idle' | 'loading' | 'success' | 'error';
   error?: string;
   items: AuditEvent[];
-  total: number;
   page: number;
-  pageSize: number;
-  setPage: (page: number) => void;
+  nextCursor?: string;
+  canPrevious: boolean;
+  next: () => void;
+  previous: () => void;
+  verifications: Record<string, AuditVerificationState>;
+  verifyEvent: (eventId: string) => void;
   retry: () => void;
 };
 
@@ -185,19 +233,24 @@ export function AuditList(props: AuditListProps) {
       {props.status === 'success' ? (
         <>
           {props.items.map((event) => (
-            <AuditEventCard key={event.id} event={event} />
+            <AuditEventCard
+              key={event.id}
+              event={event}
+              verification={props.verifications[event.id]}
+              onVerify={props.verifyEvent}
+            />
           ))}
           <Text style={styles.total}>
-            {props.total} {props.total === 1 ? 'evento' : 'eventos'}
+            {props.items.length} {props.items.length === 1 ? 'evento' : 'eventos'} en esta página
           </Text>
-          {props.total > props.pageSize ? (
+          {props.canPrevious || props.nextCursor ? (
             <View style={styles.pagination}>
               <View style={styles.pageAction}>
                 <Button
                   title="Anterior"
                   variant="secondary"
-                  disabled={props.page === 1}
-                  onPress={() => props.setPage(props.page - 1)}
+                  disabled={!props.canPrevious}
+                  onPress={props.previous}
                 />
               </View>
               <Text style={styles.pageLabel}>Página {props.page}</Text>
@@ -205,8 +258,8 @@ export function AuditList(props: AuditListProps) {
                 <Button
                   title="Siguiente"
                   variant="secondary"
-                  disabled={props.page * props.pageSize >= props.total}
-                  onPress={() => props.setPage(props.page + 1)}
+                  disabled={!props.nextCursor}
+                  onPress={props.next}
                 />
               </View>
             </View>
@@ -247,6 +300,10 @@ const styles = StyleSheet.create({
   operation: { flex: 1, color: colors.navy, fontSize: 17, fontWeight: '800' },
   resultBadge: { borderRadius: 14, paddingHorizontal: 10, paddingVertical: 5 },
   resultText: { fontSize: 13, fontWeight: '700' },
+  integrityRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  integrityBadge: { borderRadius: 14, paddingHorizontal: 10, paddingVertical: 5 },
+  integrityText: { fontSize: 13, fontWeight: '700' },
+  schemaVersion: { color: colors.steel, fontSize: 13, fontWeight: '700' },
   timestamp: { color: colors.steel, fontSize: 14 },
   failure: { color: colors.error, fontSize: 14, fontWeight: '700' },
   divider: { height: 1, backgroundColor: colors.hairline },

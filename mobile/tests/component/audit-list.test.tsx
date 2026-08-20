@@ -4,11 +4,12 @@ import { AuditList, type AuditListProps } from '@/presentation/components/audit'
 const actions = {
   setFrom: jest.fn(),
   setTo: jest.fn(),
-  setInstitutionId: jest.fn(),
   setApplicationId: jest.fn(),
   setActorUserId: jest.fn(),
   setResult: jest.fn(),
-  setPage: jest.fn(),
+  next: jest.fn(),
+  previous: jest.fn(),
+  verifyEvent: jest.fn(),
   retry: jest.fn(),
 };
 
@@ -16,11 +17,11 @@ function props(overrides: Partial<AuditListProps> = {}): AuditListProps {
   return {
     authorized: true,
     status: 'success',
-    filters: { actorUserId: 'user-auditor', result: 'rejected', page: 1 },
+    filters: { actorUserId: 'user-auditor', result: 'rejected' },
     items: [],
-    total: 0,
     page: 1,
-    pageSize: 20,
+    canPrevious: false,
+    verifications: {},
     ...actions,
     ...overrides,
   };
@@ -50,17 +51,15 @@ describe('lista de auditoría', () => {
     expect(failed.getByLabelText('Usuario')).toBeTruthy();
   });
 
-  it('propaga los cinco filtros y el resultado seleccionado', () => {
+  it('propaga los filtros permitidos y el resultado seleccionado', () => {
     const screen = render(<AuditList {...props()} />);
     fireEvent.changeText(screen.getByLabelText('Desde'), '2026-08-15T00:00:00Z');
     fireEvent.changeText(screen.getByLabelText('Hasta'), '2026-08-16T00:00:00Z');
-    fireEvent.changeText(screen.getByLabelText('Institución'), 'inst-1');
     fireEvent.changeText(screen.getByLabelText('Aplicación'), 'app-1');
     fireEvent.changeText(screen.getByLabelText('Usuario'), 'user-1');
     fireEvent.press(screen.getByLabelText('Resultado: Fallidas'));
     expect(actions.setFrom).toHaveBeenCalledWith('2026-08-15T00:00:00Z');
     expect(actions.setTo).toHaveBeenCalledWith('2026-08-16T00:00:00Z');
-    expect(actions.setInstitutionId).toHaveBeenCalledWith('inst-1');
     expect(actions.setApplicationId).toHaveBeenCalledWith('app-1');
     expect(actions.setActorUserId).toHaveBeenCalledWith('user-1');
     expect(actions.setResult).toHaveBeenCalledWith('failed');

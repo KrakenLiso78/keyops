@@ -4,7 +4,8 @@ import { listAuditEvents } from '@/domain/use-cases/audit/listAuditEvents';
 import { permissionsForProfile } from '@/domain/policies/profilePermissions';
 
 const repository: AuditRepository = {
-  list: jest.fn(async () => ({ items: [], page: 1, pageSize: 20, total: 0 })),
+  list: jest.fn(async () => ({ items: [] })),
+  verify: jest.fn(),
 };
 
 function user(profile: AuthenticatedUser['profile']): AuthenticatedUser {
@@ -24,14 +25,14 @@ describe('consulta de auditoría', () => {
     async (profile) => {
       await expect(
         listAuditEvents(repository, user(profile), { result: 'rejected' }),
-      ).resolves.toMatchObject({ pageSize: 20 });
+      ).resolves.toMatchObject({ items: [] });
       expect(repository.list).toHaveBeenCalledWith({ result: 'rejected' }, undefined);
     },
   );
 
   it('rechaza al analista antes de consultar el repositorio', async () => {
     const analyst = user('analyst');
-    const isolated: AuditRepository = { list: jest.fn() };
+    const isolated: AuditRepository = { list: jest.fn(), verify: jest.fn() };
     await expect(listAuditEvents(isolated, analyst)).rejects.toThrow('permiso');
     expect(isolated.list).not.toHaveBeenCalled();
   });
