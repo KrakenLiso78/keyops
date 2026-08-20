@@ -57,8 +57,10 @@ Export `mobile/dist`, deploy a Worker preview, and complete sign-in, navigation 
 - `https://keyops-three.vercel.app/v1/health` returns the deployed Worker JSON through the
   Vercel rewrite, and `POST /v1/sessions` returns 200 for the configured demonstration user.
 - The published sign-in page has no horizontal overflow at 390 × 844 or 360 × 800.
-- T039 remains open pending the authenticated navigation journey at both viewports. The
-  application list also remains unavailable until the external corporate catalog is configured.
+- Authenticated navigation completed at both 390 × 844 and 360 × 800. Each viewport reached
+  `/applications` without horizontal overflow after the demonstration sign-in.
+- The application list reports `catalog_not_configured` rather than substituting demonstration
+  records. This is the expected limitation until feature 006 has an authorized corporate catalog.
 
 ## Free-tier and secret review — 2026-08-20
 
