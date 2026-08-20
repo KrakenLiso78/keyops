@@ -86,7 +86,8 @@
 - [ ] T042 Implementar configuración/adaptación concreta tras T041 en `worker/src/identity/CorporateOidcProviderAdapter.ts`
 - [ ] T043 Ejecutar identidad válida/no autorizada/deshabilitada y medir ≤5 min en `worker/tests/integration/corporate-identity.pilot.test.ts`
 - [ ] T044 Registrar evidencia de auditoría y cero tokens expuestos en `specs/007-identidad-usuarios-corporativos/quickstart.md`
-- [ ] T045 Alinear los campos Airtable de identidad corporativa antes de ejecutar el piloto
+- [x] T045 Alinear los campos Airtable de identidad corporativa antes de ejecutar el piloto
+- [x] T046 Ejecutar alta idempotente, cambio y deshabilitación persistente con limpieza en `worker/tests/integration/airtable-authorized-users.test.ts`
 
 ## Dependencies & Execution Order
 

@@ -74,7 +74,7 @@
 
 ## Phase 5: Sprint validation and honest evidence
 
-- [ ] T031 Ejecutar integración Airtable de escritura/lectura y registrar fecha/recuento en `specs/005-auditoria-funcional/quickstart.md`
+- [x] T031 Ejecutar integración Airtable de escritura/lectura y registrar fecha/recuento en `specs/005-auditoria-funcional/quickstart.md`
 - [x] T032 [P] Ejecutar suite completa de redacción y búsqueda de secretos en `worker/tests/security/audit-redaction.test.ts`
 - [x] T033 [P] Verificar por contrato que PATCH/PUT/DELETE de auditoría devuelven 404/405 en `worker/tests/contract/audit.contract.test.ts`
 - [x] T034 Recorrer desde preview un acceso y una operación, consultar eventos y registrar evidencia en `specs/005-auditoria-funcional/quickstart.md`
@@ -103,4 +103,4 @@
 
 ## Phase 6: Convergence
 
-- [ ] T037 Alinear el campo remoto de limpieza `testRunId` detectado por la validación completa antes de repetir T031
+- [x] T037 Alinear el campo remoto de limpieza `testRunId` detectado por la validación completa antes de repetir T031

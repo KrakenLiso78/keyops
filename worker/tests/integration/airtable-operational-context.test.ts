@@ -6,6 +6,19 @@ declare const process: { env: Record<string, string | undefined> };
 
 const enabled = process.env.RUN_AIRTABLE_INTEGRATION === "1";
 
+async function deleteRecord(
+  baseId: string,
+  token: string,
+  table: string,
+  recordId: string,
+) {
+  const response = await fetch(
+    `https://api.airtable.com/v0/${baseId}/${table}?records[]=${recordId}`,
+    { method: "DELETE", headers: { authorization: `Bearer ${token}` } },
+  );
+  if (!response.ok) throw new Error(`No se pudo limpiar ${table}.`);
+}
+
 describe.skipIf(!enabled)("Airtable operational context", () => {
   it("persists a management change across fresh clients and restores it", async () => {
     const baseId = process.env.AIRTABLE_BASE_ID;
@@ -16,10 +29,18 @@ describe.skipIf(!enabled)("Airtable operational context", () => {
     const first = new ApplicationOperationalContextRepository(
       new AirtableClient({ baseId, token }),
     );
-    const original = (await first.list())[0];
-    if (!original) {
-      throw new Error("No existe un contexto operativo restaurable.");
-    }
+    const initialTimestamp = new Date().toISOString();
+    const existing = (await first.list())[0];
+    const original =
+      existing ??
+      (await first.saveManagement({
+        environment: "test",
+        catalogApplicationId: `integration-context-${Date.now()}`,
+        expectedUpdatedAt: initialTimestamp,
+        catalogUpdatedAt: initialTimestamp,
+        requestOrTicketId: "INTEGRATION-FIXTURE",
+        now: initialTimestamp,
+      }));
     const marker = `CATALOG-INTEGRATION-${Date.now()}`;
     const originalContact = original.fields.technicalContact
       ? (JSON.parse(original.fields.technicalContact) as {
@@ -52,7 +73,14 @@ describe.skipIf(!enabled)("Airtable operational context", () => {
         fields: { requestOrTicketId: marker },
       });
     } finally {
-      if (changedVersion) {
+      if (!existing) {
+        await deleteRecord(
+          baseId,
+          token,
+          "ApplicationOperationalContexts",
+          original.recordId,
+        );
+      } else if (changedVersion) {
         const cleanup = new ApplicationOperationalContextRepository(
           new AirtableClient({ baseId, token }),
         );

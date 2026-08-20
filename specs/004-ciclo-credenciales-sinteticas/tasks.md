@@ -137,9 +137,9 @@
 
 ## Phase 8: Persistence, security and Sprint evidence
 
-- [ ] T052 Ejecutar escenario persistente de las cinco historias desde proceso nuevo en `worker/tests/integration/airtable-credentials.test.ts`
+- [x] T052 Ejecutar escenario persistente de las cinco historias desde proceso nuevo en `worker/tests/integration/airtable-credentials.test.ts`
 - [x] T053 [P] Ejecutar análisis de respuestas/logs/registros por secretos en `worker/tests/security/credential-redaction.test.ts`
-- [ ] T054 [P] Medir registros/llamadas y actualizar presupuesto real en `specs/004-ciclo-credenciales-sinteticas/plan.md`
+- [x] T054 [P] Medir registros/llamadas y actualizar presupuesto real en `specs/004-ciclo-credenciales-sinteticas/plan.md`
 - [x] T055 Recorrer el ciclo crítico en preview móvil y registrar evidencia/limitaciones en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`
 - [x] T056 Conectar todos los resultados a la auditoría persistente de feature 005 antes de declarar FR-CRED-012 superado
 
@@ -169,4 +169,4 @@
 - [x] T058 Conservar `credentialId` al emitir en modo fake desde `mobile/src/data/fake/FakeKeyOpsRepository.ts`
 - [x] T059 Repetir emisión, regeneración y transiciones en preview móvil y actualizar la evidencia en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`
 - [x] T060 Ampliar la validación remota a todos los campos documentados en `worker/scripts/airtable/validate-data-models.mjs`
-- [ ] T061 Alinear los campos remotos de credenciales, versiones, entregas e idempotencia detectados por T060 antes de repetir T052
+- [x] T061 Alinear los campos remotos de credenciales, versiones, entregas e idempotencia detectados por T060 antes de repetir T052

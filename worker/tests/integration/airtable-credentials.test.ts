@@ -30,6 +30,7 @@ const senior: AuthorizedUser = {
 };
 
 type RawRecord = { id: string; fields: Record<string, unknown> };
+let requestCount = 0;
 
 async function airtableRequest(
   baseId: string,
@@ -37,6 +38,7 @@ async function airtableRequest(
   table: string,
   init: RequestInit = {},
 ) {
+  requestCount += 1;
   const response = await fetch(
     `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(table)}`,
     {
@@ -77,6 +79,7 @@ async function removeRun(
       method: "DELETE",
       headers: { authorization: `Bearer ${token}` },
     });
+    requestCount += 1;
     if (!deleted.ok) {
       throw new Error(`No se pudo limpiar ${table} (${deleted.status}).`);
     }
@@ -94,8 +97,19 @@ describe.skipIf(!enabled)("Airtable synthetic credential lifecycle", () => {
       );
     }
     const runId = `integration-credentials-${Date.now()}`;
-    const client = new AirtableClient({ baseId, token });
-    const applications = await client.list<ApplicationFields>("Applications");
+    requestCount = 0;
+    const client = () =>
+      new AirtableClient({
+        baseId,
+        token,
+        fetcher: async (input, init) => {
+          requestCount += 1;
+          return fetch(input, init);
+        },
+      });
+    const initialClient = client();
+    const applications =
+      await initialClient.list<ApplicationFields>("Applications");
     const application = applications.find(
       ({ fields }) =>
         fields.environment === "test" &&
@@ -110,7 +124,7 @@ describe.skipIf(!enabled)("Airtable synthetic credential lifecycle", () => {
     const original = structuredClone(application.fields);
     const at = (seconds: number) =>
       new Date(Date.now() + seconds * 1_000).toISOString();
-    const dependencies = (fresh = new AirtableClient({ baseId, token })) => ({
+    const dependencies = (fresh = client()) => ({
       credentials: new CredentialRepository(fresh),
       deliveries: new DeliveryGrantRepository(fresh),
     });
@@ -124,7 +138,7 @@ describe.skipIf(!enabled)("Airtable synthetic credential lifecycle", () => {
         origin: "https://keyops.test",
         now: at(0),
         deliveryPepper: pepper,
-        ...dependencies(client),
+        ...dependencies(initialClient),
       });
       const replay = await issueCredential({
         user: senior,
@@ -247,6 +261,29 @@ describe.skipIf(!enabled)("Airtable synthetic credential lifecycle", () => {
           )
         )?.credential.fields.state,
       ).toBe("revoked");
+
+      const peakCounts = Object.fromEntries(
+        await Promise.all(
+          ["Credentials", "CredentialVersions", "DeliveryGrants"].map(
+            async (table) => {
+              const payload = (await (
+                await airtableRequest(baseId, token, table)
+              ).json()) as { records: RawRecord[] };
+              return [
+                table,
+                payload.records.filter(({ fields }) =>
+                  String(fields.operationId ?? "").startsWith(runId),
+                ).length,
+              ];
+            },
+          ),
+        ),
+      );
+      expect(peakCounts).toEqual({
+        Credentials: 1,
+        CredentialVersions: 2,
+        DeliveryGrants: 3,
+      });
     } finally {
       for (const table of [
         "DeliveryGrants",
@@ -272,5 +309,6 @@ describe.skipIf(!enabled)("Airtable synthetic credential lifecycle", () => {
         }),
       });
     }
-  });
+    expect(requestCount).toBe(88);
+  }, 60_000);
 });

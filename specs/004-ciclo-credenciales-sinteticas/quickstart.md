@@ -38,3 +38,12 @@ From the published web preview, use synthetic test fixtures to complete issue â†
 
 This verifies the synthetic UI and local adapter only. It does not prove provider idempotency,
 one-use delivery, cross-process persistence or real credential lifecycle behavior.
+
+## Persistent Airtable evidence â€” 2026-08-20
+
+- The five-story integration passed against base `appnNMuwzI72qsjyE` in 18.5 seconds using fresh
+  clients between operations.
+- Issue replay produced the same delivery; rotation retained exactly one active version; suspend,
+  reactivate, one-use delivery and terminal revoke were reloaded from Airtable.
+- Peak test-owned storage was 1 credential, 2 versions and 3 delivery grants. The measured journey
+  used 88 Airtable requests and removed all six records before restoring the application fixture.

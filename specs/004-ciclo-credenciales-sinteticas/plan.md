@@ -30,19 +30,19 @@ Implementar el ciclo de vida sintético detrás del puerto `CredentialRepository
 
 ## Constitution Check
 
-*GATE: Passed before Phase 0 and re-checked after Phase 1.*
+_GATE: Passed before Phase 0 and re-checked after Phase 1._
 
-| Gate | Design evidence | Result |
-|---|---|---|
-| Seguridad | Material completamente sintético; código en claro solo en respuesta/memoria; digest HMAC persistido; redacción obligatoria | PASS |
-| Mínimo privilegio | Cada comando exige permiso, ambiente y recurso; revocación exige perfil senior equivalente | PASS |
-| Auditabilidad | Cada resultado emite un evento para la feature 005; receipt conserva `requestId` y `auditEventId` cuando esté activa | PASS |
-| Tres capas | Máquina de estados/casos de uso en dominio; repositorio REST en datos; UI solo confirma/intenta/representa | PASS |
-| Estado fiable | Sin optimismo ni cola offline; relectura tras confirmación; idempotencia remota | PASS |
-| Testing | Transiciones, permisos, doble solicitud, fallos intermedios y ausencia de secretos; integración Airtable | PASS |
-| Simplicidad/coste | Web Crypto y tablas pequeñas; no vault, cola ni servicio de entrega porque los datos son sintéticos | PASS |
-| Versionado | Operaciones `/v1`, DTO validados y registros con `schemaVersion` | PASS |
-| Persistencia | Estados/versiones/idempotencia sobreviven sesiones; el fake no constituye evidencia | PASS |
+| Gate              | Design evidence                                                                                                            | Result |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Seguridad         | Material completamente sintético; código en claro solo en respuesta/memoria; digest HMAC persistido; redacción obligatoria | PASS   |
+| Mínimo privilegio | Cada comando exige permiso, ambiente y recurso; revocación exige perfil senior equivalente                                 | PASS   |
+| Auditabilidad     | Cada resultado emite un evento para la feature 005; receipt conserva `requestId` y `auditEventId` cuando esté activa       | PASS   |
+| Tres capas        | Máquina de estados/casos de uso en dominio; repositorio REST en datos; UI solo confirma/intenta/representa                 | PASS   |
+| Estado fiable     | Sin optimismo ni cola offline; relectura tras confirmación; idempotencia remota                                            | PASS   |
+| Testing           | Transiciones, permisos, doble solicitud, fallos intermedios y ausencia de secretos; integración Airtable                   | PASS   |
+| Simplicidad/coste | Web Crypto y tablas pequeñas; no vault, cola ni servicio de entrega porque los datos son sintéticos                        | PASS   |
+| Versionado        | Operaciones `/v1`, DTO validados y registros con `schemaVersion`                                                           | PASS   |
+| Persistencia      | Estados/versiones/idempotencia sobreviven sesiones; el fake no constituye evidencia                                        | PASS   |
 
 No hay violaciones constitucionales que justificar. La ausencia de transacciones globales de Airtable se mitiga con estados `pending/committed`, un registro idempotente y recuperación determinista; esta feature no afirma garantías de credenciales reales.
 
@@ -90,14 +90,22 @@ worker/tests/{unit,contract,integration,security}/
 
 ## Failure Model
 
-| Failure point | Behavior |
-|---|---|
-| Authorization or invalid transition | Reject before mutation; emit rejected audit envelope |
-| Airtable throttling | Controlled retryable error; retain last confirmed UI state |
-| Response lost after commit | Same idempotency key returns original receipt |
-| Pending regeneration | Reconcile versions by operation ID; expose no success until exactly one active version is confirmed |
-| Expired/used delivery code | Reject and preserve consumed/expired state |
+| Failure point                       | Behavior                                                                                            |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Authorization or invalid transition | Reject before mutation; emit rejected audit envelope                                                |
+| Airtable throttling                 | Controlled retryable error; retain last confirmed UI state                                          |
+| Response lost after commit          | Same idempotency key returns original receipt                                                       |
+| Pending regeneration                | Reconcile versions by operation ID; expose no success until exactly one active version is confirmed |
+| Expired/used delivery code          | Reject and preserve consumed/expired state                                                          |
 
 ## Delivery and Validation
 
 Cada historia se valida con tests de reglas y contrato. La evidencia persistente ejecuta emisión, rotación, transición o entrega contra Airtable de test, crea un cliente/proceso nuevo y comprueba estado e idempotencia. La inspección de respuestas, logs y registros busca patrones de secretos y confirma que solo existen datos sintéticos.
+
+### Presupuesto observado de integración
+
+El recorrido persistente completo consume 88 peticiones Airtable y alcanza simultáneamente un
+registro de credencial, dos versiones y tres entregas. El reintento de emisión conserva el mismo
+efecto; el escenario termina revocado y elimina sus seis registros de prueba. Una ejecución supone
+el 8,8 % de las 1.000 peticiones mensuales del plan Free, por lo que se mantiene bajo demanda y no
+forma parte del polling ni de la navegación normal.

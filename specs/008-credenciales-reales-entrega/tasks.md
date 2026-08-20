@@ -99,7 +99,7 @@
 ## Phase 6: Corporate validation
 
 - [x] T043 [P] Ejecutar suite completa y documentar evidencia local en `specs/008-credenciales-reales-entrega/quickstart.md`
-- [ ] T044 [P] Ejecutar integración Airtable de referencias entre procesos en `worker/tests/integration/airtable-real-references.test.ts`
+- [x] T044 [P] Ejecutar integración Airtable de referencias entre procesos en `worker/tests/integration/airtable-real-references.test.ts`
 - [x] T045 [P] Escanear bundle/responses/logs/records por secretos en `worker/tests/security/real-credential-redaction.test.ts`
 - [x] T046 Registrar excepción constitucional/owner/caducidad en `worker/docs/real-credentials-checkpoint.md`
 - [ ] T047 Obtener contratos, owners, sandbox, scopes y semántica de estado en `worker/docs/real-credentials-checkpoint.md`
@@ -108,7 +108,7 @@
 - [ ] T050 Ejecutar suspend/reactivate/revoke y acceptance probes en `worker/tests/integration/real-credentials.pilot.test.ts`
 - [ ] T051 Ejecutar OTP/canales/expiración contra entrega real en `worker/tests/integration/secure-delivery.pilot.test.ts`
 - [ ] T052 Documentar evidencia, límites y cero secretos en `specs/008-credenciales-reales-entrega/quickstart.md`
-- [ ] T053 Crear `RealCredentialReferences` y `RealOperationReceipts` mediante la migración aditiva antes de T044
+- [x] T053 Crear `RealCredentialReferences` y `RealOperationReceipts` mediante la migración aditiva antes de T044
 
 ## Dependencies & Execution Order
 

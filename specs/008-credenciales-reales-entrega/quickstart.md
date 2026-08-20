@@ -18,7 +18,18 @@ Use provider stubs to fail before/after each external step. Verify one effect pe
 - Móvil `npm run validate`: Expo Doctor 21/21, lint, formato y typecheck correctos; 100 suites y 174 tests aprobados; contrato local 1/1 y exportación web de 20 rutas.
 - Los tests de `/v2` cubren emisión, rotación, transiciones, terminalidad, permisos, respuesta perdida, reintento idempotente y fallos después de proveedor, metadata, auditoría y entrega.
 - `real-credential-redaction.test.ts` rechaza respuestas externas con campos de secreto y comprueba que receipts y referencias serializados no contienen Client Secret, contraseña, OTP ni URL de descarga.
-- `airtable-real-references.test.ts` está implementado, pero queda omitido mientras no se proporcionen `RUN_AIRTABLE_INTEGRATION=1`, `AIRTABLE_BASE_ID`, `AIRTABLE_PAT` y `AIRTABLE_REAL_REFERENCE_ID`; por ello T044 permanece abierta.
+- En la ejecución local del 2026-08-15, `airtable-real-references.test.ts` quedó omitido porque no
+  se proporcionó acceso Airtable; la evidencia persistente posterior se registra a continuación.
+
+### Evidencia Airtable — 2026-08-20
+
+- La migración creó `RealCredentialReferences` y `RealOperationReceipts` con los 31 campos no
+  secretos documentados entre ambas tablas.
+- `airtable-real-references.test.ts` creó una referencia desechable, cambió su correlación de
+  operación, la releyó desde otro cliente y comprobó que la serialización no contiene Client
+  Secret, ZIP, contraseña, OTP ni URL de entrega.
+- La referencia se eliminó al terminar. T047–T052 siguen abiertas: no se ha contactado un servicio
+  corporativo de credenciales ni de entrega.
 
 ## Metadata persistence
 

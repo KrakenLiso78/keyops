@@ -36,7 +36,14 @@ test -- --runInBand`: 97 suites and 170 tests passed.
   routes were exported.
 
 This proves the provider-neutral flow and administration behavior with local
-stubs. `airtable-authorized-users.test.ts` remains skipped without
-`RUN_AIRTABLE_INTEGRATION=1`; no real discovery document, corporate tenant,
-external disable propagation or provider-backed audit evidence has been
-validated. Tasks T041–T044 therefore remain open.
+stubs. No real discovery document, corporate tenant, external disable
+propagation or provider-backed audit evidence was validated by that local run.
+Tasks T041–T044 therefore remain open.
+
+## Airtable authorization evidence — 2026-08-20
+
+- The migration added `corporateIssuer`, `corporateSubject` and `identityValidatedAt` to `Users`.
+- `airtable-authorized-users.test.ts` registered the same issuer/subject twice, observed one record,
+  changed its profile, disabled it and reloaded the result through a third client.
+- The integration user was deleted in `finally`. This validates KeyOps authorization persistence,
+  not real OIDC discovery, login, provider disable propagation or the five-minute pilot target.

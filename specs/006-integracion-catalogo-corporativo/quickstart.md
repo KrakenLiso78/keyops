@@ -34,3 +34,11 @@ Before enabling the real adapter, record the provider owner, base URL, authentic
 This is local adapter evidence only. The real provider owner, contract, limits,
 stable-ID rules and authorized environment are still unknown, so no pilot
 reconciliation or claim of zero out-of-scope corporate records has been made.
+
+## Airtable context evidence — 2026-08-20
+
+- The additive migration created `ApplicationOperationalContexts` with all nine documented fields.
+- `airtable-operational-context.test.ts` created a disposable context, changed its management ticket,
+  reloaded it from a fresh client and deleted the fixture after verification.
+- Corporate identity and classification remained outside Airtable. The real catalog checkpoint
+  T029–T032 remains open because this test does not contact a corporate catalog.

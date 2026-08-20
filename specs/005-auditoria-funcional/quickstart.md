@@ -49,3 +49,12 @@ years, or production compliance.
 The fake adapter keeps these events only in the current JavaScript process. This journey proves
 authorized access and functional event presentation, not Airtable persistence, rejected-operation
 coverage across processes, administrative immutability or regulatory retention.
+
+## Persistent Airtable evidence — 2026-08-20
+
+- `airtable-audit-write.test.ts` persisted one successful, one failed and one rejected event in
+  base `appnNMuwzI72qsjyE`, then reloaded all three from a fresh repository.
+- Every event carried its required correlation fields and unique `testRunId`; cleanup removed the
+  three test-owned records and a subsequent read found no residual audit event.
+- This proves functional persistence only. It does not prove administrator-resistant immutability
+  or certified five-year retention.
