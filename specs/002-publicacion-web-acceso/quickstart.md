@@ -51,13 +51,14 @@ Export `mobile/dist`, deploy a Worker preview, and complete sign-in, navigation 
 - The preview uses `EXPO_PUBLIC_DATA_SOURCE=fake`; it does not validate Airtable persistence,
   deployed Worker routing, native iOS behavior or corporate identity.
 
-### Canonical Vercel publication — pending Worker connection
+### Canonical Vercel publication — partial evidence 2026-08-20
 
 - Fixed frontend URL: `https://keyops-three.vercel.app/sign-in`.
-- On 2026-08-20 the sign-in interface loaded, but `https://keyops-three.vercel.app/v1/health`
-  returned the SPA `index.html` rather than Worker JSON.
-- The Vercel publication therefore does not yet prove remote sign-in or Airtable persistence.
-  T039 remains open until `/v1/*` reaches the deployed Worker and the two viewport journeys pass.
+- `https://keyops-three.vercel.app/v1/health` returns the deployed Worker JSON through the
+  Vercel rewrite, and `POST /v1/sessions` returns 200 for the configured demonstration user.
+- The published sign-in page has no horizontal overflow at 390 × 844 or 360 × 800.
+- T039 remains open pending the authenticated navigation journey at both viewports. The
+  application list also remains unavailable until the external corporate catalog is configured.
 
 ## Free-tier and secret review — 2026-08-20
 
