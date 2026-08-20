@@ -6,21 +6,21 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear estructura compliance y fixtures versionados en `worker/src/compliance/` y `worker/tests/fixtures/compliance/`
-- [ ] T002 [P] Añadir bindings sin secretos y modo v2 en `worker/src/config/env.ts` y `worker/.dev.vars.example`
-- [ ] T003 [P] Documentar proveedor/WORM/retención/recovery en `worker/docs/compliance-audit-checkpoint.md`
-- [ ] T004 [P] Crear router `/v2/audit-events` en `worker/src/routes/v2/audit.ts`
+- [x] T001 Crear estructura compliance y fixtures versionados en `worker/src/compliance/` y `worker/tests/fixtures/compliance/`
+- [x] T002 [P] Añadir bindings sin secretos y modo v2 en `worker/src/config/env.ts` y `worker/.dev.vars.example`
+- [x] T003 [P] Documentar proveedor/WORM/retención/recovery en `worker/docs/compliance-audit-checkpoint.md`
+- [x] T004 [P] Crear router `/v2/audit-events` en `worker/src/routes/v2/audit.ts`
 
 ## Phase 2: Foundational
 
-- [ ] T005 [P] Definir `ComplianceAuditPort` y receipts en `worker/src/compliance/ComplianceAuditPort.ts`
-- [ ] T006 [P] Definir evento canónico/versionado con Zod en `worker/src/compliance/eventEnvelope.ts`
-- [ ] T007 [P] Implementar allowlist/redacción previa en `worker/src/compliance/redactComplianceEvent.ts`
-- [ ] T008 [P] Implementar ID/fingerprint/idempotencia en `worker/src/compliance/integrity.ts`
-- [ ] T009 Crear stub WORM con append/query/verify/recovery en `worker/tests/support/ComplianceAuditStub.ts`
-- [ ] T010 Implementar adapter HTTP neutral en `worker/src/compliance/ComplianceAuditHttpAdapter.ts`
-- [ ] T011 Implementar upcasters y registro de schemas en `worker/src/compliance/schemaRegistry.ts`
-- [ ] T012 Implementar composición de sink funcional/compliance por modo en `worker/src/composition/createWorkerDependencies.ts`
+- [x] T005 [P] Definir `ComplianceAuditPort` y receipts en `worker/src/compliance/ComplianceAuditPort.ts`
+- [x] T006 [P] Definir evento canónico/versionado con Zod en `worker/src/compliance/eventEnvelope.ts`
+- [x] T007 [P] Implementar allowlist/redacción previa en `worker/src/compliance/redactComplianceEvent.ts`
+- [x] T008 [P] Implementar ID/fingerprint/idempotencia en `worker/src/compliance/integrity.ts`
+- [x] T009 Crear stub WORM con append/query/verify/recovery en `worker/tests/support/ComplianceAuditStub.ts`
+- [x] T010 Implementar adapter HTTP neutral en `worker/src/compliance/ComplianceAuditHttpAdapter.ts`
+- [x] T011 Implementar upcasters y registro de schemas en `worker/src/compliance/schemaRegistry.ts`
+- [x] T012 Implementar composición de sink funcional/compliance por modo en `worker/src/composition/createWorkerDependencies.ts`
 
 **Checkpoint**: Eventos v2 pueden añadirse/consultarse/verificarse con stub sin usar Airtable como evidencia.
 
@@ -32,20 +32,20 @@
 
 ### Tests
 
-- [ ] T013 [P] [US-COMP-01] Escribir tests fallidos de evento/allowlist/redacción en `worker/tests/unit/complianceEvent.test.ts`
-- [ ] T014 [P] [US-COMP-01] Escribir tests fallidos de idempotencia/conflicto/acuse perdido en `worker/tests/unit/complianceAppend.test.ts`
-- [ ] T015 [P] [US-COMP-01] Escribir contrato fallido de consulta/integridad y ausencia de mutaciones en `worker/tests/contract/compliance-audit-v2.contract.test.ts`
-- [ ] T016 [P] [US-COMP-01] Escribir test de manipulación contra stub en `worker/tests/security/compliance-tamper.test.ts`
-- [ ] T017 [P] [US-COMP-01] Escribir test de cero secretos/PII innecesaria en `worker/tests/security/compliance-redaction.test.ts`
+- [x] T013 [P] [US-COMP-01] Escribir tests fallidos de evento/allowlist/redacción en `worker/tests/unit/complianceEvent.test.ts`
+- [x] T014 [P] [US-COMP-01] Escribir tests fallidos de idempotencia/conflicto/acuse perdido en `worker/tests/unit/complianceAppend.test.ts`
+- [x] T015 [P] [US-COMP-01] Escribir contrato fallido de consulta/integridad y ausencia de mutaciones en `worker/tests/contract/compliance-audit-v2.contract.test.ts`
+- [x] T016 [P] [US-COMP-01] Escribir test de manipulación contra stub en `worker/tests/security/compliance-tamper.test.ts`
+- [x] T017 [P] [US-COMP-01] Escribir test de cero secretos/PII innecesaria en `worker/tests/security/compliance-redaction.test.ts`
 
 ### Implementation
 
-- [ ] T018 [US-COMP-01] Implementar append idempotente y acuse en `worker/src/compliance/appendComplianceEvent.ts`
-- [ ] T019 [US-COMP-01] Implementar reconciliación tras acuse incierto en `worker/src/audit/reconcileAudit.ts`
-- [ ] T020 [US-COMP-01] Conectar `AuditRecorder` al sink compliance en `worker/src/audit/AuditRecorder.ts`
-- [ ] T021 [US-COMP-01] Integrar resultados de catálogo/usuarios/credenciales reales en `worker/src/http/completeOperation.ts`
-- [ ] T022 [US-COMP-01] Exponer consulta/integridad v2 sin update/delete en `worker/src/routes/v2/audit.ts`
-- [ ] T023 [US-COMP-01] Registrar intento de alteración como nuevo evento en `worker/src/compliance/appendComplianceEvent.ts`
+- [x] T018 [US-COMP-01] Implementar append idempotente y acuse en `worker/src/compliance/appendComplianceEvent.ts`
+- [x] T019 [US-COMP-01] Implementar reconciliación tras acuse incierto en `worker/src/audit/reconcileAudit.ts`
+- [x] T020 [US-COMP-01] Conectar `AuditRecorder` al sink compliance en `worker/src/audit/AuditRecorder.ts`
+- [x] T021 [US-COMP-01] Integrar resultados de catálogo/usuarios/credenciales reales en `worker/src/http/completeOperation.ts`
+- [x] T022 [US-COMP-01] Exponer consulta/integridad v2 sin update/delete en `worker/src/routes/v2/audit.ts`
+- [x] T023 [US-COMP-01] Registrar intento de alteración como nuevo evento en `worker/src/compliance/appendComplianceEvent.ts`
 
 **Checkpoint**: WORM y tamper behavior demostrados con stub; evidencia real requiere Phase 5.
 

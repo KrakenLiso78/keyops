@@ -3,11 +3,21 @@ import {
   realCredentialsRoute,
   type RealCredentialRouteDependencies,
 } from "./credentials";
+import {
+  complianceAuditRoute,
+  type ComplianceAuditRouteDependencies,
+} from "./audit";
+
+export type V2RouteDependencies = RealCredentialRouteDependencies &
+  ComplianceAuditRouteDependencies;
 
 export function v2Route(
   request: Request,
   context: RequestContext,
-  dependencies: RealCredentialRouteDependencies,
+  dependencies: V2RouteDependencies,
 ) {
-  return realCredentialsRoute(request, context, dependencies);
+  return complianceAuditRoute(request, context, dependencies).then(
+    (response) =>
+      response ?? realCredentialsRoute(request, context, dependencies),
+  );
 }

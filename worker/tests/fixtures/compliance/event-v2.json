@@ -1,0 +1,16 @@
+{
+  "eventId": "cmp-22222222222222222222222222222222",
+  "schemaVersion": 2,
+  "occurredAt": "2026-08-15T12:00:00.000Z",
+  "actorUserId": "auditor-current",
+  "operation": "audit.list.v2",
+  "resourceType": "audit_collection",
+  "environment": "production",
+  "result": "succeeded",
+  "originIp": "203.0.113.18",
+  "requestId": "request-current-0002",
+  "retentionUntil": "2031-08-15T12:00:00.000Z",
+  "payloadFingerprint": "2222222222222222222222222222222222222222222222222222222222222222",
+  "integrityReference": "worm:current:0002",
+  "integrity": "verified"
+}

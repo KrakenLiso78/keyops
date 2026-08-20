@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { AirtableClient } from "../../src/airtable/AirtableClient";
 import { RealCredentialReferenceRepository } from "../../src/airtable/RealCredentialReferenceRepository";
 import { UserRepository } from "../../src/airtable/UserRepository";
-import { noOpAuditSink } from "../../src/audit/AuditSink";
+import { ComplianceAuditRecorder } from "../../src/audit/AuditRecorder";
 import { issueSessionToken } from "../../src/auth/sessionToken";
 import { createRequestContext } from "../../src/http/requestContext";
 import { realCredentialsRoute } from "../../src/routes/v2/credentials";
@@ -11,6 +11,7 @@ import { InMemoryCredentialStore } from "../support/InMemoryCredentialStore";
 import { createAirtableFetch } from "../support/createAirtableFetch";
 import { RealCredentialProviderStub } from "../support/RealCredentialProviderStub";
 import { SecureDeliveryStub } from "../support/SecureDeliveryStub";
+import { ComplianceAuditStub } from "../support/ComplianceAuditStub";
 
 const signingKey = "contract-signing-key-with-at-least-32-characters";
 const now = "2026-08-15T12:00:00.000Z";
@@ -35,6 +36,7 @@ describe("KeyOps real credentials API v2", () => {
   let dependencies: Parameters<typeof realCredentialsRoute>[2];
   let authorization: string;
   let references: RealCredentialReferenceRepository;
+  let compliance: ComplianceAuditStub;
   let sequence: number;
 
   beforeEach(async () => {
@@ -52,9 +54,10 @@ describe("KeyOps real credentials API v2", () => {
     const session = await issueSessionToken(user.userId, signingKey);
     authorization = `Bearer ${session.token}`;
     references = new RealCredentialReferenceRepository(airtable);
+    compliance = new ComplianceAuditStub();
     dependencies = {
       users: new UserRepository(airtable),
-      audit: noOpAuditSink,
+      audit: new ComplianceAuditRecorder(compliance, () => now),
       signingKey,
       real: {
         provider: new RealCredentialProviderStub(),
@@ -98,6 +101,13 @@ describe("KeyOps real credentials API v2", () => {
     expect(replayBody).toEqual(firstBody);
     expect(JSON.stringify(firstBody)).not.toMatch(/secret|password|otp|url/iu);
     expect(store.fields("RealOperationReceipts")).toHaveLength(1);
+    expect(compliance.events()).toContainEqual(
+      expect.objectContaining({
+        operation: "credential.issue.v2",
+        result: "succeeded",
+        integrity: "verified",
+      }),
+    );
   });
 
   it("rotates and retrieves the same safe receipt by operation id", async () => {
@@ -138,7 +148,7 @@ describe("KeyOps real credentials API v2", () => {
     await expect(
       realCredentialsRoute(request, createRequestContext(request), {
         users: dependencies.users,
-        audit: noOpAuditSink,
+        audit: dependencies.audit,
         signingKey,
       }),
     ).rejects.toMatchObject({ code: "real_credentials_not_configured" });

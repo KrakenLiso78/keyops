@@ -6,6 +6,7 @@ import { OidcHttpAdapter } from "../identity/OidcHttpAdapter";
 import { RealCredentialReferenceRepository } from "../airtable/RealCredentialReferenceRepository";
 import { CredentialProviderHttpAdapter } from "../credentials/real/CredentialProviderHttpAdapter";
 import { SecureDeliveryHttpAdapter } from "../delivery/SecureDeliveryHttpAdapter";
+import { ComplianceAuditHttpAdapter } from "../compliance/ComplianceAuditHttpAdapter";
 
 export function createWorkerDependencies(config: ValidatedEnv) {
   const airtable = new AirtableClient({
@@ -32,6 +33,9 @@ export function createWorkerDependencies(config: ValidatedEnv) {
           references: realReferences,
           allowedEnvironments: config.realCredentials.allowedEnvironments,
         }
+      : undefined,
+    complianceAudit: config.complianceAudit
+      ? new ComplianceAuditHttpAdapter(config.complianceAudit)
       : undefined,
   };
 }

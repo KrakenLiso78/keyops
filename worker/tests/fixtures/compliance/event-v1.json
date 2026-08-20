@@ -1,0 +1,16 @@
+{
+  "eventId": "cmp-11111111111111111111111111111111",
+  "schemaVersion": 1,
+  "timestamp": "2021-08-15T12:00:00.000Z",
+  "actorId": "auditor-legacy",
+  "action": "audit.list.v1",
+  "resourceType": "audit_collection",
+  "environment": "test",
+  "outcome": "succeeded",
+  "ip": "203.0.113.17",
+  "correlationId": "request-legacy-0001",
+  "retentionUntil": "2026-08-15T12:00:00.000Z",
+  "payloadFingerprint": "1111111111111111111111111111111111111111111111111111111111111111",
+  "integrityReference": "worm:legacy:0001",
+  "integrity": "verified"
+}

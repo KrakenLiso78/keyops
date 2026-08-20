@@ -3,7 +3,11 @@ import { CredentialRepository } from "./airtable/CredentialRepository";
 import { DeliveryGrantRepository } from "./airtable/DeliveryGrantRepository";
 import { IdempotencyRepository } from "./airtable/IdempotencyRepository";
 import { AuditEventRepository } from "./airtable/AuditEventRepository";
-import { AuditRecorder } from "./audit/AuditRecorder";
+import {
+  AuditRecorder,
+  ComplianceAuditRecorder,
+  DualAuditRecorder,
+} from "./audit/AuditRecorder";
 import type { AuditSink } from "./audit/AuditSink";
 import { validateEnv, type WorkerEnv } from "./config/env";
 import { ApiError, errorResponse } from "./http/ApiError";
@@ -121,6 +125,15 @@ function fallbackAuditDescriptor(request: Request, url: URL) {
   if (url.pathname === "/v1/audit-events") {
     return { operation: "audit.list.v1", resourceType: "audit" };
   }
+  if (url.pathname === "/v2/audit-events") {
+    return { operation: "audit.list.v2", resourceType: "audit_collection" };
+  }
+  if (/^\/v2\/audit-events\/[^/]+\/integrity$/u.test(url.pathname)) {
+    return {
+      operation: "audit.integrity.v2",
+      resourceType: "compliance_event",
+    };
+  }
   if (url.pathname === "/v1/users" && method === "GET") {
     return { operation: "user.list.v1", resourceType: "user_collection" };
   }
@@ -156,17 +169,34 @@ export async function handleRequest(
       const { airtable } = core;
       const users = new UserRepository(airtable);
       const auditEvents = new AuditEventRepository(airtable);
-      audit = new AuditRecorder(auditEvents);
+      const functionalAudit = new AuditRecorder(auditEvents);
+      const complianceAudit = core.complianceAudit
+        ? new ComplianceAuditRecorder(core.complianceAudit)
+        : undefined;
+      const operationalAudit = complianceAudit
+        ? new DualAuditRecorder(complianceAudit, functionalAudit)
+        : functionalAudit;
+      audit = operationalAudit;
       const sessionDependencies = {
         users,
         demoCredentials: config.demoCredentials,
         signingKey: config.sessionSigningKey,
-        audit,
+        audit: operationalAudit,
       };
       if (url.pathname.startsWith("/v2/")) {
+        if (!core.complianceAudit) {
+          audit = undefined;
+          throw new ApiError(
+            503,
+            "compliance_audit_not_configured",
+            "La auditoría de cumplimiento no está configurada.",
+          );
+        }
+        audit = complianceAudit!;
         const response = await v2Route(request, context, {
           users,
           audit,
+          compliance: core.complianceAudit,
           signingKey: config.sessionSigningKey,
           real: core.realCredentials,
         });
@@ -177,6 +207,7 @@ export async function handleRequest(
           "No se encontró el recurso solicitado.",
         );
       }
+      audit = operationalAudit;
       const corporateResponse = await corporateAuthRoute(request, context, {
         users,
         audit,

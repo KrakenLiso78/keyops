@@ -17,6 +17,10 @@ export interface WorkerEnv {
   SECURE_DELIVERY_BASE_URL?: string;
   SECURE_DELIVERY_TOKEN?: string;
   REAL_CREDENTIAL_ENVIRONMENTS?: string;
+  COMPLIANCE_AUDIT_MODE?: string;
+  COMPLIANCE_AUDIT_BASE_URL?: string;
+  COMPLIANCE_AUDIT_APPEND_TOKEN?: string;
+  COMPLIANCE_AUDIT_QUERY_TOKEN?: string;
   ASSETS?: Fetcher;
 }
 
@@ -38,6 +42,10 @@ const workerEnvSchema = z
     SECURE_DELIVERY_BASE_URL: z.string().url().optional(),
     SECURE_DELIVERY_TOKEN: z.string().min(12).optional(),
     REAL_CREDENTIAL_ENVIRONMENTS: z.string().min(1).optional(),
+    COMPLIANCE_AUDIT_MODE: z.literal("v2").optional(),
+    COMPLIANCE_AUDIT_BASE_URL: z.string().url().optional(),
+    COMPLIANCE_AUDIT_APPEND_TOKEN: z.string().min(12).optional(),
+    COMPLIANCE_AUDIT_QUERY_TOKEN: z.string().min(12).optional(),
   })
   .superRefine((value, context) => {
     if (Boolean(value.CATALOG_BASE_URL) !== Boolean(value.CATALOG_READ_TOKEN)) {
@@ -74,6 +82,19 @@ const workerEnvSchema = z
         message: "All real credential bindings must be configured together.",
       });
     }
+    const compliance = [
+      value.COMPLIANCE_AUDIT_MODE,
+      value.COMPLIANCE_AUDIT_BASE_URL,
+      value.COMPLIANCE_AUDIT_APPEND_TOKEN,
+      value.COMPLIANCE_AUDIT_QUERY_TOKEN,
+    ];
+    if (compliance.some(Boolean) && !compliance.every(Boolean)) {
+      context.addIssue({
+        code: "custom",
+        path: ["COMPLIANCE_AUDIT_MODE"],
+        message: "All compliance audit bindings must be configured together.",
+      });
+    }
   });
 
 export interface ValidatedEnv {
@@ -93,6 +114,12 @@ export interface ValidatedEnv {
     provider: { baseUrl: string; token: string };
     delivery: { baseUrl: string; token: string };
     allowedEnvironments: ReadonlySet<"test" | "production">;
+  };
+  complianceAudit?: {
+    mode: "v2";
+    baseUrl: string;
+    appendToken: string;
+    queryToken: string;
   };
 }
 
@@ -155,6 +182,18 @@ export function validateEnv(env: WorkerEnv): ValidatedEnv {
               token: parsed.SECURE_DELIVERY_TOKEN,
             },
             allowedEnvironments: new Set(realEnvironments),
+          }
+        : undefined,
+    complianceAudit:
+      parsed.COMPLIANCE_AUDIT_MODE &&
+      parsed.COMPLIANCE_AUDIT_BASE_URL &&
+      parsed.COMPLIANCE_AUDIT_APPEND_TOKEN &&
+      parsed.COMPLIANCE_AUDIT_QUERY_TOKEN
+        ? {
+            mode: parsed.COMPLIANCE_AUDIT_MODE,
+            baseUrl: parsed.COMPLIANCE_AUDIT_BASE_URL.replace(/\/$/u, ""),
+            appendToken: parsed.COMPLIANCE_AUDIT_APPEND_TOKEN,
+            queryToken: parsed.COMPLIANCE_AUDIT_QUERY_TOKEN,
           }
         : undefined,
   };
