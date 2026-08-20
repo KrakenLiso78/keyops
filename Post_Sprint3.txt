@@ -1,0 +1,41 @@
+Hola a todos, aquí el Escuadrón 4 para la entrega del Sprint 3. 
+
+En este sprint hemos pasado de la teoría a la implementación y nos hemos dado cuenta de que algunas de las decisiones de diseño tomadas en sprint previos debían modificarse. Así que ha habido un poquito de back and forth y también hemos versionado algunos de los ficheros creados anteriormente para ajustarlos más a lo que necesitamos y también para prepararnos para el siguiente sprint y el despliegue en producción.
+
+En primer lugar, trabajamos para generar el fichero Constitution.md y nos dimos cuenta de que este fichero, en un entorno profesional corporativo, es un elemento clave para definir los principios de diseño y arquitectura que gobiernan en la organización. Lo hemos versionado dos o tres veces para ajustarlo a situaciones reales pero factibles en el entorno en el que trabajamos. 
+
+A partir de ahí utilizamos la skill SpecKit-Plan y la información contenida en los ficheros Spec.md, Design.md y Constitution.md para generar los artefactos técnicos y los ficheros Plan.md y su correspondiente troceo en tareas más pequeñas Task.md. Este Plan.md incluye:
+- la base técnica
+- el acceso a los ambientes
+- la arquitectura móvil en tres capas 
+- el código para nuestro Stack Tecnológico con Expo, React Native y Node.js
+
+Por último, pasamos a la implementación pura y dura y fuimos a lo grande fijándole a Codex una GOAL en la que debía implementar utilizando los ficheros generados (Incluido design.md) y la skill  SpecKit-Implement y luego validar contra las user stories definidas. En este punto nos dimos cuenta de que los requisitos incluidos en el Constitution.md hacían que requiriéramos de entornos separados, contratos ZOD/OpenAPI. repositorios REST, SecureStore real, controladores, componentes... todo ello elementos de los que no disponemos, así que hubo que echar marcha atrás y relajar las especificaciones de arquitectura del Constitution.md, rehaciendo en cascada el resto de ficheros. Aprovechamos también para trocear historias de usuario, ya que era un diseño monolítico (! parecemos nuevos!) y cualquier cambio requería retocar todo (y en consecuencia probar todo).
+
+Finalmente, tenemos un prototipo "construible" y "validable" sin servicios externos, con datos fake deterministas, Simba Ken, emuladores de servicios remotos. 
+
+Entregables del Sprint 3:: 
+
+	🔗 Enlace al repositorio con plan.md, tasks.md y la app: 
+	https://github.com/KrakenLiso78/keyops/tree/main
+
+	📱 Capturas o un vídeo corto de la app funcionando en móvil:
+	https://docs.google.com/videos/d/1JGwquIZsqSuuFP3ZUPERBxML1fZhFyPl8RusBDcB8-k/edit?scene=id.p#scene=id.p
+
+	⭐ Qué funciona ya: (https://github.com/KrakenLiso78/keyops/blob/main/specs/README.md)
+	Funcionan features de la 2 a la 5, incluyendo:
+		- publicación web y acceso
+		- operaciones para generar por ambiente credenciales
+		- consulta de detalle y contexto de gestión entre sesiones
+		- emisión, rotación, suspensión, reactivación, revocación y reentrega de credenciales sintéticas sin revelación de secretos
+		- auditoría funcional para operaciones exitosas, fallidas y rechazadas
+
+	🙏 Qué NO funciona todavía: (https://github.com/KrakenLiso78/keyops/blob/main/specs/README.md)
+	El modo "fake" permite construir el MVP, pero el piloto real requiere demostrar atomicidad, idempotencia, entrega y auditoría contra los servicios remotos.Ejemplos de cosas que no funcionan aún:
+		- Integración con el catálogo corporativo de instituciones/aplicaciones
+		- Acceso corporativo y administración real de usuarios y perfiles
+		- Operaciones que afectan al servicio real de credenciales y entrega
+
+
+	📝 Tres líneas: qué le pedisteis a la IA, dónde se atascó y cómo la desatascasteis:
+	Empezamos pidiendo buenas prácticas de arquitectura para aplicaciones móviles pero nos atascamos por la falta de entornos, componentes y rebajamos las expectativas para hacerlo más factible. 
