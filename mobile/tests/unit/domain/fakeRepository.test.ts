@@ -25,11 +25,18 @@ describe('adaptador fake', () => {
     );
   });
 
-  it('emite una credencial con entrega separada', () => {
+  it('emite y después regenera una credencial conservando su identidad', () => {
     const user = fakeRepository.signIn('analista');
-    const result = fakeRepository.operate(user, 'app-001', 'test', 'issue');
-    expect(result.delivery?.deliveryUrl).toMatch(/^https:/);
-    expect(result.delivery?.otp).toMatch(/^\d{6}$/);
+    const issue = fakeRepository.operate(user, 'app-001', 'test', 'issue');
+    const credentialId = fakeRepository.getApplication('app-001', 'test')?.credentialId;
+
+    expect(issue.delivery?.deliveryUrl).toMatch(/^https:/);
+    expect(issue.delivery?.otp).toMatch(/^\d{6}$/);
+    expect(credentialId).toMatch(/^cred_test_/);
+
+    const regeneration = fakeRepository.operate(user, 'app-001', 'test', 'regenerate');
+    expect(regeneration.result).toBe('succeeded');
+    expect(fakeRepository.getApplication('app-001', 'test')?.credentialId).toBe(credentialId);
   });
   it('rechaza una suspensión sin motivo', () => {
     const user = fakeRepository.signIn('analista');

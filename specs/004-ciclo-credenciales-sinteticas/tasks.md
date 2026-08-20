@@ -140,7 +140,7 @@
 - [ ] T052 Ejecutar escenario persistente de las cinco historias desde proceso nuevo en `worker/tests/integration/airtable-credentials.test.ts`
 - [x] T053 [P] Ejecutar análisis de respuestas/logs/registros por secretos en `worker/tests/security/credential-redaction.test.ts`
 - [ ] T054 [P] Medir registros/llamadas y actualizar presupuesto real en `specs/004-ciclo-credenciales-sinteticas/plan.md`
-- [ ] T055 Recorrer el ciclo crítico en preview móvil y registrar evidencia/limitaciones en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`
+- [x] T055 Recorrer el ciclo crítico en preview móvil y registrar evidencia/limitaciones en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`
 - [x] T056 Conectar todos los resultados a la auditoría persistente de feature 005 antes de declarar FR-CRED-012 superado
 
 ## Dependencies & Execution Order
@@ -162,3 +162,9 @@
 2. Regeneración e idempotencia ante respuesta incierta.
 3. Suspensión/reactivación y revocación.
 4. Reentrega, persistencia completa y conexión de auditoría.
+
+## Phase 9: Convergence
+
+- [x] T057 [P] Añadir regresión de emisión seguida de regeneración con el repositorio fake en `mobile/tests/unit/domain/fakeRepository.test.ts`
+- [x] T058 Conservar `credentialId` al emitir en modo fake desde `mobile/src/data/fake/FakeKeyOpsRepository.ts`
+- [x] T059 Repetir emisión, regeneración y transiciones en preview móvil y actualizar la evidencia en `specs/004-ciclo-credenciales-sinteticas/quickstart.md`

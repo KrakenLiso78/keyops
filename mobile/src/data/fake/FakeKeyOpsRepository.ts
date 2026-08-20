@@ -129,6 +129,7 @@ export const fakeRepository = {
         application.credentialState,
       );
       application.credentialState = credentialState;
+      if (action === 'issue') application.credentialId ??= `cred_${environment}_${id()}`;
       application.clientId ??= `cli_${environment}_${id()}`;
       application.lastChangedAt = now();
       application.credentialHistory = [
