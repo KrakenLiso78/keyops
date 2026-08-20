@@ -100,7 +100,7 @@
 
 - [x] T037 [P] Ejecutar y documentar `npm run validate` móvil y tests Worker en `specs/002-publicacion-web-acceso/quickstart.md`
 - [ ] T038 Ejecutar bajo demanda la prueba de usuario persistente contra Airtable de test desde `worker/tests/integration/airtable-session.test.ts`
-- [ ] T039 Publicar preview, recorrer ambos viewports y registrar URL/fecha/limitaciones en `specs/002-publicacion-web-acceso/quickstart.md`
+- [x] T039 Publicar preview, recorrer ambos viewports y registrar URL/fecha/limitaciones en `specs/002-publicacion-web-acceso/quickstart.md`
 - [x] T040 Revalidar límites Free y revisar bundle/logs por secretos antes del checkpoint de la feature
 
 ## Dependencies & Execution Order

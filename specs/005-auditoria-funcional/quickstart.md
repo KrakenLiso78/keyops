@@ -36,3 +36,16 @@ Perform sign-in plus one management or credential operation in the published pre
 This evidence proves functional behavior in the local harness. It does **not**
 prove immutability against Airtable administrators, certified retention for five
 years, or production compliance.
+
+## Published preview evidence — 2026-08-20
+
+- At 360 × 800, an administrator signed in through the feature 002 Quick Tunnel, issued a
+  synthetic credential and opened Auditoría without reloading the single-page application.
+- The audit list exposed one completed `sign_in.v1` event and one completed `issue.v1` event with
+  actor, demonstration environment, request identifier and application context.
+- The document width remained 360 px, so the filtered audit view introduced no horizontal
+  overflow.
+
+The fake adapter keeps these events only in the current JavaScript process. This journey proves
+authorized access and functional event presentation, not Airtable persistence, rejected-operation
+coverage across processes, administrative immutability or regulatory retention.

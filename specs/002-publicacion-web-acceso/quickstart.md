@@ -32,6 +32,19 @@ Run the Worker integration script against the dedicated Airtable test base. Disa
 
 Export `mobile/dist`, deploy a Worker preview, and complete sign-in, navigation and environment change at 390 × 844 and 360 × 800. Confirm that `/v1/*` returns JSON and unknown client routes use the SPA fallback. Record the preview URL and date as evidence; do not claim native or corporate-identity validation.
 
+### Published preview evidence — 2026-08-20
+
+- Quick Tunnel: `https://tropical-thrown-colours-tribunal.trycloudflare.com/sign-in`.
+- The exported fake build loaded through the public URL, accepted the demonstration administrator
+  and reached `/applications` at 390 × 844 and 360 × 800.
+- Both viewports reported a document width equal to the viewport width, with no horizontal
+  overflow on the application list.
+- This URL exists only while the local static server and `cloudflared` process remain running. A
+  Quick Tunnel has no stable hostname or uptime guarantee and is evidence for development access,
+  not a deployment or an availability result.
+- The preview uses `EXPO_PUBLIC_DATA_SOURCE=fake`; it does not validate Airtable persistence,
+  deployed Worker routing, native iOS behavior or corporate identity.
+
 ## Free-tier and secret review — 2026-08-20
 
 The current official limits were rechecked before publication:
