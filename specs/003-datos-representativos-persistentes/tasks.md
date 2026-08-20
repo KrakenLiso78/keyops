@@ -92,8 +92,9 @@
 ## Phase 6: Validation
 
 - [x] T034 [P] Ejecutar validaciones móvil/Worker y actualizar evidencia en `specs/003-datos-representativos-persistentes/quickstart.md`
-- [ ] T035 Medir llamadas/registro del seed y escenarios y documentar presupuesto real en `specs/003-datos-representativos-persistentes/plan.md`
+- [x] T035 Medir llamadas/registro del seed y escenarios y documentar presupuesto real en `specs/003-datos-representativos-persistentes/plan.md`
 - [x] T036 Verificar que 429/agotamiento devuelve error controlado y nunca activa fake en `worker/tests/integration/airtable-rate-limit.test.ts`
+- [x] T037 Ejecutar la integración persistente T028 con dos clientes, restaurar el fixture y registrar evidencia
 
 ## Dependencies & Execution Order
 

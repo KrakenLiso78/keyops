@@ -53,6 +53,8 @@ Record seed counts, Airtable test base identifier (never the PAT), test timestam
 - 2026-08-15: `mobile/npm run validate` completó Expo Doctor 21/21, lint, formato, tipos,
   85 suites y 146 tests, contrato local y exportación web de 20 rutas. `npm run test:e2e` añadió
   4 recorridos en viewports 390×844 y 360×800.
-- `npm run test:integration:airtable` ejecutó la prueba local de cuota y dejó la prueba destructiva
-  de persistencia marcada como `skipped`. Por tanto, esta evidencia no demuestra todavía la
-  actualización y relectura real con dos clientes Airtable.
+- 2026-08-20: `RUN_AIRTABLE_INTEGRATION=1 npx vitest run
+tests/integration/airtable-application-management.test.ts` actualizó una gestión, rechazó la
+  escritura obsoleta, la releyó desde un cliente nuevo y restauró el ticket original en Airtable.
+- El escenario persistente consumió exactamente 25 peticiones observadas, conforme al presupuesto
+  de T035 y sin polling ni fallback fake.

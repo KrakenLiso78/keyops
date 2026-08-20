@@ -108,7 +108,7 @@ en una base vacía como en una base completamente sembrada: tres lecturas inicia
 de escritura de hasta diez registros y tres relecturas. Una base parcialmente sembrada puede
 dividir cada tabla entre lotes de creación y actualización; el peor caso calculado es 20 llamadas.
 
-La integración de gestión con conflicto controlado consume 25 llamadas con los fixtures actuales:
+La integración de gestión con conflicto controlado consumió 25 llamadas observadas con los fixtures actuales:
 cinco para la lectura inicial, siete para la escritura y relectura desde un segundo cliente, una
 para rechazar la escritura obsoleta, cinco para verificar desde un cliente nuevo y siete para
 restaurar y releer el fixture. Seed y escenario completo suman 38 llamadas en el caso normal o 45

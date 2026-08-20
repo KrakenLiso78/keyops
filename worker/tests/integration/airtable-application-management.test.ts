@@ -13,9 +13,18 @@ describe.skipIf(!enabled)("Airtable application management", () => {
     if (!baseId || !token)
       throw new Error("Faltan AIRTABLE_BASE_ID o AIRTABLE_PAT.");
 
-    const first = new ApplicationRepository(
-      new AirtableClient({ baseId, token }),
-    );
+    let requestCount = 0;
+    const client = () =>
+      new AirtableClient({
+        baseId,
+        token,
+        fetcher: async (input, init) => {
+          requestCount += 1;
+          return fetch(input, init);
+        },
+      });
+
+    const first = new ApplicationRepository(client());
     const page = await first.list({ environment: "test", page: 1 });
     const original = page.items.find(
       (item) => item.management.requestOrTicketId,
@@ -29,9 +38,7 @@ describe.skipIf(!enabled)("Airtable application management", () => {
     const staleMarker = `${marker}-STALE`;
     let changedVersion: string | undefined;
     try {
-      const second = new ApplicationRepository(
-        new AirtableClient({ baseId, token }),
-      );
+      const second = new ApplicationRepository(client());
       const changed = await second.updateManagement(
         "test",
         original.id,
@@ -46,21 +53,18 @@ describe.skipIf(!enabled)("Airtable application management", () => {
         }),
       ).rejects.toMatchObject({ status: 409, code: "stale_application" });
 
-      const fresh = new ApplicationRepository(
-        new AirtableClient({ baseId, token }),
-      );
+      const fresh = new ApplicationRepository(client());
       await expect(fresh.get("test", original.id)).resolves.toMatchObject({
         management: { requestOrTicketId: marker },
       });
     } finally {
       if (changedVersion) {
-        const cleanup = new ApplicationRepository(
-          new AirtableClient({ baseId, token }),
-        );
+        const cleanup = new ApplicationRepository(client());
         await cleanup.updateManagement("test", original.id, changedVersion, {
           requestOrTicketId: original.management.requestOrTicketId,
         });
       }
     }
+    expect(requestCount).toBe(25);
   });
 });
