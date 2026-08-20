@@ -30,18 +30,18 @@ Persistir un inventario representativo en Airtable y exponerlo mediante rutas `/
 
 ## Constitution Check
 
-*GATE: Passed before Phase 0 and re-checked after Phase 1.*
+_GATE: Passed before Phase 0 and re-checked after Phase 1._
 
-| Gate | Design evidence | Result |
-|---|---|---|
-| Seguridad/privacidad | Campos permitidos por DTO; no se consulta ni devuelve material de entrega | PASS |
-| Mínimo privilegio | Worker filtra por ambiente y alcance y exige `applications:read`; las escrituras se autorizan aparte | PASS |
-| Tres capas | Casos de uso existentes consumen `ApplicationRepository`; `RestApplicationRepository` encapsula HTTP | PASS |
-| Estado fiable | Respuesta del Worker es la única confirmación; errores conservan el último modelo confirmado | PASS |
-| Testing | Búsqueda/filtros en unidad y contrato; persistencia entre procesos contra Airtable de test | PASS |
-| Simplicidad/coste | Tres tablas normalizadas, API existente, Cache API y sin motor de búsqueda adicional | PASS |
-| Versionado | Contrato `/v1` y esquemas Zod explícitos | PASS |
-| Persistencia | Datos y gestiones se releen desde Airtable; fake no prueba la historia | PASS |
+| Gate                 | Design evidence                                                                                      | Result |
+| -------------------- | ---------------------------------------------------------------------------------------------------- | ------ |
+| Seguridad/privacidad | Campos permitidos por DTO; no se consulta ni devuelve material de entrega                            | PASS   |
+| Mínimo privilegio    | Worker filtra por ambiente y alcance y exige `applications:read`; las escrituras se autorizan aparte | PASS   |
+| Tres capas           | Casos de uso existentes consumen `ApplicationRepository`; `RestApplicationRepository` encapsula HTTP | PASS   |
+| Estado fiable        | Respuesta del Worker es la única confirmación; errores conservan el último modelo confirmado         | PASS   |
+| Testing              | Búsqueda/filtros en unidad y contrato; persistencia entre procesos contra Airtable de test           | PASS   |
+| Simplicidad/coste    | Tres tablas normalizadas, API existente, Cache API y sin motor de búsqueda adicional                 | PASS   |
+| Versionado           | Contrato `/v1` y esquemas Zod explícitos                                                             | PASS   |
+| Persistencia         | Datos y gestiones se releen desde Airtable; fake no prueba la historia                               | PASS   |
 
 No hay violaciones constitucionales que justificar.
 
@@ -89,17 +89,33 @@ worker/tests/{unit,contract,integration}/
 
 ## Capacity Budget
 
-| Data | Budget |
-|---|---:|
-| Institutions | 24 |
-| API roles | 4 |
-| Applications | 24 |
-| Users from 002 | 6 |
-| Reserved credentials/delivery/idempotency | 250 |
-| Reserved audit events | 650 |
-| Operational margin | 42 |
-| **Maximum** | **1,000** |
+| Data                                      |    Budget |
+| ----------------------------------------- | --------: |
+| Institutions                              |        24 |
+| API roles                                 |         4 |
+| Applications                              |        24 |
+| Users from 002                            |         6 |
+| Reserved credentials/delivery/idempotency |       250 |
+| Reserved audit events                     |       650 |
+| Operational margin                        |        42 |
+| **Maximum**                               | **1,000** |
+
+### Request budget
+
+Con las 24 instituciones, 4 roles y 24 aplicaciones canónicas, cada tabla cabe en una sola
+página de lectura Airtable (`pageSize=100`). El seed de aplicaciones consume 13 llamadas tanto
+en una base vacía como en una base completamente sembrada: tres lecturas iniciales, siete lotes
+de escritura de hasta diez registros y tres relecturas. Una base parcialmente sembrada puede
+dividir cada tabla entre lotes de creación y actualización; el peor caso calculado es 20 llamadas.
+
+La integración de gestión con conflicto controlado consume 25 llamadas con los fixtures actuales:
+cinco para la lectura inicial, siete para la escritura y relectura desde un segundo cliente, una
+para rechazar la escritura obsoleta, cinco para verificar desde un cliente nuevo y siete para
+restaurar y releer el fixture. Seed y escenario completo suman 38 llamadas en el caso normal o 45
+en el peor caso parcial, un máximo del 4,5 % del presupuesto mensual de 1.000 llamadas definido
+para este candidato. No hay polling; cualquier paginación adicional debe volver a medirse si una
+tabla supera 100 registros.
 
 ## Delivery and Validation
 
-Validar primero mappers, normalización, autorización y conflictos. Ejecutar después contrato local y una prueba bajo demanda que actualice una gestión, destruya el cliente/sesión, vuelva a leerla con otro usuario autorizado y restaure el fixture. Medir el número de llamadas y confirmar que no existe polling.
+Validar primero mappers, normalización, autorización y conflictos. Ejecutar después contrato local y una prueba bajo demanda que actualice una gestión, rechace una escritura obsoleta, destruya el cliente/sesión, vuelva a leerla con otro usuario autorizado y restaure el fixture. Confirmar que el recuento observado coincide con el presupuesto y que no existe polling.

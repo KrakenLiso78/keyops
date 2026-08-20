@@ -77,7 +77,7 @@
 
 - [x] T026 [P] [US-DATA-03] Escribir tests fallidos de validación, permiso, `If-Match`, 409 y 503 en `worker/tests/contract/application-management.contract.test.ts`
 - [x] T027 [P] [US-DATA-03] Escribir test móvil fallido de confirmación/error/último valor en `mobile/tests/component/management-context.test.tsx`
-- [ ] T028 [US-DATA-03] Escribir integración Airtable fallida entre dos clientes en `worker/tests/integration/airtable-application-management.test.ts`
+- [x] T028 [US-DATA-03] Escribir integración Airtable fallida entre dos clientes en `worker/tests/integration/airtable-application-management.test.ts`
 
 ### Implementation
 

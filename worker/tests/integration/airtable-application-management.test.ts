@@ -7,7 +7,7 @@ declare const process: { env: Record<string, string | undefined> };
 const enabled = process.env.RUN_AIRTABLE_INTEGRATION === "1";
 
 describe.skipIf(!enabled)("Airtable application management", () => {
-  it("persists across fresh clients and restores the original ticket", async () => {
+  it("persists across clients, rejects a stale write and restores the fixture", async () => {
     const baseId = process.env.AIRTABLE_BASE_ID;
     const token = process.env.AIRTABLE_PAT;
     if (!baseId || !token)
@@ -26,9 +26,13 @@ describe.skipIf(!enabled)("Airtable application management", () => {
       );
     }
     const marker = `INTEGRATION-${Date.now()}`;
+    const staleMarker = `${marker}-STALE`;
     let changedVersion: string | undefined;
     try {
-      const changed = await first.updateManagement(
+      const second = new ApplicationRepository(
+        new AirtableClient({ baseId, token }),
+      );
+      const changed = await second.updateManagement(
         "test",
         original.id,
         original.updatedAt,
@@ -36,10 +40,16 @@ describe.skipIf(!enabled)("Airtable application management", () => {
       );
       changedVersion = changed.updatedAt;
 
-      const second = new ApplicationRepository(
+      await expect(
+        first.updateManagement("test", original.id, original.updatedAt, {
+          requestOrTicketId: staleMarker,
+        }),
+      ).rejects.toMatchObject({ status: 409, code: "stale_application" });
+
+      const fresh = new ApplicationRepository(
         new AirtableClient({ baseId, token }),
       );
-      await expect(second.get("test", original.id)).resolves.toMatchObject({
+      await expect(fresh.get("test", original.id)).resolves.toMatchObject({
         management: { requestOrTicketId: marker },
       });
     } finally {
