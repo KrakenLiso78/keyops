@@ -160,7 +160,10 @@ export async function handleRequest(
   try {
     const url = new URL(request.url);
     if (url.pathname === "/v1/health" && request.method === "GET") {
-      return healthResponse(context.requestId);
+      return healthResponse(
+        context.requestId,
+        env.KEYOPS_MODE === "fake" ? "fake" : "real",
+      );
     }
 
     if (/^\/v[12]\//u.test(url.pathname)) {

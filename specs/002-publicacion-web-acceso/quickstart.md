@@ -7,6 +7,26 @@
 - Cloudflare account on the Free plan.
 - Worker secrets: `AIRTABLE_PAT`, `AIRTABLE_BASE_ID`, `DEMO_CREDENTIALS_JSON`, `SESSION_SIGNING_KEY`.
 
+## Runtime mode
+
+`KEYOPS_MODE` is a Worker configuration variable, never a browser setting:
+
+- `fake` is the deployed default. It serves the representative catalog from the Worker while
+  retaining Airtable for authorized users, operational context, synthetic credentials and audit.
+- `real` disables that catalog and uses only configured external catalog, identity, credential,
+  delivery and compliance providers. Missing provider configuration is reported as unavailable;
+  it never falls back to representative data.
+
+Deploy a mode explicitly from `worker/`:
+
+```bash
+npx wrangler deploy --var KEYOPS_MODE:fake
+# or, once every external provider is configured:
+npx wrangler deploy --var KEYOPS_MODE:real
+```
+
+`GET /v1/health` returns the active `mode` without exposing configuration values or secrets.
+
 ## Local verification
 
 ```bash

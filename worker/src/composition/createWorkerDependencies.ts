@@ -1,6 +1,7 @@
 import { AirtableClient } from "../airtable/AirtableClient";
 import { ApplicationOperationalContextRepository } from "../airtable/ApplicationOperationalContextRepository";
 import { CorporateCatalogHttpAdapter } from "../catalog/CorporateCatalogHttpAdapter";
+import { DemoCatalogAdapter } from "../catalog/DemoCatalogAdapter";
 import type { ValidatedEnv } from "../config/env";
 import { OidcHttpAdapter } from "../identity/OidcHttpAdapter";
 import { RealCredentialReferenceRepository } from "../airtable/RealCredentialReferenceRepository";
@@ -18,24 +19,32 @@ export function createWorkerDependencies(config: ValidatedEnv) {
     airtable,
     realReferences,
     operationalContexts: new ApplicationOperationalContextRepository(airtable),
-    catalog: config.catalog
-      ? new CorporateCatalogHttpAdapter(config.catalog)
-      : undefined,
-    oidc: config.oidc ? new OidcHttpAdapter(config.oidc) : undefined,
-    realCredentials: config.realCredentials
-      ? {
-          provider: new CredentialProviderHttpAdapter(
-            config.realCredentials.provider,
-          ),
-          delivery: new SecureDeliveryHttpAdapter(
-            config.realCredentials.delivery,
-          ),
-          references: realReferences,
-          allowedEnvironments: config.realCredentials.allowedEnvironments,
-        }
-      : undefined,
-    complianceAudit: config.complianceAudit
-      ? new ComplianceAuditHttpAdapter(config.complianceAudit)
-      : undefined,
+    catalog:
+      config.mode === "fake"
+        ? new DemoCatalogAdapter()
+        : config.catalog
+          ? new CorporateCatalogHttpAdapter(config.catalog)
+          : undefined,
+    oidc:
+      config.mode === "real" && config.oidc
+        ? new OidcHttpAdapter(config.oidc)
+        : undefined,
+    realCredentials:
+      config.mode === "real" && config.realCredentials
+        ? {
+            provider: new CredentialProviderHttpAdapter(
+              config.realCredentials.provider,
+            ),
+            delivery: new SecureDeliveryHttpAdapter(
+              config.realCredentials.delivery,
+            ),
+            references: realReferences,
+            allowedEnvironments: config.realCredentials.allowedEnvironments,
+          }
+        : undefined,
+    complianceAudit:
+      config.mode === "real" && config.complianceAudit
+        ? new ComplianceAuditHttpAdapter(config.complianceAudit)
+        : undefined,
   };
 }

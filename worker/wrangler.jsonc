@@ -3,6 +3,9 @@
   "name": "keyops-web",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-15",
+  "vars": {
+    "KEYOPS_MODE": "fake",
+  },
   "assets": {
     "directory": "../mobile/dist",
     "binding": "ASSETS",

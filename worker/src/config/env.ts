@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export interface WorkerEnv {
+  KEYOPS_MODE?: "fake" | "real";
   AIRTABLE_BASE_ID: string;
   AIRTABLE_PAT: string;
   DEMO_CREDENTIALS_JSON: string;
@@ -26,6 +27,7 @@ export interface WorkerEnv {
 
 const workerEnvSchema = z
   .object({
+    KEYOPS_MODE: z.enum(["fake", "real"]).default("real"),
     AIRTABLE_BASE_ID: z.string().regex(/^app[A-Za-z0-9]{14}$/),
     AIRTABLE_PAT: z.string().min(10),
     DEMO_CREDENTIALS_JSON: z.string().min(2),
@@ -98,6 +100,7 @@ const workerEnvSchema = z
   });
 
 export interface ValidatedEnv {
+  mode: "fake" | "real";
   airtableBaseId: string;
   airtablePat: string;
   demoCredentials: Readonly<Record<string, string>>;
@@ -139,6 +142,7 @@ export function validateEnv(env: WorkerEnv): ValidatedEnv {
         )
     : undefined;
   return {
+    mode: parsed.KEYOPS_MODE,
     airtableBaseId: parsed.AIRTABLE_BASE_ID,
     airtablePat: parsed.AIRTABLE_PAT,
     demoCredentials: credentials,
