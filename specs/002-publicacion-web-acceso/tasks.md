@@ -8,11 +8,11 @@
 
 **Purpose**: Crear el único Worker compartido y fijar versiones/configuración.
 
-- [X] T001 Crear `.nvmrc` con Node 25.9.0 y alinear `engines`/`packageManager` en `mobile/package.json`
-- [X] T002 Crear el proyecto TypeScript del Worker en `worker/package.json`, `worker/package-lock.json` y `worker/tsconfig.json` con Wrangler 4.115.0, Vitest 4.1.10 y scripts `test`, `dev`, `deploy` y `test:contract`
-- [X] T003 Configurar `worker/wrangler.jsonc` con `compatibility_date`, activos `../mobile/dist`, fallback SPA y ejecución prioritaria de `/v1/*`
-- [X] T004 [P] Crear ejemplos sin secretos en `worker/.dev.vars.example` y `mobile/.env.example` y comprobar exclusiones en `.gitignore`
-- [X] T005 [P] Crear el router y respuesta de salud versionada en `worker/src/index.ts` y `worker/src/routes/v1/health.ts`
+- [x] T001 Crear `.nvmrc` con Node 25.9.0 y alinear `engines`/`packageManager` en `mobile/package.json`
+- [x] T002 Crear el proyecto TypeScript del Worker en `worker/package.json`, `worker/package-lock.json` y `worker/tsconfig.json` con Wrangler 4.115.0, Vitest 4.1.10 y scripts `test`, `dev`, `deploy` y `test:contract`
+- [x] T003 Configurar `worker/wrangler.jsonc` con `compatibility_date`, activos `../mobile/dist`, fallback SPA y ejecución prioritaria de `/v1/*`
+- [x] T004 [P] Crear ejemplos sin secretos en `worker/.dev.vars.example` y `mobile/.env.example` y comprobar exclusiones en `.gitignore`
+- [x] T005 [P] Crear el router y respuesta de salud versionada en `worker/src/index.ts` y `worker/src/routes/v1/health.ts`
 
 **Checkpoint**: `mobile/dist` y `/v1/health` se sirven desde `wrangler dev` sin credenciales reales.
 
@@ -20,15 +20,15 @@
 
 **Purpose**: Infraestructura común que bloquea las historias de esta feature y las features 003–005.
 
-- [X] T006 [P] Definir y validar bindings/secretos en `worker/src/config/env.ts` sin exponer valores en logs
-- [X] T007 [P] Implementar errores, request ID y respuestas JSON controladas en `worker/src/http/ApiError.ts` y `worker/src/http/requestContext.ts`
-- [X] T008 [P] Implementar `worker/src/airtable/AirtableClient.ts` con timeout, paginación, batching, manejo de 429 y redacción
-- [X] T009 Crear schemas y mapper de usuario Airtable en `worker/src/airtable/userSchema.ts` y `worker/src/airtable/userMapper.ts`
-- [X] T010 Implementar lectura de usuario por identificador/ID en `worker/src/airtable/UserRepository.ts`
-- [X] T011 [P] Implementar firma/verificación HMAC y expiración en `worker/src/auth/sessionToken.ts`
-- [X] T012 Implementar autenticación y autorización deny-by-default en `worker/src/auth/authenticate.ts` y `worker/src/auth/authorize.ts`
-- [X] T013 [P] Crear fixtures y adaptador Airtable en memoria para tests del Worker en `worker/tests/fixtures/users.ts` y `worker/tests/support/InMemoryAirtable.ts`
-- [X] T014 [P] Crear el contrato de trazabilidad de resultados en `worker/src/audit/AuditSink.ts` para que la feature 005 conecte su persistencia
+- [x] T006 [P] Definir y validar bindings/secretos en `worker/src/config/env.ts` sin exponer valores en logs
+- [x] T007 [P] Implementar errores, request ID y respuestas JSON controladas en `worker/src/http/ApiError.ts` y `worker/src/http/requestContext.ts`
+- [x] T008 [P] Implementar `worker/src/airtable/AirtableClient.ts` con timeout, paginación, batching, manejo de 429 y redacción
+- [x] T009 Crear schemas y mapper de usuario Airtable en `worker/src/airtable/userSchema.ts` y `worker/src/airtable/userMapper.ts`
+- [x] T010 Implementar lectura de usuario por identificador/ID en `worker/src/airtable/UserRepository.ts`
+- [x] T011 [P] Implementar firma/verificación HMAC y expiración en `worker/src/auth/sessionToken.ts`
+- [x] T012 Implementar autenticación y autorización deny-by-default en `worker/src/auth/authenticate.ts` y `worker/src/auth/authorize.ts`
+- [x] T013 [P] Crear fixtures y adaptador Airtable en memoria para tests del Worker en `worker/tests/fixtures/users.ts` y `worker/tests/support/InMemoryAirtable.ts`
+- [x] T014 [P] Crear el contrato de trazabilidad de resultados en `worker/src/audit/AuditSink.ts` para que la feature 005 conecte su persistencia
 
 **Checkpoint**: La infraestructura autentica, vuelve a cargar permisos y rechaza por defecto; aún no se declara superada la trazabilidad persistente de acceso.
 
@@ -40,21 +40,21 @@
 
 ### Tests
 
-- [X] T015 [P] [US-WEB-01] Escribir tests unitarios fallidos de token, expiración, usuario deshabilitado y permisos en `worker/tests/unit/auth.test.ts`
-- [X] T016 [P] [US-WEB-01] Escribir tests de contrato fallidos para `POST /v1/sessions` y `GET /v1/session` en `worker/tests/contract/session.contract.test.ts`
-- [X] T017 [P] [US-WEB-01] Escribir tests móviles fallidos de login, restauración, cierre y rutas protegidas en `mobile/tests/integration/auth-flow.test.tsx`
-- [X] T018 [P] [US-WEB-01] Escribir test de seguridad fallido para secretos/errores genéricos en `worker/tests/security/session-redaction.test.ts`
+- [x] T015 [P] [US-WEB-01] Escribir tests unitarios fallidos de token, expiración, usuario deshabilitado y permisos en `worker/tests/unit/auth.test.ts`
+- [x] T016 [P] [US-WEB-01] Escribir tests de contrato fallidos para `POST /v1/sessions` y `GET /v1/session` en `worker/tests/contract/session.contract.test.ts`
+- [x] T017 [P] [US-WEB-01] Escribir tests móviles fallidos de login, restauración, cierre y rutas protegidas en `mobile/tests/integration/auth-flow.test.tsx`
+- [x] T018 [P] [US-WEB-01] Escribir test de seguridad fallido para secretos/errores genéricos en `worker/tests/security/session-redaction.test.ts`
 
 ### Implementation
 
-- [X] T019 [US-WEB-01] Implementar creación/restauración de sesión conforme al contrato en `worker/src/routes/v1/sessions.ts`
-- [X] T020 [US-WEB-01] Conectar autenticación y emisión de resultados auditables en `worker/src/index.ts` sin persistir cuerpos ni contraseñas
-- [X] T021 [P] [US-WEB-01] Actualizar schemas/mappers de sesión en `mobile/src/data/schemas/session.ts` y `mobile/src/data/mappers/sessionMapper.ts`
-- [X] T022 [US-WEB-01] Sustituir el alias fake por `RestAuthRepository` real en `mobile/src/data/repositories/RestAuthRepository.ts`
-- [X] T023 [US-WEB-01] Hacer `remote` el origen predeterminado y validar URL/modo en `mobile/src/composition/runtimeConfig.ts` y `mobile/src/composition/createAppDependencies.ts`
-- [X] T024 [US-WEB-01] Consolidar inyección y estado de sesión en `mobile/src/composition/DependenciesProvider.tsx`, retirar el `SessionProvider` redundante y centralizar la sesión en `mobile/src/presentation/state/AppProvider.tsx`
-- [X] T025 [US-WEB-01] Aplicar guardas por sesión/permiso a navegación directa en `mobile/src/app/(protected)/_layout.tsx` y rutas protegidas
-- [X] T026 [US-WEB-01] Limpiar token y estado sensible al cerrar/caducar sesión en `mobile/src/presentation/controllers/useSignInController.ts` y `mobile/src/data/session/SecureStoreSessionStore.ts`
+- [x] T019 [US-WEB-01] Implementar creación/restauración de sesión conforme al contrato en `worker/src/routes/v1/sessions.ts`
+- [x] T020 [US-WEB-01] Conectar autenticación y emisión de resultados auditables en `worker/src/index.ts` sin persistir cuerpos ni contraseñas
+- [x] T021 [P] [US-WEB-01] Actualizar schemas/mappers de sesión en `mobile/src/data/schemas/session.ts` y `mobile/src/data/mappers/sessionMapper.ts`
+- [x] T022 [US-WEB-01] Sustituir el alias fake por `RestAuthRepository` real en `mobile/src/data/repositories/RestAuthRepository.ts`
+- [x] T023 [US-WEB-01] Hacer `remote` el origen predeterminado y validar URL/modo en `mobile/src/composition/runtimeConfig.ts` y `mobile/src/composition/createAppDependencies.ts`
+- [x] T024 [US-WEB-01] Consolidar inyección y estado de sesión en `mobile/src/composition/DependenciesProvider.tsx`, retirar el `SessionProvider` redundante y centralizar la sesión en `mobile/src/presentation/state/AppProvider.tsx`
+- [x] T025 [US-WEB-01] Aplicar guardas por sesión/permiso a navegación directa en `mobile/src/app/(protected)/_layout.tsx` y rutas protegidas
+- [x] T026 [US-WEB-01] Limpiar token y estado sensible al cerrar/caducar sesión en `mobile/src/presentation/controllers/useSignInController.ts` y `mobile/src/data/session/SecureStoreSessionStore.ts`
 
 **Checkpoint**: Acceso y autorización funcionan contra Worker; el criterio de evento persistente queda condicionado a la integración de feature 005.
 
@@ -66,14 +66,14 @@
 
 ### Tests
 
-- [X] T027 [P] [US-WEB-02] Escribir tests fallidos de reducción/reset y carrera de cambio de ambiente en `mobile/tests/unit/environment-state.test.tsx`
-- [X] T028 [P] [US-WEB-02] Escribir test de componente fallido de identificación visible en `mobile/tests/component/environment-banner.test.tsx`
+- [x] T027 [P] [US-WEB-02] Escribir tests fallidos de reducción/reset y carrera de cambio de ambiente en `mobile/tests/unit/environment-state.test.tsx`
+- [x] T028 [P] [US-WEB-02] Escribir test de componente fallido de identificación visible en `mobile/tests/component/environment-banner.test.tsx`
 
 ### Implementation
 
-- [X] T029 [US-WEB-02] Centralizar cambio y reset inmutable en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`
-- [X] T030 [US-WEB-02] Cancelar/ignorar respuestas del ambiente anterior en `mobile/src/data/http/EnvironmentRequestScope.ts` y controladores dependientes
-- [X] T031 [US-WEB-02] Mostrar ambiente y etiqueta de demostración en todo el chrome protegido desde `mobile/src/presentation/components/environment/index.tsx` y `mobile/src/presentation/components/chrome.tsx`
+- [x] T029 [US-WEB-02] Centralizar cambio y reset inmutable en `mobile/src/presentation/state/EnvironmentProvider.tsx` y `mobile/src/presentation/state/resetEnvironmentState.ts`
+- [x] T030 [US-WEB-02] Cancelar/ignorar respuestas del ambiente anterior en `mobile/src/data/http/EnvironmentRequestScope.ts` y controladores dependientes
+- [x] T031 [US-WEB-02] Mostrar ambiente y etiqueta de demostración en todo el chrome protegido desde `mobile/src/presentation/components/environment/index.tsx` y `mobile/src/presentation/components/chrome.tsx`
 
 **Checkpoint**: Ningún dato visual del ambiente anterior sobrevive al cambio.
 
@@ -85,23 +85,23 @@
 
 ### Tests
 
-- [X] T032 [P] [US-WEB-03] Escribir test de accesibilidad/navegación de controles visibles en `mobile/tests/accessibility/web-navigation.test.tsx`
-- [X] T033 [P] [US-WEB-03] Fijar Playwright Test 1.61.1 en `mobile/package.json`/`mobile/package-lock.json` y crear el E2E fallido de ambos viewports en `mobile/playwright.config.ts` y `mobile/tests/e2e/web-access.spec.ts`
+- [x] T032 [P] [US-WEB-03] Escribir test de accesibilidad/navegación de controles visibles en `mobile/tests/accessibility/web-navigation.test.tsx`
+- [x] T033 [P] [US-WEB-03] Fijar Playwright Test 1.61.1 en `mobile/package.json`/`mobile/package-lock.json` y crear el E2E fallido de ambos viewports en `mobile/playwright.config.ts` y `mobile/tests/e2e/web-access.spec.ts`
 
 ### Implementation
 
-- [X] T034 [US-WEB-03] Retirar consumo y controles sin recorrido; mantener usuarios solo para administradores porque la feature 007 lo incorpora al alcance final, en `mobile/src/app/(protected)/_layout.tsx` y el chrome
-- [X] T035 [US-WEB-03] Corregir overflow/foco/scroll y semántica de encabezados en los componentes afectados bajo `mobile/src/presentation/components/`
-- [X] T036 [US-WEB-03] Añadir scripts reproducibles `export:web`, `test:e2e` y preview Worker en `mobile/package.json` y `worker/package.json`
+- [x] T034 [US-WEB-03] Retirar consumo y controles sin recorrido; mantener usuarios solo para administradores porque la feature 007 lo incorpora al alcance final, en `mobile/src/app/(protected)/_layout.tsx` y el chrome
+- [x] T035 [US-WEB-03] Corregir overflow/foco/scroll y semántica de encabezados en los componentes afectados bajo `mobile/src/presentation/components/`
+- [x] T036 [US-WEB-03] Añadir scripts reproducibles `export:web`, `test:e2e` y preview Worker en `mobile/package.json` y `worker/package.json`
 
 **Checkpoint**: Preview web recorrible en ambos tamaños, sin desplazamiento horizontal ni controles inertes.
 
 ## Phase 6: Validation and release evidence
 
-- [X] T037 [P] Ejecutar y documentar `npm run validate` móvil y tests Worker en `specs/002-publicacion-web-acceso/quickstart.md`
+- [x] T037 [P] Ejecutar y documentar `npm run validate` móvil y tests Worker en `specs/002-publicacion-web-acceso/quickstart.md`
 - [ ] T038 Ejecutar bajo demanda la prueba de usuario persistente contra Airtable de test desde `worker/tests/integration/airtable-session.test.ts`
 - [ ] T039 Publicar preview, recorrer ambos viewports y registrar URL/fecha/limitaciones en `specs/002-publicacion-web-acceso/quickstart.md`
-- [ ] T040 Revalidar límites Free y revisar bundle/logs por secretos antes del checkpoint de la feature
+- [x] T040 Revalidar límites Free y revisar bundle/logs por secretos antes del checkpoint de la feature
 
 ## Dependencies & Execution Order
 
