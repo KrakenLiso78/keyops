@@ -24,12 +24,16 @@ export interface AirtableClientOptions {
 }
 
 export class AirtableClient {
-  private readonly fetcher: typeof fetch;
+  private readonly fetcher: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
   private readonly timeoutMs: number;
   private readonly maxRetries: number;
 
   constructor(private readonly options: AirtableClientOptions) {
-    this.fetcher = options.fetcher ?? fetch;
+    this.fetcher = (input, init) =>
+      options.fetcher ? options.fetcher(input, init) : fetch(input, init);
     this.timeoutMs = options.timeoutMs ?? 8_000;
     this.maxRetries = options.maxRetries ?? 3;
   }
