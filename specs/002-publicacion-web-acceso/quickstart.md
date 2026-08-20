@@ -28,11 +28,17 @@ In another terminal, run Expo Web configured with `EXPO_PUBLIC_DATA_SOURCE=remot
 
 Run the Worker integration script against the dedicated Airtable test base. Disable a seeded user in Airtable, start a new process and verify that `GET /v1/session` rejects the existing token. Re-enable the fixture after the test.
 
+### Persistent evidence — 2026-08-20
+
+- `RUN_AIRTABLE_INTEGRATION=1 npx vitest run tests/integration/airtable-session.test.ts` passed against base `appnNMuwzI72qsjyE`.
+- The test disabled the seeded user through one Airtable client, observed the disabled state from a fresh client and restored the original record in cleanup.
+- Airtable omits unchecked checkbox fields. The persisted-user mapper now treats an absent `enabled` field as `false`, with a unit regression covering that representation.
+
 ## Published verification
 
 Export `mobile/dist`, deploy a Worker preview, and complete sign-in, navigation and environment change at 390 × 844 and 360 × 800. Confirm that `/v1/*` returns JSON and unknown client routes use the SPA fallback. Record the preview URL and date as evidence; do not claim native or corporate-identity validation.
 
-### Published preview evidence — 2026-08-20
+### Historical Quick Tunnel evidence — 2026-08-20
 
 - Quick Tunnel: `https://tropical-thrown-colours-tribunal.trycloudflare.com/sign-in`.
 - The exported fake build loaded through the public URL, accepted the demonstration administrator
@@ -44,6 +50,14 @@ Export `mobile/dist`, deploy a Worker preview, and complete sign-in, navigation 
   not a deployment or an availability result.
 - The preview uses `EXPO_PUBLIC_DATA_SOURCE=fake`; it does not validate Airtable persistence,
   deployed Worker routing, native iOS behavior or corporate identity.
+
+### Canonical Vercel publication — pending Worker connection
+
+- Fixed frontend URL: `https://keyops-three.vercel.app/sign-in`.
+- On 2026-08-20 the sign-in interface loaded, but `https://keyops-three.vercel.app/v1/health`
+  returned the SPA `index.html` rather than Worker JSON.
+- The Vercel publication therefore does not yet prove remote sign-in or Airtable persistence.
+  T039 remains open until `/v1/*` reaches the deployed Worker and the two viewport journeys pass.
 
 ## Free-tier and secret review — 2026-08-20
 

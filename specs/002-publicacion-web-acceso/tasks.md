@@ -99,8 +99,8 @@
 ## Phase 6: Validation and release evidence
 
 - [x] T037 [P] Ejecutar y documentar `npm run validate` móvil y tests Worker en `specs/002-publicacion-web-acceso/quickstart.md`
-- [ ] T038 Ejecutar bajo demanda la prueba de usuario persistente contra Airtable de test desde `worker/tests/integration/airtable-session.test.ts`
-- [x] T039 Publicar preview, recorrer ambos viewports y registrar URL/fecha/limitaciones en `specs/002-publicacion-web-acceso/quickstart.md`
+- [x] T038 Ejecutar bajo demanda la prueba de usuario persistente contra Airtable de test desde `worker/tests/integration/airtable-session.test.ts`
+- [ ] T039 Publicar Vercel conectado al Worker/Airtable, recorrer ambos viewports y registrar URL/fecha/limitaciones en `specs/002-publicacion-web-acceso/quickstart.md`
 - [x] T040 Revalidar límites Free y revisar bundle/logs por secretos antes del checkpoint de la feature
 
 ## Dependencies & Execution Order
@@ -122,3 +122,8 @@
 2. Completar acceso remoto y rutas protegidas.
 3. Añadir separación de ambiente.
 4. Validar navegador móvil y conectar auditoría 005 antes de declarar la feature completa.
+
+## Phase 7: Convergence
+
+- [x] T041 Añadir regresión del checkbox Airtable desmarcado en `worker/tests/unit/user-mapper.test.ts`
+- [x] T042 Interpretar `enabled` ausente como usuario deshabilitado en `worker/src/airtable/userSchema.ts`

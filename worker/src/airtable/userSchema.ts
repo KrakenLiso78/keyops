@@ -22,7 +22,7 @@ export const userFieldsSchema = z.object({
   loginIdentifier: z.string().min(1),
   displayName: z.string().min(1),
   profile: z.enum(["analyst", "senior_analyst", "administrator", "auditor"]),
-  enabled: z.boolean(),
+  enabled: z.boolean().default(false),
   permissions: z.array(permissionSchema).default([]),
   institutionIds: z.array(z.string().min(1)).optional(),
   updatedAt: z.string().optional(),
