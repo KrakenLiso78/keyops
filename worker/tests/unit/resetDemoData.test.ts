@@ -13,6 +13,8 @@ describe("reset demo data", () => {
     await expect(resetDemoData(client)).resolves.toMatchObject({
       Users: 4,
       Applications: 24,
+      Credentials: 6,
+      CredentialVersions: 7,
       AuditEvents: 0,
     });
     expect(client.list).toHaveBeenCalledWith("ApplicationOperationalContexts");
@@ -23,7 +25,20 @@ describe("reset demo data", () => {
     expect(client.createMany).toHaveBeenCalledWith(
       "Applications",
       expect.arrayContaining([
-        expect.objectContaining({ applicationId: "app-001" }),
+        expect.objectContaining({
+          applicationId: "app-002",
+          credentialState: "active",
+          currentCredentialId: "cred-app-002-test",
+        }),
+      ]),
+    );
+    expect(client.createMany).toHaveBeenCalledWith(
+      "Credentials",
+      expect.arrayContaining([
+        expect.objectContaining({
+          credentialId: "cred-app-002-test",
+          applicationId: "app-002",
+        }),
       ]),
     );
   });

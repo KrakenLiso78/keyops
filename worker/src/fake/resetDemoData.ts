@@ -3,6 +3,7 @@ import {
   TABLE_NAMES,
   airtableSeed,
 } from "../../scripts/airtable/seed-data.mjs";
+import credentialFixture from "../../scripts/airtable/fixtures/credentials.json" with { type: "json" };
 import type { AirtableClient } from "../airtable/AirtableClient";
 
 const RESET_DELETE_ORDER = [
@@ -11,7 +12,37 @@ const RESET_DELETE_ORDER = [
 ] as const;
 
 type ResetClient = Pick<AirtableClient, "createMany" | "deleteMany" | "list">;
-const seed = airtableSeed as Record<string, Record<string, unknown>[]>;
+const credentialSeed = credentialFixture as {
+  credentials: Record<string, unknown>[];
+  versions: Record<string, unknown>[];
+};
+const credentialByApplication = new Map(
+  credentialSeed.credentials.map((credential) => [
+    String(credential.applicationId),
+    credential,
+  ]),
+);
+const seed: Record<string, Record<string, unknown>[]> = {
+  ...(airtableSeed as Record<string, Record<string, unknown>[]>),
+  Applications: (airtableSeed.Applications as Record<string, unknown>[]).map(
+    (application) => {
+      const credential = credentialByApplication.get(
+        String(application.applicationId),
+      );
+      return credential
+        ? {
+            ...application,
+            currentCredentialId: credential.credentialId,
+            credentialState: credential.state,
+            lastChangedAt: credential.lastChangedAt,
+            updatedAt: credential.lastChangedAt,
+          }
+        : application;
+    },
+  ),
+  Credentials: credentialSeed.credentials,
+  CredentialVersions: credentialSeed.versions,
+};
 
 export async function resetDemoData(client: ResetClient) {
   const existing = new Map<string, string[]>();
