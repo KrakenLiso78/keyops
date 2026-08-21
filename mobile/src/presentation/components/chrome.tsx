@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import Constants from 'expo-constants';
+import { appVersion, appVersionLabel } from '@/constants/appVersion';
 import type { CredentialState, Environment } from '@/domain/model/types';
 import { colors, space } from '@/presentation/design-system';
 
@@ -16,8 +16,6 @@ const stateContent: Record<CredentialState, { label: string; background: string;
     },
     revoked: { label: 'Revocada', background: colors.rose, color: colors.error },
   };
-
-const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
 export function AppHeader({ onMenu, onSignOut }: { onMenu?: () => void; onSignOut?: () => void }) {
   return (
@@ -38,7 +36,7 @@ export function AppHeader({ onMenu, onSignOut }: { onMenu?: () => void; onSignOu
       />
       <View style={styles.headerSpacer} />
       <Text accessibilityLabel={`Versión ${appVersion}`} style={styles.version}>
-        v{appVersion}
+        {appVersionLabel}
       </Text>
       {onSignOut ? (
         <Pressable

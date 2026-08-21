@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { appVersion, appVersionLabel } from '@/constants/appVersion';
 import { Button, Field, Heading, Screen } from '@/presentation/components/base';
 import { colors, space } from '@/presentation/design-system';
 import { firstAllowedPath } from '@/presentation/navigation/authorization';
@@ -89,6 +90,9 @@ export default function SignInScreen() {
               </Pressable>
             </View>
           ) : null}
+          <Text accessibilityLabel={`Versión ${appVersion}`} style={styles.version}>
+            {appVersionLabel}
+          </Text>
           <View style={styles.cornerDecoration} />
         </View>
       </ScrollView>
@@ -121,6 +125,7 @@ const styles = StyleSheet.create({
   links: { alignItems: 'center', gap: 12, marginTop: space.sm },
   link: { color: colors.primaryDeep, fontSize: 15, fontWeight: '500' },
   error: { color: colors.error, fontSize: 13, textAlign: 'center' },
+  version: { color: colors.slate, fontSize: 11, marginTop: 'auto', textAlign: 'center' },
   cornerDecoration: {
     pointerEvents: 'none',
     position: 'absolute',
