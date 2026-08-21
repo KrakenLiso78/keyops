@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DeliveryGrantRepository } from "../../src/airtable/DeliveryGrantRepository";
+import { CredentialRepository } from "../../src/airtable/CredentialRepository";
 import { IdempotencyRepository } from "../../src/airtable/IdempotencyRepository";
 import type { AuthorizedUser } from "../../src/airtable/userSchema";
 import type { DeliveryGrantFields } from "../../src/airtable/operationSchema";
@@ -105,6 +106,29 @@ describe("credential foundation", () => {
         now,
       }),
     ).rejects.toMatchObject({ code: "idempotency_conflict", status: 409 });
+  });
+
+  it("derives fake application state from the credential seed table", async () => {
+    const store = new InMemoryCredentialStore({
+      Applications: [
+        {
+          applicationId: "app-006",
+          name: "Carpeta ciudadana",
+          searchName: "carpeta ciudadana",
+          institutionId: "inst-junta",
+          environment: "test",
+          roleId: "role-consulta",
+          declaredIps: "[]",
+          credentialState: "active",
+          lastChangedAt: now,
+          updatedAt: now,
+        },
+      ],
+    });
+    const repository = new CredentialRepository(store, "fake");
+    const application = await repository.getApplication("test", "app-006");
+    expect(application.fields.credentialState).toBe("no_credentials");
+    expect(application.fields.currentCredentialId).toBeUndefined();
   });
 
   it("invalidates an earlier grant and consumes a valid code once", async () => {

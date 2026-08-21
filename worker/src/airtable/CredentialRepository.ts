@@ -69,9 +69,21 @@ export class CredentialRepository {
           : "No se encontró la aplicación solicitada.",
       );
     }
+    const credential =
+      this.mode === "fake"
+        ? await this.findCredential(environment, applicationId)
+        : undefined;
     return {
       recordId: matches[0]!.id,
-      fields: applicationFieldsSchema.parse(matches[0]!.fields),
+      fields: {
+        ...applicationFieldsSchema.parse(matches[0]!.fields),
+        ...(this.mode === "fake"
+          ? {
+              credentialState: credential?.fields.state ?? "no_credentials",
+              currentCredentialId: credential?.fields.credentialId,
+            }
+          : {}),
+      },
     };
   }
 
