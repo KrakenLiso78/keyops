@@ -76,6 +76,7 @@ describe("credential foundation", () => {
       now,
     });
     expect(first.created).toBe(true);
+    expect(store.fields("IdempotencyRecords")[0]).not.toHaveProperty("now");
     await repository.commit(
       first.record,
       {

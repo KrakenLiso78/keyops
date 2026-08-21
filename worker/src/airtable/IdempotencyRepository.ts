@@ -53,7 +53,9 @@ export class IdempotencyRepository {
     ).toISOString();
     const created = mapRecord(
       await this.client.create<IdempotencyFields>("IdempotencyRecords", {
-        ...input,
+        scopeKey: input.scopeKey,
+        requestFingerprint: input.requestFingerprint,
+        operationId: input.operationId,
         status: "processing",
         expiresAt,
         createdAt: input.now,
