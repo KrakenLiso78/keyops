@@ -1,0 +1,32 @@
+name: Automatic Semantic Tagging
+
+on:
+  push:
+    branches:
+      - main  # Cambia por 'master' si tu rama principal se llama así
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # OBLIGATORIO: Permite a la acción crear etiquetas en el repositorio
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Descarga todo el historial para calcular correctamente el tag
+
+      - name: Generar versión y tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Token automático proporcionado por GitHub
+
+      - name: Crear GitHub Release (Opcional)
+        if: steps.tag_version.outputs.new_tag != ''
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
