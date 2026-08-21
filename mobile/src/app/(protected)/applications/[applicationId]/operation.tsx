@@ -106,7 +106,24 @@ export default function OperationScreen() {
     [registerReset, resetOperation],
   );
   const title = titles[action] ?? 'Operación sobre credencial';
-  const isReal = dependencies.dataSource === 'remote';
+  const [workerMode, setWorkerMode] = useState<'fake' | 'real'>('fake');
+  useEffect(() => {
+    if (dependencies.dataSource !== 'remote') {
+      setWorkerMode('fake');
+      return;
+    }
+    let active = true;
+    void dependencies
+      .getWorkerMode()
+      .then((mode) => {
+        if (active) setWorkerMode(mode);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [dependencies.dataSource, dependencies.getWorkerMode]);
+  const isReal = workerMode === 'real';
   const protectedDelivery =
     result?.delivery && isProtectedDelivery(result.delivery) ? result.delivery : undefined;
   const realDelivery =
