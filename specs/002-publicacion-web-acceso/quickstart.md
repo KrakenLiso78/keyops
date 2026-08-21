@@ -9,7 +9,10 @@
 
 ## Runtime mode
 
-`KEYOPS_MODE` is a Worker configuration variable, never a browser setting:
+El modo activo se guarda como un documento JSON en Airtable, en la tabla
+`RuntimeConfiguration` (registro `configurationId: runtime`). `KEYOPS_MODE` solo
+actúa como valor de arranque si todavía no existe ese registro; no es un ajuste
+del navegador.
 
 - `fake` is the deployed default. It reads the persistent representative catalog from Airtable,
   as well as authorized users, operational context, synthetic credentials and audit.
@@ -17,15 +20,25 @@
   delivery and compliance providers. Missing provider configuration is reported as unavailable;
   it never falls back to representative data.
 
-Deploy a mode explicitly from `worker/`:
+Antes de publicar esta versión, crea la tabla de configuración desde `worker/`:
 
 ```bash
-npx wrangler deploy --var KEYOPS_MODE:fake
-# or, once every external provider is configured:
-npx wrangler deploy --var KEYOPS_MODE:real
+npm run airtable:schema:migrate
 ```
 
-`GET /v1/health` returns the active `mode` without exposing configuration values or secrets.
+Un administrador puede cambiar el modo desde el menú de la aplicación. La
+acción guarda `{ "mode": "fake" }` o `{ "mode": "real" }`, solicita una
+recarga explícita y queda auditada. El Worker conserva ese valor en memoria
+durante un máximo de 60 segundos para reducir lecturas de Airtable.
+
+Cloudflare puede ejecutar más de un isolate del Worker: la recarga es inmediata
+en el isolate que atiende la acción y los demás aplican el cambio al caducar la
+caché o al reiniciarse. No hay un proceso global de Worker que pueda reiniciarse
+de forma atómica.
+
+`GET /v1/health` devuelve el `mode` efectivo sin exponer configuración ni
+secretos. El modo `real` no debe seleccionarse hasta contar con proveedores
+externos configurados: no cae de vuelta a los datos de demostración.
 
 ### Restaurar la demostración persistente
 

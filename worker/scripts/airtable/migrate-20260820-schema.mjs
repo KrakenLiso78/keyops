@@ -36,6 +36,11 @@ const existingTableAdditions = {
 };
 
 const newTables = {
+  RuntimeConfiguration: [
+    { name: "configurationId", type: "singleLineText" },
+    { name: "documentJson", type: "multilineText" },
+    { name: "updatedAt", type: "dateTime" },
+  ],
   ApplicationOperationalContexts: [
     { name: "contextId", type: "singleLineText" },
     { name: "catalogApplicationId", type: "singleLineText" },

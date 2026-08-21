@@ -30,8 +30,18 @@ const sortLabels = {
 export default function ApplicationsScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { environment, user, signOut } = useApp();
-  const { dataSource, getWorkerMode, resetFakeData } = useDependencies();
+  const {
+    dataSource,
+    getWorkerMode,
+    reloadWorkerMode,
+    resetFakeData,
+    setWorkerMode: persistWorkerMode,
+  } = useDependencies();
   const [workerMode, setWorkerMode] = useState<'fake' | 'real'>();
+  const [selectedWorkerMode, setSelectedWorkerMode] = useState<'fake' | 'real'>('fake');
+  const [modeConfigurationOpen, setModeConfigurationOpen] = useState(false);
+  const [savingWorkerMode, setSavingWorkerMode] = useState(false);
+  const [modeError, setModeError] = useState<string>();
   const [resettingDemo, setResettingDemo] = useState(false);
   const [resetConfirmationOpen, setResetConfirmationOpen] = useState(false);
   const [resetError, setResetError] = useState<string>();
@@ -75,6 +85,21 @@ export default function ApplicationsScreen() {
       })
       .finally(() => setResettingDemo(false));
   };
+  const applyWorkerMode = () => {
+    setSavingWorkerMode(true);
+    setModeError(undefined);
+    void persistWorkerMode(selectedWorkerMode)
+      .then(() => reloadWorkerMode())
+      .then((mode) => {
+        setWorkerMode(mode);
+        setModeConfigurationOpen(false);
+        controller.retry();
+      })
+      .catch((error: unknown) => {
+        setModeError(error instanceof Error ? error.message : 'No se pudo cambiar el modo.');
+      })
+      .finally(() => setSavingWorkerMode(false));
+  };
   const apps = controller.items;
   const resultCount = controller.total === 1 ? '1 resultado' : `${controller.total} resultados`;
 
@@ -102,6 +127,67 @@ export default function ApplicationsScreen() {
             >
               <Text style={styles.menuText}>Usuarios autorizados</Text>
             </Pressable>
+          ) : null}
+          {user?.profile === 'administrator' && dataSource === 'remote' ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Configurar modo de operación"
+              onPress={() => {
+                setSelectedWorkerMode(workerMode ?? 'fake');
+                setModeError(undefined);
+                setModeConfigurationOpen(true);
+              }}
+              style={styles.menuItem}
+            >
+              <Text style={styles.menuText}>Modo de operación: {workerMode ?? '…'}</Text>
+            </Pressable>
+          ) : null}
+          {modeConfigurationOpen ? (
+            <View style={styles.resetConfirmation}>
+              <Text style={styles.resetConfirmationText}>
+                Fake usa los datos persistentes de demostración. Real usa exclusivamente los
+                proveedores externos configurados y no muestra datos fake si no están disponibles.
+              </Text>
+              <View style={styles.modeOptions}>
+                {(['fake', 'real'] as const).map((mode) => (
+                  <Pressable
+                    key={mode}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: selectedWorkerMode === mode }}
+                    onPress={() => setSelectedWorkerMode(mode)}
+                    style={[
+                      styles.modeOption,
+                      selectedWorkerMode === mode && styles.modeOptionSelected,
+                    ]}
+                  >
+                    <Text style={styles.modeOptionText}>{mode}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              {modeError ? <Text style={styles.resetError}>{modeError}</Text> : null}
+              <View style={styles.resetActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancelar cambio de modo"
+                  disabled={savingWorkerMode}
+                  onPress={() => setModeConfigurationOpen(false)}
+                  style={styles.resetCancel}
+                >
+                  <Text style={styles.resetCancelText}>Cancelar</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Guardar y recargar modo"
+                  disabled={savingWorkerMode}
+                  onPress={applyWorkerMode}
+                  style={styles.resetConfirm}
+                >
+                  <Text style={styles.resetConfirmText}>
+                    {savingWorkerMode ? 'Guardando…' : 'Guardar y recargar'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
           ) : null}
           {user?.profile === 'administrator' && workerMode === 'fake' ? (
             <Pressable
@@ -405,6 +491,10 @@ const styles = StyleSheet.create({
   resetConfirmationText: { color: colors.ink, fontSize: 13, lineHeight: 18 },
   resetError: { color: colors.error, fontSize: 13 },
   resetActions: { flexDirection: 'row', gap: space.xs },
+  modeOptions: { flexDirection: 'row', gap: space.xs },
+  modeOption: { borderColor: colors.hairline, borderRadius: 8, borderWidth: 1, padding: space.xs },
+  modeOptionSelected: { backgroundColor: colors.lavender, borderColor: colors.primary },
+  modeOptionText: { color: colors.ink, fontWeight: '700' },
   resetCancel: {
     borderColor: colors.hairline,
     borderRadius: 8,

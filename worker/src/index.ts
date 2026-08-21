@@ -23,6 +23,9 @@ import { corporateAuthRoute } from "./routes/v1/auth";
 import { InMemoryAuthorizationReplayStore } from "./auth/authorizationTransaction";
 import { usersRoute } from "./routes/v1/users";
 import { fakeRoute } from "./routes/v1/fake";
+import { runtimeConfigurationRoute } from "./routes/v1/runtimeConfiguration";
+import { RuntimeConfigurationRepository } from "./runtime/RuntimeConfigurationRepository";
+import { RuntimeModeCache } from "./runtime/RuntimeModeCache";
 import { v2Route } from "./routes/v2";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
@@ -144,6 +147,21 @@ function fallbackAuditDescriptor(request: Request, url: URL) {
   if (url.pathname === "/v1/fake/reset" && method === "POST") {
     return { operation: "fake.reset.v1", resourceType: "demo_dataset" };
   }
+  if (url.pathname === "/v1/runtime-configuration" && method === "PUT") {
+    return {
+      operation: "runtime.mode.update.v1",
+      resourceType: "runtime_configuration",
+    };
+  }
+  if (
+    url.pathname === "/v1/runtime-configuration/reload" &&
+    method === "POST"
+  ) {
+    return {
+      operation: "runtime.mode.reload.v1",
+      resourceType: "runtime_configuration",
+    };
+  }
   const user = url.pathname.match(/^\/v1\/users\/([^/]+)$/u);
   if (user && method === "PATCH") {
     return {
@@ -163,17 +181,19 @@ export async function handleRequest(
   let audit: AuditSink | undefined;
   try {
     const url = new URL(request.url);
-    if (url.pathname === "/v1/health" && request.method === "GET") {
-      return healthResponse(
-        context.requestId,
-        env.KEYOPS_MODE === "fake" ? "fake" : "real",
-      );
-    }
-
     if (/^\/v[12]\//u.test(url.pathname)) {
       const config = validateEnv(env);
-      const core = createWorkerDependencies(config);
-      const { airtable } = core;
+      const bootstrap = createWorkerDependencies(config);
+      const { airtable } = bootstrap;
+      const runtimeConfiguration = new RuntimeConfigurationRepository(airtable);
+      const runtimeMode = await runtimeModeCache.getOrLoad(() =>
+        runtimeConfiguration.read(config.mode),
+      );
+      const runtimeConfig = { ...config, mode: runtimeMode };
+      if (url.pathname === "/v1/health" && request.method === "GET") {
+        return healthResponse(context.requestId, runtimeMode);
+      }
+      const core = createWorkerDependencies(runtimeConfig);
       const users = new UserRepository(airtable);
       const auditEvents = new AuditEventRepository(airtable);
       const functionalAudit = new AuditRecorder(auditEvents);
@@ -250,8 +270,29 @@ export async function handleRequest(
         audit,
       });
       if (userResponse) return userResponse;
+      const runtimeResponse = await runtimeConfigurationRoute(
+        request,
+        context,
+        {
+          users,
+          configuration: runtimeConfiguration,
+          signingKey: config.sessionSigningKey,
+          readMode: () =>
+            runtimeModeCache.getOrLoad(() =>
+              runtimeConfiguration.read(config.mode),
+            ),
+          reloadMode: async () => {
+            runtimeModeCache.clear();
+            return runtimeModeCache.getOrLoad(() =>
+              runtimeConfiguration.read(config.mode),
+            );
+          },
+          audit,
+        },
+      );
+      if (runtimeResponse) return runtimeResponse;
       const fakeResponse = await fakeRoute(request, context, {
-        mode: config.mode,
+        mode: runtimeConfig.mode,
         users,
         airtable,
         signingKey: config.sessionSigningKey,
@@ -341,5 +382,6 @@ export async function handleRequest(
 
 const catalogCache = new CatalogCache();
 const authorizationReplayStore = new InMemoryAuthorizationReplayStore();
+const runtimeModeCache = new RuntimeModeCache();
 
 export default { fetch: handleRequest } satisfies ExportedHandler<WorkerEnv>;
