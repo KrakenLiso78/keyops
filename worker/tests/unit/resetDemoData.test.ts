@@ -13,8 +13,8 @@ describe("reset demo data", () => {
     await expect(resetDemoData(client)).resolves.toMatchObject({
       Users: 4,
       Applications: 24,
-      Credentials: 6,
-      CredentialVersions: 7,
+      Credentials: 20,
+      CredentialVersions: 21,
       AuditEvents: 0,
     });
     expect(client.list).toHaveBeenCalledWith("ApplicationOperationalContexts");

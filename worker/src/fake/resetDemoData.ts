@@ -16,32 +16,79 @@ const credentialSeed = credentialFixture as {
   credentials: Record<string, unknown>[];
   versions: Record<string, unknown>[];
 };
-const credentialByApplication = new Map(
+const seededCredentialByApplication = new Map(
   credentialSeed.credentials.map((credential) => [
+    String(credential.applicationId),
+    credential,
+  ]),
+);
+const applicationSeed = airtableSeed.Applications as Record<string, unknown>[];
+const generatedCredentials = applicationSeed
+  .filter(
+    (application) =>
+      application.credentialState !== "no_credentials" &&
+      !seededCredentialByApplication.has(String(application.applicationId)),
+  )
+  .map((application) => {
+    const applicationId = String(application.applicationId);
+    const environment = String(application.environment);
+    const state = String(application.credentialState);
+    const timestamp = String(application.lastChangedAt);
+    const credentialId = `cred-${applicationId}-${environment}`;
+    const versionId = `ver-${applicationId}-1`;
+    return {
+      credentialId,
+      applicationId,
+      environment,
+      syntheticClientId: `synthetic_${environment}_${applicationId}`,
+      currentVersionId: versionId,
+      state,
+      operationId: `seed-${applicationId}`,
+      lastChangedAt: timestamp,
+      schemaVersion: "1",
+    };
+  });
+const seededCredentials = [
+  ...credentialSeed.credentials,
+  ...generatedCredentials,
+];
+const seededVersions = [
+  ...credentialSeed.versions,
+  ...generatedCredentials.map((credential) => ({
+    versionId: credential.currentVersionId,
+    credentialId: credential.credentialId,
+    sequence: 1,
+    state: credential.state,
+    operationId: credential.operationId,
+    createdAt: credential.lastChangedAt,
+    stateChangedAt: credential.lastChangedAt,
+    schemaVersion: "1",
+  })),
+];
+const credentialByApplication = new Map(
+  seededCredentials.map((credential) => [
     String(credential.applicationId),
     credential,
   ]),
 );
 const seed: Record<string, Record<string, unknown>[]> = {
   ...(airtableSeed as Record<string, Record<string, unknown>[]>),
-  Applications: (airtableSeed.Applications as Record<string, unknown>[]).map(
-    (application) => {
-      const credential = credentialByApplication.get(
-        String(application.applicationId),
-      );
-      return credential
-        ? {
-            ...application,
-            currentCredentialId: credential.credentialId,
-            credentialState: credential.state,
-            lastChangedAt: credential.lastChangedAt,
-            updatedAt: credential.lastChangedAt,
-          }
-        : application;
-    },
-  ),
-  Credentials: credentialSeed.credentials,
-  CredentialVersions: credentialSeed.versions,
+  Applications: applicationSeed.map((application) => {
+    const credential = credentialByApplication.get(
+      String(application.applicationId),
+    );
+    return credential
+      ? {
+          ...application,
+          currentCredentialId: credential.credentialId,
+          credentialState: credential.state,
+          lastChangedAt: credential.lastChangedAt,
+          updatedAt: credential.lastChangedAt,
+        }
+      : application;
+  }),
+  Credentials: seededCredentials,
+  CredentialVersions: seededVersions,
 };
 
 export async function resetDemoData(client: ResetClient) {
