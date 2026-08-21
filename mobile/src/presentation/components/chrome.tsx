@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import Constants from 'expo-constants';
 import type { CredentialState, Environment } from '@/domain/model/types';
 import { colors, space } from '@/presentation/design-system';
 
@@ -15,6 +16,8 @@ const stateContent: Record<CredentialState, { label: string; background: string;
     },
     revoked: { label: 'Revocada', background: colors.rose, color: colors.error },
   };
+
+const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
 export function AppHeader({ onMenu, onSignOut }: { onMenu?: () => void; onSignOut?: () => void }) {
   return (
@@ -34,6 +37,9 @@ export function AppHeader({ onMenu, onSignOut }: { onMenu?: () => void; onSignOu
         style={styles.brand}
       />
       <View style={styles.headerSpacer} />
+      <Text accessibilityLabel={`Versión ${appVersion}`} style={styles.version}>
+        v{appVersion}
+      </Text>
       {onSignOut ? (
         <Pressable
           accessibilityRole="button"
@@ -125,6 +131,7 @@ const styles = StyleSheet.create({
   headerSpacer: { flex: 1 },
   signOut: { minHeight: 48, justifyContent: 'center', paddingHorizontal: space.sm },
   signOutText: { color: colors.primary, fontWeight: '700' },
+  version: { color: colors.slate, fontSize: 11, marginRight: space.xs },
   backRow: { minHeight: 48, justifyContent: 'center' },
   backButton: {
     minHeight: 40,
