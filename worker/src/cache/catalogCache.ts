@@ -28,6 +28,10 @@ export class CatalogCache {
       if (key.includes(`environment=${environment}`)) this.entries.delete(key);
     }
   }
+
+  clear() {
+    this.entries.clear();
+  }
 }
 
 export function catalogCacheKey(input: {

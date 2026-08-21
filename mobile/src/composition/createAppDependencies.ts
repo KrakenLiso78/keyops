@@ -25,6 +25,8 @@ export interface AppDependencies {
   credentials?: CredentialRepository;
   audit: AuditRepository;
   users: UserRepository;
+  getWorkerMode: () => Promise<'fake' | 'real'>;
+  resetFakeData: () => Promise<void>;
   keyOps: typeof fakeRepository;
 }
 export function createAppDependencies(
@@ -47,6 +49,14 @@ export function createAppDependencies(
     credentials: dataSource === 'remote' ? new RestCredentialRepository(http) : undefined,
     audit: dataSource === 'remote' ? new RestAuditRepository(http) : fakeAuditRepository,
     users: dataSource === 'remote' ? new RestUserRepository(http) : new FakeUserRepository(),
+    getWorkerMode: async () =>
+      dataSource === 'remote'
+        ? (await http.request<{ mode: 'fake' | 'real' }>('/v1/health')).mode
+        : 'fake',
+    resetFakeData: async () => {
+      if (dataSource !== 'remote') throw new Error('El servidor de demostración no está activo.');
+      await http.request('/v1/fake/reset', { method: 'POST' });
+    },
     keyOps: fakeRepository,
   };
 }

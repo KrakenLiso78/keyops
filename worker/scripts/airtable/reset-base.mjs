@@ -22,6 +22,7 @@ if (unknownArgs.length > 0 || (dryRun && confirmed)) {
 const expectedCounts = Object.fromEntries(
   TABLE_NAMES.map((tableName) => [tableName, airtableSeed[tableName].length]),
 );
+const resetDeleteOrder = ["ApplicationOperationalContexts", ...DELETE_ORDER];
 
 if (dryRun) {
   console.log("Seed válido. Plan de reseteo de KeyOps:");
@@ -163,11 +164,11 @@ async function resetBase() {
   // Se capturan todos los IDs antes de borrar. Así, una tabla inexistente o sin acceso
   // detiene la operación antes de la primera modificación.
   const existingRecordIds = {};
-  for (const tableName of TABLE_NAMES) {
+  for (const tableName of resetDeleteOrder) {
     existingRecordIds[tableName] = await client.listRecordIds(tableName);
   }
 
-  for (const tableName of DELETE_ORDER) {
+  for (const tableName of resetDeleteOrder) {
     const recordIds = existingRecordIds[tableName];
     await client.deleteRecords(tableName, recordIds);
     console.log(`Vaciada ${tableName}: ${recordIds.length} registros.`);

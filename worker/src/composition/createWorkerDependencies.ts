@@ -1,7 +1,7 @@
 import { AirtableClient } from "../airtable/AirtableClient";
 import { ApplicationOperationalContextRepository } from "../airtable/ApplicationOperationalContextRepository";
 import { CorporateCatalogHttpAdapter } from "../catalog/CorporateCatalogHttpAdapter";
-import { DemoCatalogAdapter } from "../catalog/DemoCatalogAdapter";
+import { AirtableDemoCatalogAdapter } from "../catalog/AirtableDemoCatalogAdapter";
 import type { ValidatedEnv } from "../config/env";
 import { OidcHttpAdapter } from "../identity/OidcHttpAdapter";
 import { RealCredentialReferenceRepository } from "../airtable/RealCredentialReferenceRepository";
@@ -21,7 +21,7 @@ export function createWorkerDependencies(config: ValidatedEnv) {
     operationalContexts: new ApplicationOperationalContextRepository(airtable),
     catalog:
       config.mode === "fake"
-        ? new DemoCatalogAdapter()
+        ? new AirtableDemoCatalogAdapter(airtable)
         : config.catalog
           ? new CorporateCatalogHttpAdapter(config.catalog)
           : undefined,

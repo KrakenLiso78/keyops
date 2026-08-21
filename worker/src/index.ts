@@ -22,6 +22,7 @@ import { createWorkerDependencies } from "./composition/createWorkerDependencies
 import { corporateAuthRoute } from "./routes/v1/auth";
 import { InMemoryAuthorizationReplayStore } from "./auth/authorizationTransaction";
 import { usersRoute } from "./routes/v1/users";
+import { fakeRoute } from "./routes/v1/fake";
 import { v2Route } from "./routes/v2";
 
 function environmentFromUrl(url: URL): "test" | "production" | undefined {
@@ -140,6 +141,9 @@ function fallbackAuditDescriptor(request: Request, url: URL) {
   if (url.pathname === "/v1/users" && method === "POST") {
     return { operation: "user.register.v1", resourceType: "user" };
   }
+  if (url.pathname === "/v1/fake/reset" && method === "POST") {
+    return { operation: "fake.reset.v1", resourceType: "demo_dataset" };
+  }
   const user = url.pathname.match(/^\/v1\/users\/([^/]+)$/u);
   if (user && method === "PATCH") {
     return {
@@ -246,6 +250,15 @@ export async function handleRequest(
         audit,
       });
       if (userResponse) return userResponse;
+      const fakeResponse = await fakeRoute(request, context, {
+        mode: config.mode,
+        users,
+        airtable,
+        signingKey: config.sessionSigningKey,
+        audit,
+        invalidateCatalog: () => catalogCache.clear(),
+      });
+      if (fakeResponse) return fakeResponse;
       const credentials = new CredentialRepository(airtable);
       const credentialResponse = await credentialsRoute(request, context, {
         users,

@@ -3,6 +3,8 @@
     "target": "ES2024",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": { "@/*": ["../mobile/src/*"] },
     "lib": ["ES2024", "WebWorker"],
     "types": ["@cloudflare/workers-types", "vitest/globals"],
     "strict": true,
@@ -11,7 +13,8 @@
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]
 }

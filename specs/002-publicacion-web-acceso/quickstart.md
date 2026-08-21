@@ -11,8 +11,8 @@
 
 `KEYOPS_MODE` is a Worker configuration variable, never a browser setting:
 
-- `fake` is the deployed default. It serves the representative catalog from the Worker while
-  retaining Airtable for authorized users, operational context, synthetic credentials and audit.
+- `fake` is the deployed default. It reads the persistent representative catalog from Airtable,
+  as well as authorized users, operational context, synthetic credentials and audit.
 - `real` disables that catalog and uses only configured external catalog, identity, credential,
   delivery and compliance providers. Missing provider configuration is reported as unavailable;
   it never falls back to representative data.
@@ -26,6 +26,24 @@ npx wrangler deploy --var KEYOPS_MODE:real
 ```
 
 `GET /v1/health` returns the active `mode` without exposing configuration values or secrets.
+
+### Restaurar la demostración persistente
+
+Al abrir el menú con un usuario administrador, el modo `fake` muestra
+**Restablecer demostración**. Tras confirmar, el Worker borra los datos actuales
+de KeyOps en Airtable y carga el seed canónico. La acción no existe en modo
+`real`, requiere autenticación de administrador y queda registrada en auditoría.
+
+También se conserva la alternativa de terminal para administración local:
+
+```bash
+cd worker
+npm run airtable:reset -- --confirm-reset=KeyOps
+```
+
+Ambas opciones son destructivas. La recarga restaura los usuarios semilla, por
+lo que una cuenta creada después del seed deja de existir y deberá iniciarse una
+nueva sesión con una cuenta semilla configurada en `DEMO_CREDENTIALS_JSON`.
 
 ## Local verification
 

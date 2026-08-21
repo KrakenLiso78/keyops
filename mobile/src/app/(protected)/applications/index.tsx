@@ -8,6 +8,7 @@ import { colors, space } from '@/presentation/design-system';
 import { useApp } from '@/presentation/state/AppProvider';
 import { useEnvironment } from '@/presentation/state/EnvironmentProvider';
 import { useApplicationListController } from '@/presentation/controllers/useApplicationListController';
+import { useDependencies } from '@/composition/DependenciesProvider';
 import { LoadingState } from '@/presentation/components/feedback';
 import { CorporateCatalogError } from '@/presentation/components/applications/CorporateCatalogStatus';
 import type { CredentialState } from '@/domain/model/types';
@@ -29,6 +30,11 @@ const sortLabels = {
 export default function ApplicationsScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { environment, user, signOut } = useApp();
+  const { dataSource, getWorkerMode, resetFakeData } = useDependencies();
+  const [workerMode, setWorkerMode] = useState<'fake' | 'real'>();
+  const [resettingDemo, setResettingDemo] = useState(false);
+  const [resetConfirmationOpen, setResetConfirmationOpen] = useState(false);
+  const [resetError, setResetError] = useState<string>();
   const { registerReset } = useEnvironment();
   const controller = useApplicationListController(environment);
   const { query, setQuery } = controller;
@@ -40,6 +46,35 @@ export default function ApplicationsScreen() {
       }),
     [registerReset, setQuery],
   );
+  useEffect(() => {
+    if (user?.profile !== 'administrator' || dataSource !== 'remote') {
+      setWorkerMode(undefined);
+      return;
+    }
+    let active = true;
+    void getWorkerMode()
+      .then((mode) => active && setWorkerMode(mode))
+      .catch(() => active && setWorkerMode(undefined));
+    return () => {
+      active = false;
+    };
+  }, [dataSource, getWorkerMode, user?.profile]);
+  const resetDemo = () => {
+    setResettingDemo(true);
+    setResetError(undefined);
+    void resetFakeData()
+      .then(() => {
+        setMenuOpen(false);
+        setResetConfirmationOpen(false);
+        controller.retry();
+      })
+      .catch((error: unknown) => {
+        setResetError(
+          error instanceof Error ? error.message : 'No se pudo completar la operación.',
+        );
+      })
+      .finally(() => setResettingDemo(false));
+  };
   const apps = controller.items;
   const resultCount = controller.total === 1 ? '1 resultado' : `${controller.total} resultados`;
 
@@ -67,6 +102,53 @@ export default function ApplicationsScreen() {
             >
               <Text style={styles.menuText}>Usuarios autorizados</Text>
             </Pressable>
+          ) : null}
+          {user?.profile === 'administrator' && workerMode === 'fake' ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Restablecer datos de demostración"
+              disabled={resettingDemo}
+              onPress={() => {
+                setResetError(undefined);
+                setResetConfirmationOpen(true);
+              }}
+              style={styles.menuItem}
+            >
+              <Text style={styles.menuText}>
+                {resettingDemo ? 'Restableciendo demostración…' : 'Restablecer demostración'}
+              </Text>
+            </Pressable>
+          ) : null}
+          {resetConfirmationOpen ? (
+            <View style={styles.resetConfirmation}>
+              <Text style={styles.resetConfirmationText}>
+                Se eliminarán los datos actuales de KeyOps en Airtable y se cargarán los datos
+                semilla.
+              </Text>
+              {resetError ? <Text style={styles.resetError}>{resetError}</Text> : null}
+              <View style={styles.resetActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancelar restauración"
+                  disabled={resettingDemo}
+                  onPress={() => setResetConfirmationOpen(false)}
+                  style={styles.resetCancel}
+                >
+                  <Text style={styles.resetCancelText}>Cancelar</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Confirmar restauración de demostración"
+                  disabled={resettingDemo}
+                  onPress={resetDemo}
+                  style={styles.resetConfirm}
+                >
+                  <Text style={styles.resetConfirmText}>
+                    {resettingDemo ? 'Restableciendo…' : 'Restablecer'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
           ) : null}
           <Pressable
             accessibilityRole="button"
@@ -319,6 +401,19 @@ const styles = StyleSheet.create({
   menuItem: { minHeight: 44, justifyContent: 'center', paddingHorizontal: space.sm },
   menuText: { color: colors.primaryDeep, fontWeight: '700' },
   menuProfile: { color: colors.steel, fontSize: 13, padding: space.sm },
+  resetConfirmation: { gap: space.xs, paddingHorizontal: space.sm, paddingBottom: space.sm },
+  resetConfirmationText: { color: colors.ink, fontSize: 13, lineHeight: 18 },
+  resetError: { color: colors.error, fontSize: 13 },
+  resetActions: { flexDirection: 'row', gap: space.xs },
+  resetCancel: {
+    borderColor: colors.hairline,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: space.xs,
+  },
+  resetCancelText: { color: colors.ink, fontWeight: '700' },
+  resetConfirm: { backgroundColor: colors.error, borderRadius: 8, padding: space.xs },
+  resetConfirmText: { color: colors.canvas, fontWeight: '700' },
   pagination: {
     flexDirection: 'row',
     alignItems: 'center',

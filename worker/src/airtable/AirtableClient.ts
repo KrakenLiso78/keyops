@@ -96,6 +96,18 @@ export class AirtableClient {
     return created;
   }
 
+  async deleteMany(table: string, recordIds: string[]): Promise<void> {
+    for (let index = 0; index < recordIds.length; index += 10) {
+      const url = new URL(this.tableUrl(table));
+      for (const recordId of recordIds.slice(index, index + 10)) {
+        url.searchParams.append("records[]", recordId);
+      }
+      await this.request<{ records: Array<{ id: string }> }>(url, {
+        method: "DELETE",
+      });
+    }
+  }
+
   async update<TFields>(
     table: string,
     recordId: string,
