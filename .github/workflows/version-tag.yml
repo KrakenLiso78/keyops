@@ -1,0 +1,34 @@
+name: Validate tagged KeyOps version
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  validate-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: Validate tag format
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "${RELEASE_TAG#v}" != "0.0.0"
+      - name: Build tagged web bundle
+        working-directory: mobile
+        env:
+          KEYOPS_VERSION: ${{ github.ref_name }}
+        run: |
+          npm ci
+          npm run export:web
