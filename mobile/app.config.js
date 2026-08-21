@@ -9,6 +9,23 @@ const candidates = [
   process.env.VERCEL_GIT_COMMIT_REF,
 ];
 try {
+  const release = execFileSync(
+    'curl',
+    [
+      '--fail',
+      '--silent',
+      '--show-error',
+      '--header',
+      'Accept: application/vnd.github+json',
+      'https://api.github.com/repos/KrakenLiso78/keyops/releases/latest',
+    ],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
+  );
+  candidates.push(JSON.parse(release).tag_name);
+} catch {
+  // Offline builds use the Git tag checked out locally or the baseline.
+}
+try {
   candidates.push(
     execFileSync('git', ['describe', '--tags', '--exact-match', 'HEAD'], {
       encoding: 'utf8',
@@ -31,7 +48,7 @@ try {
     .at(-1);
   candidates.push(latestRemoteTag);
 } catch {
-  // Offline builds use the tag checked out locally or the app baseline.
+  // The release endpoint is authoritative when it is available.
 }
 const taggedVersion = candidates.map((value) => value?.match(semverTag)?.[1]).find(Boolean);
 
