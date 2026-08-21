@@ -16,10 +16,14 @@ const seed = airtableSeed as Record<string, Record<string, unknown>[]>;
 export async function resetDemoData(client: ResetClient) {
   const existing = new Map<string, string[]>();
   for (const table of RESET_DELETE_ORDER) {
-    const records = await client.list(table);
+    const records = await client.list<Record<string, unknown>>(table);
+    const resettable =
+      table === "AuditEvents"
+        ? records.filter(({ fields }) => fields.mode !== "real")
+        : records;
     existing.set(
       table,
-      records.map(({ id }) => id),
+      resettable.map(({ id }) => id),
     );
   }
   for (const table of RESET_DELETE_ORDER) {

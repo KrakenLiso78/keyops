@@ -16,6 +16,7 @@ const safeIdentifier = z.string().min(1).max(200);
 export const auditEventFieldsSchema = z
   .object({
     eventId: z.string().regex(/^evt-[A-Za-z0-9_-]{12,100}$/u),
+    mode: z.enum(["fake", "real"]).optional(),
     schemaVersion: z.literal(1),
     occurredAt: z.string().datetime({ offset: true }),
     actorUserId: safeIdentifier,

@@ -40,6 +40,14 @@ de forma atómica.
 secretos. El modo `real` no debe seleccionarse hasta contar con proveedores
 externos configurados: no cae de vuelta a los datos de demostración.
 
+En modo `fake`, la aplicación usa las rutas v1 y las tablas sintéticas de
+Airtable (`Credentials`, `CredentialVersions`, `DeliveryGrants`,
+`IdempotencyRecords` y `AuditEvents`). En modo `real`, las operaciones de
+credenciales y auditoría de cumplimiento usan las rutas v2 y las referencias
+externas (`RealCredentialReferences`, `RealOperationReceipts` y el proveedor de
+cumplimiento). Las auditorías funcionales se etiquetan con `mode` para evitar
+mezclas entre ambos modos.
+
 ### Restablecer datos semilla
 
 Al abrir el menú con un usuario administrador, el modo `fake` muestra
@@ -57,6 +65,9 @@ npm run airtable:reset -- --confirm-reset=KeyOps
 Ambas opciones son destructivas. La recarga restaura los usuarios semilla, por
 lo que una cuenta creada después del seed deja de existir y deberá iniciarse una
 nueva sesión con una cuenta semilla configurada en `DEMO_CREDENTIALS_JSON`.
+El restablecimiento elimina los datos sintéticos de credenciales, entregas,
+idempotencia y auditoría; conserva las referencias y auditorías etiquetadas como
+`real`.
 
 ## Local verification
 

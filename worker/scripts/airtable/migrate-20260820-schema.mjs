@@ -32,7 +32,10 @@ const existingTableAdditions = {
     { name: "updatedAt", type: "dateTime" },
     { name: "schemaVersion", type: "singleLineText" },
   ],
-  AuditEvents: [{ name: "testRunId", type: "singleLineText" }],
+  AuditEvents: [
+    { name: "testRunId", type: "singleLineText" },
+    { name: "mode", ...select("fake", "real") },
+  ],
 };
 
 const newTables = {

@@ -27,10 +27,16 @@ function escapeFormula(value: string): string {
 }
 
 export class AuditEventRepository implements AuditEventStore {
-  constructor(private readonly client: AuditClient) {}
+  constructor(
+    private readonly client: AuditClient,
+    private readonly mode?: "fake" | "real",
+  ) {}
 
   async append(fields: AuditEventFields): Promise<PersistedAuditEvent> {
-    const validated = auditEventFieldsSchema.parse(fields);
+    const validated = auditEventFieldsSchema.parse({
+      ...fields,
+      ...(this.mode ? { mode: this.mode } : {}),
+    });
     const existing = (
       await this.client.list<AuditEventFields>("AuditEvents", {
         filterByFormula: `{eventId}='${escapeFormula(validated.eventId)}'`,
@@ -60,8 +66,10 @@ export class AuditEventRepository implements AuditEventStore {
   }
 
   async list(): Promise<PersistedAuditEvent[]> {
-    return (await this.client.list<AuditEventFields>("AuditEvents")).map(
-      mapEvent,
-    );
+    return (await this.client.list<AuditEventFields>("AuditEvents"))
+      .map(mapEvent)
+      .filter(
+        ({ fields }) => !this.mode || !fields.mode || fields.mode === this.mode,
+      );
   }
 }

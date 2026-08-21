@@ -43,7 +43,10 @@ function mapVersion(
 }
 
 export class CredentialRepository {
-  constructor(private readonly client: CredentialClient) {}
+  constructor(
+    private readonly client: CredentialClient,
+    private readonly mode: "fake" | "real" = "fake",
+  ) {}
 
   async getApplication(
     environment: "test" | "production",
@@ -154,12 +157,14 @@ export class CredentialRepository {
   }
 
   async listCredentials(): Promise<CredentialFields[]> {
+    if (this.mode === "real") return [];
     return (await this.client.list<CredentialFields>("Credentials")).map(
       (record) => mapCredential(record).fields,
     );
   }
 
   async listVersions(): Promise<CredentialVersionFields[]> {
+    if (this.mode === "real") return [];
     return (
       await this.client.list<CredentialVersionFields>("CredentialVersions")
     ).map((record) => mapVersion(record).fields);

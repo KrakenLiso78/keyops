@@ -147,4 +147,23 @@ describe('RestCredentialRepository', () => {
       headers: { 'x-keyops-contract-version': '2' },
     });
   });
+
+  it('uses the v1 synthetic routes when the Worker is in fake mode', async () => {
+    const syntheticReceipt = {
+      contractVersion: '1',
+      operationId: 'operation-fake',
+      requestId: 'request-fake',
+      result: 'succeeded',
+    };
+    const request = jest.fn().mockResolvedValue(syntheticReceipt);
+    const repository = new RestCredentialRepository(
+      { request } as unknown as FetchHttpClient,
+      async () => 'fake',
+    );
+    await repository.issue('test', 'app-001', 'fake-key-000001');
+    expect(request).toHaveBeenCalledWith(
+      '/v1/applications/app-001/credentials?environment=test',
+      expect.objectContaining({ headers: { 'idempotency-key': 'fake-key-000001' } }),
+    );
+  });
 });

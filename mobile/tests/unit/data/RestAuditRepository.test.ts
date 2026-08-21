@@ -44,4 +44,32 @@ describe('RestAuditRepository', () => {
       undefined,
     );
   });
+
+  it('lee la auditoría sintética mediante el contrato v1 en modo fake', async () => {
+    const request = jest.fn(async () => ({
+      items: [
+        {
+          id: 'evt-fake-1',
+          occurredAt: '2026-08-15T12:00:00Z',
+          actorUserId: 'user-1',
+          operation: 'credential.issue.v1',
+          resourceType: 'credential',
+          result: 'succeeded',
+          originIp: '127.0.0.1',
+          requestId: 'request-fake-1',
+        },
+      ],
+      page: 1,
+      pageSize: 20,
+      total: 1,
+    }));
+    const repository = new RestAuditRepository(
+      { request } as unknown as FetchHttpClient,
+      async () => 'fake',
+    );
+    await expect(repository.list()).resolves.toMatchObject({
+      items: [{ id: 'evt-fake-1', integrity: 'unavailable', schemaVersion: 1 }],
+    });
+    expect(request).toHaveBeenCalledWith('/v1/audit-events', undefined, undefined);
+  });
 });

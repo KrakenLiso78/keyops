@@ -27,4 +27,25 @@ describe("reset demo data", () => {
       ]),
     );
   });
+
+  it("preserves audit records tagged as real", async () => {
+    const client = {
+      list: vi.fn(async (table: string) =>
+        table === "AuditEvents"
+          ? [
+              { id: "fake-audit", fields: { mode: "fake" } },
+              { id: "real-audit", fields: { mode: "real" } },
+            ]
+          : [],
+      ),
+      deleteMany: vi.fn(async () => undefined),
+      createMany: vi.fn(async () => []),
+    } as unknown as Pick<AirtableClient, "createMany" | "deleteMany" | "list">;
+
+    await resetDemoData(client);
+
+    expect(client.deleteMany).toHaveBeenCalledWith("AuditEvents", [
+      "fake-audit",
+    ]);
+  });
 });

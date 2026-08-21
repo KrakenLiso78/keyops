@@ -39,6 +39,10 @@ export function createAppDependencies(
     runtimeConfig.EXPO_PUBLIC_API_BASE_URL,
     async () => (await sessionStore.read())?.accessToken,
   );
+  const getWorkerMode = async () =>
+    dataSource === 'remote'
+      ? (await http.request<{ mode: 'fake' | 'real' }>('/v1/health')).mode
+      : ('fake' as const);
   return {
     dataSource,
     sessionStore,
@@ -48,13 +52,12 @@ export function createAppDependencies(
         : new FakeAuthRepository(),
     applications:
       dataSource === 'remote' ? new RestApplicationRepository(http) : fakeApplicationRepository,
-    credentials: dataSource === 'remote' ? new RestCredentialRepository(http) : undefined,
-    audit: dataSource === 'remote' ? new RestAuditRepository(http) : fakeAuditRepository,
+    credentials:
+      dataSource === 'remote' ? new RestCredentialRepository(http, getWorkerMode) : undefined,
+    audit:
+      dataSource === 'remote' ? new RestAuditRepository(http, getWorkerMode) : fakeAuditRepository,
     users: dataSource === 'remote' ? new RestUserRepository(http) : new FakeUserRepository(),
-    getWorkerMode: async () =>
-      dataSource === 'remote'
-        ? (await http.request<{ mode: 'fake' | 'real' }>('/v1/health')).mode
-        : 'fake',
+    getWorkerMode,
     setWorkerMode: async (mode) =>
       (
         await http.request<{ mode: 'fake' | 'real' }>('/v1/runtime-configuration', {

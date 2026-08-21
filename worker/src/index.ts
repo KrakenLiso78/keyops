@@ -195,7 +195,7 @@ export async function handleRequest(
       }
       const core = createWorkerDependencies(runtimeConfig);
       const users = new UserRepository(airtable);
-      const auditEvents = new AuditEventRepository(airtable);
+      const auditEvents = new AuditEventRepository(airtable, runtimeMode);
       const functionalAudit = new AuditRecorder(auditEvents);
       const complianceAudit = core.complianceAudit
         ? new ComplianceAuditRecorder(core.complianceAudit)
@@ -300,7 +300,7 @@ export async function handleRequest(
         invalidateCatalog: () => catalogCache.clear(),
       });
       if (fakeResponse) return fakeResponse;
-      const credentials = new CredentialRepository(airtable);
+      const credentials = new CredentialRepository(airtable, runtimeMode);
       const credentialResponse = await credentialsRoute(request, context, {
         users,
         credentials,
