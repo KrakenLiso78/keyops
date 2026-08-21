@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { EnvironmentBar } from '@/presentation/components/environment';
 import { EnvironmentProvider } from '@/presentation/state/EnvironmentProvider';
 
-describe('identificación del ambiente de demostración', () => {
+describe('identificación del modo demo', () => {
   it('permanece visible y anuncia el ambiente activo', () => {
     const screen = render(
       <EnvironmentProvider>
@@ -10,7 +10,7 @@ describe('identificación del ambiente de demostración', () => {
       </EnvironmentProvider>,
     );
 
-    expect(screen.getByText('AMBIENTE DE DEMOSTRACIÓN')).toBeTruthy();
+    expect(screen.getByText('MODO DEMO')).toBeTruthy();
     expect(screen.getByLabelText('Ambiente activo: Pruebas de demostración')).toBeTruthy();
 
     fireEvent.press(screen.getByRole('tab', { name: 'Producción' }));

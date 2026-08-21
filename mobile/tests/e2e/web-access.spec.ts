@@ -7,7 +7,7 @@ test('acceso, navegación y ambiente caben en el viewport móvil', async ({ page
   await page.getByRole('button', { name: 'Ingresar' }).click();
 
   await expect(page.getByRole('heading', { name: 'Credenciales' })).toBeVisible();
-  await expect(page.getByText('AMBIENTE DE DEMOSTRACIÓN')).toBeVisible();
+  await expect(page.getByText('MODO DEMO')).toBeVisible();
   await page.getByRole('tab', { name: 'Producción' }).click();
   await expect(page.getByRole('alert')).toContainText('PRODUCCIÓN');
   await expect(page.getByRole('button', { name: /Abrir / }).first()).toBeVisible();

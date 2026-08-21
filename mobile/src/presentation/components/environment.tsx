@@ -10,7 +10,7 @@ export function EnvironmentBar() {
       accessibilityLabel={`Ambiente activo: ${environmentName} de demostración`}
       style={styles.container}
     >
-      <Text style={styles.demoLabel}>AMBIENTE DE DEMOSTRACIÓN</Text>
+      <Text style={styles.demoLabel}>MODO DEMO</Text>
       <View accessibilityRole="tablist" style={styles.tabs}>
         {(['test', 'production'] as const).map((value) => (
           <Pressable
