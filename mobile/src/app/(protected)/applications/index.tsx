@@ -192,7 +192,7 @@ export default function ApplicationsScreen() {
           {user?.profile === 'administrator' && workerMode === 'fake' ? (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Restablecer datos de demostración"
+              accessibilityLabel="Restablecer datos semilla"
               disabled={resettingDemo}
               onPress={() => {
                 setResetError(undefined);
@@ -201,7 +201,7 @@ export default function ApplicationsScreen() {
               style={styles.menuItem}
             >
               <Text style={styles.menuText}>
-                {resettingDemo ? 'Restableciendo demostración…' : 'Restablecer demostración'}
+                {resettingDemo ? 'Restableciendo datos semilla…' : 'Restablecer datos semilla'}
               </Text>
             </Pressable>
           ) : null}
@@ -224,7 +224,7 @@ export default function ApplicationsScreen() {
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  accessibilityLabel="Confirmar restauración de demostración"
+                  accessibilityLabel="Confirmar restauración de datos semilla"
                   disabled={resettingDemo}
                   onPress={resetDemo}
                   style={styles.resetConfirm}

@@ -40,10 +40,10 @@ de forma atómica.
 secretos. El modo `real` no debe seleccionarse hasta contar con proveedores
 externos configurados: no cae de vuelta a los datos de demostración.
 
-### Restaurar la demostración persistente
+### Restablecer datos semilla
 
 Al abrir el menú con un usuario administrador, el modo `fake` muestra
-**Restablecer demostración**. Tras confirmar, el Worker borra los datos actuales
+**Restablecer datos semilla**. Tras confirmar, el Worker borra los datos actuales
 de KeyOps en Airtable y carga el seed canónico. La acción no existe en modo
 `real`, requiere autenticación de administrador y queda registrada en auditoría.
 
