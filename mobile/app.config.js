@@ -18,6 +18,21 @@ try {
 } catch {
   // Hosted builds use GITHUB_REF_NAME or VERCEL_GIT_COMMIT_REF instead.
 }
+try {
+  const remoteTags = execFileSync('git', ['ls-remote', '--tags', 'origin'], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  const latestRemoteTag = remoteTags
+    .split('\n')
+    .map((line) => line.match(/refs\/tags\/(v\d+\.\d+\.\d+)\^?\{?\}?$/u)?.[1])
+    .filter(Boolean)
+    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true }))
+    .at(-1);
+  candidates.push(latestRemoteTag);
+} catch {
+  // Offline builds use the tag checked out locally or the app baseline.
+}
 const taggedVersion = candidates.map((value) => value?.match(semverTag)?.[1]).find(Boolean);
 
 module.exports = {
