@@ -14,7 +14,10 @@ export function createWorkerDependencies(config: ValidatedEnv) {
     baseId: config.airtableBaseId,
     token: config.airtablePat,
   });
-  const realReferences = new RealCredentialReferenceRepository(airtable);
+  const realReferences =
+    config.mode === "real"
+      ? new RealCredentialReferenceRepository(airtable)
+      : undefined;
   return {
     airtable,
     realReferences,
@@ -38,7 +41,7 @@ export function createWorkerDependencies(config: ValidatedEnv) {
             delivery: new SecureDeliveryHttpAdapter(
               config.realCredentials.delivery,
             ),
-            references: realReferences,
+            references: realReferences!,
             allowedEnvironments: config.realCredentials.allowedEnvironments,
           }
         : undefined,
